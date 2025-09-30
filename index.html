@@ -11,45 +11,418 @@
       crossorigin="anonymous"
     />
     <link rel="stylesheet" href="css/style.css" />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
+      crossorigin="anonymous"
+      referrerpolicy="no-referrer"
+    />
   </head>
   <body>
     <!--HEADER-->
 
-    <nav class="navbar navbar-expand-lg bg-body-tertiary">
-      <div class="container-fluid px-3 px-lg-5">
-        <button
-          class="navbar-toggler"
-          type="button"
-          data-bs-toggle="collapse"
-          data-bs-target="#navbarNav"
-          aria-controls="navbarNav"
-          aria-expanded="false"
-          aria-label="Toggle navigation"
-        >
-          <span class="navbar-toggler-icon"></span>
-        </button>
-        <div class="collapse navbar-collapse" id="navbarNav">
-          <ul class="navbar-nav">
-            <li class="nav-item">
-              <a class="nav-link" href="#">Home</a>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link" href="#">Oferta</a>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link" href="#">Zarezerwuj</a>
-            </li>
-          </ul>
-          <ul class="navbar-nav ms-auto">
-            <li class="nav-item">
-              <a class="btn btn-outline-primary" href="#">Zaloguj</a>
-            </li>
-          </ul>
+    <header class="position-relative">
+      <nav
+        class="navbar navbar-expand-lg navbar-light bg-transparent position-absolute top-0 start-0 w-100 z-3"
+      >
+        <div class="container-fluid px-3 px-lg-5">
+          <button
+            class="navbar-toggler"
+            type="button"
+            data-bs-toggle="collapse"
+            data-bs-target="#navbarNav"
+            aria-controls="navbarNav"
+            aria-expanded="false"
+            aria-label="Toggle navigation"
+          >
+            <span class="navbar-toggler-icon"></span>
+          </button>
+          <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav">
+              <li class="nav-item"><a class="nav-link" href="#">HOME</a></li>
+              <li class="nav-item">
+                <a class="nav-link" href="#offer">OFERTA</a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="#offer">ZAREZERWUJ</a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="#">DODATKI</a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="#">KONTAKT</a>
+              </li>
+            </ul>
+            <ul class="navbar-nav ms-auto">
+              <li class="nav-item">
+                <a class="btn btn-outline-primary text-black" href="#"
+                  >Zaloguj</a
+                >
+              </li>
+            </ul>
+          </div>
+        </div>
+      </nav>
+
+      <div
+        class="text-center bg-image hero"
+        style="background-image: url('assets/header3.webp')"
+      >
+        <div>
+          <div class="d-flex justify-content-center align-items-center">
+            <div class="text-gray">
+              <h1 class="mb-3">
+                WYPOŻYCZALNIA SAMOCHODÓW
+                <b style="color: rgb(50, 131, 60)">CORONA</b>
+              </h1>
+              <h4 class="mb-3">Nowoczesna flota, przejrzyste warunki!</h4>
+              <a class="btn btn-outline-dark btn-lg" href="#offer" role="button"
+                >Zarezerwuj</a
+              >
+            </div>
+          </div>
         </div>
       </div>
-    </nav>
+    </header>
 
     <!--HEADER-->
+
+    <section>
+      <div class="container-fluid">
+        <div
+          id="offer"
+          class="text-center section-offer"
+          style="background-color: rgb(234, 234, 227)"
+        >
+          <div>
+            <div class="d-flex justify-content-center align-items-center">
+              <div class="text-gray">
+                <h2 class="mb-3">NASZA OFERTA</h2>
+                <h4 class="mb-3">
+                  Posiadamy nowoczesną flotę co zapewnia bezpieczną podróż!
+                </h4>
+              </div>
+            </div>
+
+            <!--WYSZUKIWARKA-->
+
+            <div class="container py-4 search-wrapper">
+  <div class="card p-3 p-md-4" style="border-radius:18px; box-shadow:0 6px 24px rgba(0,0,0,.08); border:1px solid rgba(0,0,0,.06); overflow: visible;">
+    <form id="search-form" action="/search" method="get" novalidate>
+
+      <!-- Główna linia -->
+      <div class="row g-3 align-items-end">
+        <div class="col-12 col-lg-3">
+          <label class="form-label mb-1">Miejsce odbioru</label>
+          <select class="form-select" id="pickupLocation" name="pickup_location" required>
+            <option value="" disabled selected>Wybierz...</option>
+            <option>Warszawa Lotnisko</option><option>Warszawa Centrum</option>
+            <option>Kraków</option><option>Gdańsk</option><option>Wrocław</option>
+            <option>Poznań</option><option>Katowice</option>
+          </select>
+        </div>
+
+        <div class="col-12 col-lg-3">
+          <label class="form-label mb-1">Miejsce zwrotu</label>
+          <select class="form-select" id="dropoffLocation" name="dropoff_location" required>
+            <option value="" disabled selected>Wybierz...</option>
+            <option>To samo co odbiór</option>
+            <option>Warszawa Lotnisko</option><option>Warszawa Centrum</option>
+            <option>Kraków</option><option>Gdańsk</option><option>Wrocław</option>
+            <option>Poznań</option><option>Katowice</option>
+          </select>
+        </div>
+
+        <div class="col-12 col-lg-3">
+          <label class="form-label mb-1">Data odbioru</label>
+          <input type="datetime-local" class="form-control" id="pickupDateTime" name="pickup_datetime" required>
+        </div>
+
+        <div class="col-12 col-lg-3">
+          <label class="form-label mb-1">Data zwrotu</label>
+          <input type="datetime-local" class="form-control" id="dropoffDateTime" name="dropoff_datetime" required>
+        </div>
+      </div>
+
+      <hr class="my-3" />
+
+      <!-- Filtry + przycisk po prawej -->
+      <div class="d-flex align-items-center flex-wrap gap-2" style="overflow: visible;">
+        <!-- Grupa chipów -->
+        <div class="d-flex flex-wrap gap-2 flex-grow-1" style="overflow: visible;">
+          <!-- Typ pojazdu -->
+          <div class="dropdown" data-bs-display="static" style="overflow: visible;">
+            <button class="btn btn-light rounded-pill px-3 dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+              Typ pojazdu
+            </button>
+            <ul class="dropdown-menu shadow mt-2" style="position:absolute; inset:auto auto 0 0; transform:translateY(100%);">
+              <li><a class="dropdown-item" data-value="">Dowolny</a></li>
+              <li><a class="dropdown-item" data-value="economy">Miejski/Economy</a></li>
+              <li><a class="dropdown-item" data-value="compact">Kompakt</a></li>
+              <li><a class="dropdown-item" data-value="suv">SUV</a></li>
+              <li><a class="dropdown-item" data-value="van">Van</a></li>
+              <li><a class="dropdown-item" data-value="premium">Premium</a></li>
+            </ul>
+            <input type="hidden" name="class" id="classHidden">
+          </div>
+
+          <!-- Skrzynia biegów -->
+          <div class="dropdown" data-bs-display="static" style="overflow: visible;">
+            <button class="btn btn-light rounded-pill px-3 dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+              Skrzynia biegów
+            </button>
+            <ul class="dropdown-menu shadow mt-2" style="position:absolute; inset:auto auto 0 0; transform:translateY(100%);">
+              <li><a class="dropdown-item" data-value="">Dowolna</a></li>
+              <li><a class="dropdown-item" data-value="manual">Manualna</a></li>
+              <li><a class="dropdown-item" data-value="automatic">Automatyczna</a></li>
+            </ul>
+            <input type="hidden" name="transmission" id="transHidden">
+          </div>
+
+          <!-- Minimalna liczba miejsc -->
+          <div class="dropdown" data-bs-display="static" style="overflow: visible;">
+            <button class="btn btn-light rounded-pill px-3 dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+              Minimalna liczba miejsc
+            </button>
+            <ul class="dropdown-menu shadow mt-2" style="position:absolute; inset:auto auto 0 0; transform:translateY(100%);">
+              <li><a class="dropdown-item" data-value="">Dowolna</a></li>
+              <li><a class="dropdown-item" data-value="2">2</a></li>
+              <li><a class="dropdown-item" data-value="4">4</a></li>
+              <li><a class="dropdown-item" data-value="5">5</a></li>
+              <li><a class="dropdown-item" data-value="7">7</a></li>
+              <li><a class="dropdown-item" data-value="9">9</a></li>
+            </ul>
+            <input type="hidden" name="seats_min" id="seatsHidden">
+          </div>
+
+          <!-- Rodzaj paliwa -->
+          <div class="dropdown" data-bs-display="static" style="overflow: visible;">
+            <button class="btn btn-light rounded-pill px-3 dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+              Rodzaj paliwa
+            </button>
+            <ul class="dropdown-menu shadow mt-2" style="position:absolute; inset:auto auto 0 0; transform:translateY(100%);">
+              <li><a class="dropdown-item" data-value="">Dowolny</a></li>
+              <li><a class="dropdown-item" data-value="benzyna">Benzyna</a></li>
+              <li><a class="dropdown-item" data-value="diesel">Diesel</a></li>
+              <li><a class="dropdown-item" data-value="hybryda">Hybryda</a></li>
+              <li><a class="dropdown-item" data-value="elektryczny">Elektryczny</a></li>
+            </ul>
+            <input type="hidden" name="fuel" id="fuelHidden">
+          </div>
+        </div>
+
+        <!-- CTA wyrównany do prawej -->
+        <button class="btn rounded-pill px-4 ms-auto" type="submit"
+                style="background:#188f45; border-color:#255b35; color:#fff; white-space:nowrap;">
+          Pokaż samochody
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
+
+
+            <!--WYSZUKIWARKA-->
+            <div class="container-fluid py-4">
+  <div class="row g-4 pt-5 align-items-stretch">
+
+    <!-- 1 -->
+    <div class="col-12 col-sm-6 col-lg-3 d-flex">
+      <div class="card card-product h-100 w-100 text-center">
+        <img src="assets/audi.jpg" class="card-img-top" alt="Audi A5">
+        <div class="card-body pb-0">
+          <h5 class="card-title pb-2 mb-1">AUDI A5</h5>
+        </div>
+        <div class="card-segment mb-3">KLASA C / HATCHBACK</div>
+
+        <div class="card-features px-3 py-3">
+          <div class="row row-cols-2 g-3 text-start">
+            <div class="col">
+              <div class="d-flex align-items-center gap-2">
+                <span class="feature-icon bg-transparent"><i class="far fa-circle-check"></i></span>
+                <span>Benzyna</span>
+              </div>
+            </div>
+            <div class="col">
+              <div class="d-flex align-items-center gap-2">
+                <span class="feature-icon bg-transparent"><i class="far fa-circle-check"></i></span>
+                <span>Manualna</span>
+              </div>
+            </div>
+            <div class="col">
+              <div class="d-flex align-items-center gap-2">
+                <span class="feature-icon bg-transparent"><i class="far fa-circle-check"></i></span>
+                <span>5-osobowy</span>
+              </div>
+            </div>
+            <div class="col">
+              <div class="d-flex align-items-center gap-2">
+                <span class="feature-icon bg-transparent"><i class="far fa-circle-check"></i></span>
+                <span>4-drzwiowy</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="card-body pt-3">
+          <div class="h5 mb-3">Cena od: <strong>159 zł/dzień</strong></div>
+          <a class="btn btn-primary" href="#">Zarezerwuj</a>
+        </div>
+      </div>
+    </div>
+
+    <!-- 2 -->
+    <div class="col-12 col-sm-6 col-lg-3 d-flex">
+      <div class="card card-product h-100 w-100 text-center">
+        <img src="assets/nissan.jpg" class="card-img-top" alt="Nissan Maxima">
+        <div class="card-body pb-0">
+          <h5 class="card-title pb-2 mb-1">NISSAN MAXIMA</h5>
+        </div>
+        <div class="card-segment mb-3">KLASA D / SEDAN</div>
+
+        <div class="card-features px-3 py-3">
+          <div class="row row-cols-2 g-3 text-start">
+            <div class="col">
+              <div class="d-flex align-items-center gap-2">
+                <span class="feature-icon bg-transparent"><i class="far fa-circle-check"></i></span>
+                <span>Benzyna</span>
+              </div>
+            </div>
+            <div class="col">
+              <div class="d-flex align-items-center gap-2">
+                <span class="feature-icon bg-transparent"><i class="far fa-circle-check"></i></span>
+                <span>Automatyczna</span>
+              </div>
+            </div>
+            <div class="col">
+              <div class="d-flex align-items-center gap-2">
+                <span class="feature-icon bg-transparent"><i class="far fa-circle-check"></i></span>
+                <span>5-osobowy</span>
+              </div>
+            </div>
+            <div class="col">
+              <div class="d-flex align-items-center gap-2">
+                <span class="feature-icon bg-transparent"><i class="far fa-circle-check"></i></span>
+                <span>4-drzwiowy</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="card-body pt-3">
+          <div class="h5 mb-3">Cena od: <strong>159 zł/dzień</strong></div>
+          <a class="btn btn-primary" href="#">Zarezerwuj</a>
+        </div>
+      </div>
+    </div>
+
+    <!-- 3 -->
+    <div class="col-12 col-sm-6 col-lg-3 d-flex">
+      <div class="card card-product h-100 w-100 text-center">
+        <img src="assets/mercedes.jpg" class="card-img-top" alt="Mercedes Coupe">
+        <div class="card-body pb-0">
+          <h5 class="card-title pb-2 mb-1">MERCEDES COUPE</h5>
+        </div>
+        <div class="card-segment mb-3">KLASA C / COUPE</div>
+
+        <div class="card-features px-3 py-3">
+          <div class="row row-cols-2 g-3 text-start">
+            <div class="col">
+              <div class="d-flex align-items-center gap-2">
+                <span class="feature-icon bg-transparent"><i class="far fa-circle-check"></i></span>
+                <span>Diesel</span>
+              </div>
+            </div>
+            <div class="col">
+              <div class="d-flex align-items-center gap-2">
+                <span class="feature-icon bg-transparent"><i class="far fa-circle-check"></i></span>
+                <span>Automatyczna</span>
+              </div>
+            </div>
+            <div class="col">
+              <div class="d-flex align-items-center gap-2">
+                <span class="feature-icon bg-transparent"><i class="far fa-circle-check"></i></span>
+                <span>5-osobowy</span>
+              </div>
+            </div>
+            <div class="col">
+              <div class="d-flex align-items-center gap-2">
+                <span class="feature-icon bg-transparent"><i class="far fa-circle-check"></i></span>
+                <span>2-drzwiowy</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="card-body pt-3">
+          <div class="h5 mb-3">Cena od: <strong>159 zł/dzień</strong></div>
+          <a class="btn btn-primary" href="#">Zarezerwuj</a>
+        </div>
+      </div>
+    </div>
+
+    <!-- 4 -->
+    <div class="col-12 col-sm-6 col-lg-3 d-flex">
+      <div class="card card-product h-100 w-100 text-center">
+        <img src="assets/mustang.jpg" class="card-img-top" alt="Ford Mustang">
+        <div class="card-body pb-0">
+          <h5 class="card-title pb-2 mb-1">FORD MUSTANG</h5>
+        </div>
+        <div class="card-segment mb-3">KLASA C / COUPE</div>
+
+        <div class="card-features px-3 py-3">
+          <div class="row row-cols-2 g-3 text-start">
+            <div class="col">
+              <div class="d-flex align-items-center gap-2">
+                <span class="feature-icon bg-transparent"><i class="far fa-circle-check"></i></span>
+                <span>Benzyna</span>
+              </div>
+            </div>
+            <div class="col">
+              <div class="d-flex align-items-center gap-2">
+                <span class="feature-icon bg-transparent"><i class="far fa-circle-check"></i></span>
+                <span>Manualna</span>
+              </div>
+            </div>
+            <div class="col">
+              <div class="d-flex align-items-center gap-2">
+                <span class="feature-icon bg-transparent"><i class="far fa-circle-check"></i></span>
+                <span>5-osobowy</span>
+              </div>
+            </div>
+            <div class="col">
+              <div class="d-flex align-items-center gap-2">
+                <span class="feature-icon bg-transparent"><i class="far fa-circle-check"></i></span>
+                <span>2-drzwiowy</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="card-body pt-3">
+          <div class="h5 mb-3">Cena od: <strong>159 zł/dzień</strong></div>
+          <a class="btn btn-primary" href="#">Zarezerwuj</a>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+ 
+           </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Back to top -->
+    <button id="backToTop" class="back-to-top" type="button" aria-label="Wróć na górę">
+        <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true">
+            <path d="M12 5l-7 7h4v7h6v-7h4l-7-7z" fill="currentColor"/>
+        </svg>
+    </button>
+
+
 
     <script
       src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"
@@ -61,11 +434,7 @@
       integrity="sha384-I7E8VVD/ismYTF4hNIPjVp/Zjvgyol6VFvRkX/vR+Vc4jQkC+hVqc2pM8ODewa9r"
       crossorigin="anonymous"
     ></script>
-    <script
-      src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.min.js"
-      integrity="sha384-G/EV+4j2dNv+tEPo3++6LCgdCROaejBqfUeNjuKAiuXbjrxilcCdDz6ZAVfHWe1Y"
-      crossorigin="anonymous"
-    ></script>
+
     <script src="js/index.js"></script>
   </body>
 </html>

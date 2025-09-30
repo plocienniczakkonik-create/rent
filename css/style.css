@@ -1,0 +1,206 @@
+.hero {
+  height: 100vh;
+  background-position: center;
+  background-size: cover;
+  display: flex;
+  align-items: center;
+  justify-content: space-around; /* start na desktopie */
+  padding-inline: clamp(16px, 6vw, 80px); /* odstęp od krawędzi */
+}
+
+.mask {
+  background: rgba(0, 0, 0, 0.6);
+  color: #fff;
+  padding: 1.25rem 1.5rem;
+  border-radius: 0.75rem;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25);
+  max-width: min(90vw, 560px); /* nie wyjdzie poza ekran */
+}
+
+.navbar-nav {
+  color: black;
+}
+
+.section-offer {
+  height: 100vh;
+  background-position: center;
+  background-size: cover;
+  display: flex;
+  align-items: top;
+  justify-content: space-around; /* start na desktopie */
+  padding-inline: clamp(16px, 6vw, 80px); /* odstęp od krawędzi */
+  padding-top: 5rem;
+}
+
+.card-product {
+  background: #eaeae3;
+  border: 1px solid #424343;
+  border-radius: 12px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+}
+
+/* Zdjęcie bez „białego paska” i ładny crop */
+.card-product .card-img-top {
+  aspect-ratio: 16/9; /* stałe proporcje */
+  object-fit: cover; /* przycinanie bez zniekształceń */
+  border-top-left-radius: 12px;
+  border-top-right-radius: 12px;
+}
+
+/* Sekcja cech oddzielona subtelnie */
+.card-features {
+  background: rgba(0, 0, 0, 0.02);
+  border-block: 1px solid rgba(0, 0, 0, 0.08);
+}
+
+/* Placeholder pod ikony (wstaw <i> lub <img>) */
+.feature-icon {
+  width: 28px;
+  height: 28px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 6px;
+  background: #fff;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.06);
+  flex: 0 0 28px;
+}
+.feature-icon i {
+  font-size: 1rem;
+} /* gdy użyjesz Bootstrap Icons / Font Awesome */
+
+/* MOBILE: wycentruj */
+@media (max-width: 800px) {
+  .hero {
+    justify-content: center;
+  }
+}
+
+.btn {
+  border-color: transparent;
+  color: #fff;
+  background-color: #7474743f;
+}
+
+.btn:hover {
+  border-color: transparent;
+  background-color: #1b1b1b96;
+  color: white !important;
+}
+
+.btn {
+  color: black !important;
+}
+
+/* Kompaktowy, „referencyjny” wygląd */
+.search-wrapper {
+  max-width: 1100px;
+  margin-inline: auto;
+}
+.search-card {
+  border-radius: 18px;
+  box-shadow: 0 6px 24px rgba(0, 0, 0, 0.08);
+  border: 1px solid rgba(0, 0, 0, 0.06);
+  background: #fff;
+}
+.search-card .form-label {
+  font-size: 0.9rem;
+  color: #495057;
+  margin-bottom: 0.35rem;
+}
+.search-card .form-select,
+.search-card .form-control {
+  border-radius: 12px;
+  padding: 0.55rem 0.75rem;
+  font-size: 0.95rem;
+}
+.search-card .input-group > .form-control,
+.search-card .input-group > .form-select {
+  border-radius: 12px;
+}
+.divider {
+  height: 1px;
+  background: rgba(0, 0, 0, 0.08);
+}
+/* „Czipy” filtrów */
+.chip-group {
+  gap: 0.6rem;
+  overflow: auto;
+  white-space: nowrap;
+}
+.chip {
+  border-radius: 999px !important;
+  background: #f3f4f6;
+  border: 1px solid rgba(0, 0, 0, 0.06);
+  padding: 0.35rem 0.9rem;
+  font-weight: 500;
+}
+.chip .dropdown-toggle::after {
+  margin-left: 0.4rem;
+}
+/* Przycisk akcentowy jak w ref. */
+.btn-accent {
+  background: #ff5a19;
+  border-color: #ff5a19;
+  color: #fff;
+}
+.btn-accent:hover {
+  background: #e04e15;
+  border-color: #e04e15;
+}
+/* Responsywność + kompakt */
+@media (min-width: 992px) {
+  .grid-cols {
+    display: grid;
+    grid-template-columns: 1.2fr 1.2fr 0.9fr 0.9fr auto;
+    gap: 0.9rem;
+  }
+}
+@media (max-width: 991.98px) {
+  .grid-cols .btn-accent {
+    width: 100%;
+  }
+}
+
+/* Back to top (prawy dół) */
+.back-to-top {
+  position: fixed;
+  right: 20px;
+  bottom: 20px;
+  width: 48px;
+  height: 48px;
+  border: 0;
+  border-radius: 50%;
+  background: #35a65b;
+  color: #fff;
+  display: grid;
+  place-items: center;
+  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.18);
+  z-index: 99999;
+
+  /* ukryty na starcie */
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  transform: translateY(10px);
+  transition: opacity 0.4s ease, transform 0.4s ease, visibility 0s linear 0.4s;
+}
+.back-to-top:hover {
+  background: #097739;
+}
+
+/* widoczny po scrollu (dodaje JS) */
+.back-to-top.show {
+  opacity: 1;
+  visibility: visible;
+  pointer-events: auto;
+  transform: translateY(0);
+  transition: opacity 0.4s ease, transform 0.4s ease, visibility 0s;
+}
+
+/* jeżeli masz pływający chat/CTA na dole mobilnie, podnieś przycisk */
+@media (max-width: 576px) {
+  .back-to-top {
+    bottom: 80px;
+  }
+}
