@@ -1,29 +1,50 @@
 <?php
-session_start();
+// /auth/login-handler.php
+require_once __DIR__ . '/auth.php';
 
-// UWAGA: to mock do etapu UI. Później podepniemy bazę + hashowanie.
-$users = [
-    'klient@example.com' => ['password' => 'demo123', 'role' => 'client', 'name' => 'Jan Klient'],
-    'staff@example.com'  => ['password' => 'demo123', 'role' => 'staff',  'name' => 'Anna Obsługa'],
-];
+$BASE = defined('BASE_URL') ? rtrim(BASE_URL, '/') : '';
+
+// helper do budowy adresów
+$to = function (string $path) use ($BASE): string {
+    $path = ltrim($path, '/');
+    return $BASE ? ($BASE . '/' . $path) : ('../' . $path); // jesteśmy w /auth
+};
 
 $email = trim($_POST['email'] ?? '');
 $pass  = $_POST['password'] ?? '';
-$redirect = 'index.php?page=login&error=1';
 
-if ($email && $pass && isset($users[$email]) && $users[$email]['password'] === $pass) {
-    $_SESSION['user'] = [
-        'email' => $email,
-        'name'  => $users[$email]['name'],
-        'role'  => $users[$email]['role'],
-    ];
-    // przekierowanie wg roli
-    if ($users[$email]['role'] === 'staff') {
-        header('Location: index.php?page=dashboard-staff');
-    } else {
-        header('Location: index.php?page=dashboard-client');
-    }
+if ($email === '' || $pass === '') {
+    header('Location: ' . $to('index.php?page=login&e=empty'));
     exit;
 }
-header("Location: {$redirect}");
+
+// pobierz też role, żeby po sukcesie wiedzieć, dokąd przekierować
+$stmt = db()->prepare("SELECT id, password_hash, is_active, role FROM users WHERE email = ?");
+$stmt->execute([$email]);
+$row = $stmt->fetch(PDO::FETCH_ASSOC);
+
+$ok = $row && (int)$row['is_active'] === 1 && password_verify($pass, $row['password_hash']);
+if (!$ok) {
+    header('Location: ' . $to('index.php?page=login&e=invalid'));
+    exit;
+}
+
+// logujemy
+$_SESSION['user_id'] = (int)$row['id'];
+
+// ustal redirect: 1) jeśli przyszedł w POST → użyj go (wewnętrzny), 2) w przeciwnym razie wg roli
+$redirect = trim($_POST['redirect'] ?? '');
+
+// jeśli ktoś podał pełny URL z domeną – odetnij domenę
+if ($redirect !== '') {
+    $redirect = preg_replace('#^https?://[^/]+#i', '', $redirect);
+    $redirect = ltrim($redirect, '/');
+}
+
+// akceptujemy tylko ścieżki typu "index.php?..." — inaczej domyślnie kierujemy wg roli
+if ($redirect === '' || !preg_match('#^index\.php(\?.*)?$#i', $redirect)) {
+    $redirect = 'index.php?page=' . (($row['role'] ?? 'client') === 'staff' ? 'dashboard-staff' : 'dashboard-client');
+}
+
+header('Location: ' . $to($redirect));
 exit;

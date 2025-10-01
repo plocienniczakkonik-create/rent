@@ -1,155 +1,163 @@
-<!-- GRID KART PRODUKTÓW -->
-<section>
-    <div class="container-fluid">
-        <div class="text-center section-offer" style="background-color: rgb(234, 234, 227)">
-            <div>
-                <div class="d-flex justify-content-center align-items-center">
-                    <div class="text-gray">
-                        <h2 class="mb-3">NASZA OFERTA</h2>
-                        <h4 class="mb-3">Posiadamy nowoczesną flotę co zapewnia bezpieczną podróż!</h4>
-                    </div>
-                </div>
+<?php
+// /components/product-grid.php
+require_once dirname(__DIR__) . '/includes/db.php';
 
-                <!-- LISTA KART -->
-                <div class="container-fluid py-4">
-                    <div class="row g-4 pt-5 align-items-stretch">
+$BASE = defined('BASE_URL') ? rtrim(BASE_URL, '/') : '';
 
-                        <!-- 1 -->
-                        <div class="col-12 col-sm-6 col-lg-3 d-flex">
-                            <div class="card card-product h-100 w-100 text-center">
-                                <img src="assets/img/audi.jpg" class="card-img-top" alt="Audi A5">
-                                <div class="card-body pb-0">
-                                    <h5 class="card-title pb-2 mb-1">AUDI A5</h5>
-                                </div>
-                                <div class="card-segment mb-3">KLASA C / HATCHBACK</div>
+/** Buduje URL względny do BASE_URL, niezależnie czy w DB jest z lub bez wiodącego / */
+function asset_url(string $path): string
+{
+    global $BASE;
+    $p = ltrim($path, '/');
+    return ($BASE !== '' ? $BASE . '/' : '') . $p;
+}
 
-                                <div class="card-features px-3 py-3">
-                                    <div class="row row-cols-2 g-3 text-start">
-                                        <div class="col">
-                                            <div class="d-flex align-items-center gap-2"><span class="feature-icon bg-transparent"><i class="far fa-circle-check"></i></span><span>Benzyna</span></div>
-                                        </div>
-                                        <div class="col">
-                                            <div class="d-flex align-items-center gap-2"><span class="feature-icon bg-transparent"><i class="far fa-circle-check"></i></span><span>Manualna</span></div>
-                                        </div>
-                                        <div class="col">
-                                            <div class="d-flex align-items-center gap-2"><span class="feature-icon bg-transparent"><i class="far fa-circle-check"></i></span><span>5-osobowy</span></div>
-                                        </div>
-                                        <div class="col">
-                                            <div class="d-flex align-items-center gap-2"><span class="feature-icon bg-transparent"><i class="far fa-circle-check"></i></span><span>4-drzwiowy</span></div>
-                                        </div>
-                                    </div>
-                                </div>
+function price_unit_label(?string $u): string
+{
+    return match ($u) {
+        'per_hour' => ' / godz.',
+        default    => ' / dzień',
+    };
+}
 
-                                <div class="card-body pt-3">
-                                    <div class="h5 mb-3">Cena od: <strong>159 zł/dzień</strong></div>
-                                    <a class="btn btn-primary" href="#">Zarezerwuj</a>
-                                </div>
-                            </div>
-                        </div>
+function spec_line(array $p): string
+{
+    $parts = [];
+    if (!empty($p['category'])) $parts[] = 'Klasa ' . strtoupper((string)$p['category']);
+    if (!empty($p['seats']))    $parts[] = (int)$p['seats'] . ' miejsca';
+    if (!empty($p['doors']))    $parts[] = (int)$p['doors'] . ' drzwi';
+    if (!empty($p['gearbox']))  $parts[] = (string)$p['gearbox'];
+    if (!empty($p['fuel']))     $parts[] = (string)$p['fuel'];
+    return implode(' · ', $parts);
+}
 
-                        <!-- 2 -->
-                        <div class="col-12 col-sm-6 col-lg-3 d-flex">
-                            <div class="card card-product h-100 w-100 text-center">
-                                <img src="assets/img/nissan.jpg" class="card-img-top" alt="Nissan Maxima">
-                                <div class="card-body pb-0">
-                                    <h5 class="card-title pb-2 mb-1">NISSAN MAXIMA</h5>
-                                </div>
-                                <div class="card-segment mb-3">KLASA D / SEDAN</div>
+// 1) Jeżeli home.php zainicjalizował $SEARCH = run_search($_GET), użyj jego wyników.
+//    TYLKO gdy nie ma $SEARCH — dopiero wtedy pobierz wszystko z DB.
+$usingSearch   = isset($SEARCH) && is_array($SEARCH) && array_key_exists('products', $SEARCH);
+$searchActive  = $usingSearch && !empty($SEARCH['active']); // użyjemy do napisu i badge
+$products      = [];
 
-                                <div class="card-features px-3 py-3">
-                                    <div class="row row-cols-2 g-3 text-start">
-                                        <div class="col">
-                                            <div class="d-flex align-items-center gap-2"><span class="feature-icon bg-transparent"><i class="far fa-circle-check"></i></span><span>Benzyna</span></div>
-                                        </div>
-                                        <div class="col">
-                                            <div class="d-flex align-items-center gap-2"><span class="feature-icon bg-transparent"><i class="far fa-circle-check"></i></span><span>Automatyczna</span></div>
-                                        </div>
-                                        <div class="col">
-                                            <div class="d-flex align-items-center gap-2"><span class="feature-icon bg-transparent"><i class="far fa-circle-check"></i></span><span>5-osobowy</span></div>
-                                        </div>
-                                        <div class="col">
-                                            <div class="d-flex align-items-center gap-2"><span class="feature-icon bg-transparent"><i class="far fa-circle-check"></i></span><span>4-drzwiowy</span></div>
-                                        </div>
-                                    </div>
-                                </div>
+if ($usingSearch) {
+    $products = $SEARCH['products'] ?? [];
+} else {
+    // Fallback — bez filtrów
+    $stmt = db()->query("
+      SELECT
+        id, name, sku, price, price_unit, stock, status,
+        category, seats, doors, gearbox, fuel, image_path, description
+      FROM products
+      WHERE status = 'active' AND stock > 0
+      ORDER BY id DESC
+    ");
+    $products = $stmt->fetchAll(PDO::FETCH_ASSOC);
+}
 
-                                <div class="card-body pt-3">
-                                    <div class="h5 mb-3">Cena od: <strong>159 zł/dzień</strong></div>
-                                    <a class="btn btn-primary" href="#">Zarezerwuj</a>
-                                </div>
-                            </div>
-                        </div>
+// placeholder (bez wiodącego slasha – dołączymy BASE_URL helperem)
+$placeholderRel = 'assets/img/placeholder-car.webp';
+?>
+<section id="offer" class="py-5">
+    <div class="container">
 
-                        <!-- 3 -->
-                        <div class="col-12 col-sm-6 col-lg-3 d-flex">
-                            <div class="card card-product h-100 w-100 text-center">
-                                <img src="assets/img/mercedes.jpg" class="card-img-top" alt="Mercedes Coupe">
-                                <div class="card-body pb-0">
-                                    <h5 class="card-title pb-2 mb-1">MERCEDES COUPE</h5>
-                                </div>
-                                <div class="card-segment mb-3">KLASA C / COUPE</div>
-
-                                <div class="card-features px-3 py-3">
-                                    <div class="row row-cols-2 g-3 text-start">
-                                        <div class="col">
-                                            <div class="d-flex align-items-center gap-2"><span class="feature-icon bg-transparent"><i class="far fa-circle-check"></i></span><span>Diesel</span></div>
-                                        </div>
-                                        <div class="col">
-                                            <div class="d-flex align-items-center gap-2"><span class="feature-icon bg-transparent"><i class="far fa-circle-check"></i></span><span>Automatyczna</span></div>
-                                        </div>
-                                        <div class="col">
-                                            <div class="d-flex align-items-center gap-2"><span class="feature-icon bg-transparent"><i class="far fa-circle-check"></i></span><span>5-osobowy</span></div>
-                                        </div>
-                                        <div class="col">
-                                            <div class="d-flex align-items-center gap-2"><span class="feature-icon bg-transparent"><i class="far fa-circle-check"></i></span><span>2-drzwiowy</span></div>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <div class="card-body pt-3">
-                                    <div class="h5 mb-3">Cena od: <strong>159 zł/dzień</strong></div>
-                                    <a class="btn btn-primary" href="#">Zarezerwuj</a>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- 4 -->
-                        <div class="col-12 col-sm-6 col-lg-3 d-flex">
-                            <div class="card card-product h-100 w-100 text-center">
-                                <img src="assets/img/mustang.jpg" class="card-img-top" alt="Ford Mustang">
-                                <div class="card-body pb-0">
-                                    <h5 class="card-title pb-2 mb-1">FORD MUSTANG</h5>
-                                </div>
-                                <div class="card-segment mb-3">KLASA C / COUPE</div>
-
-                                <div class="card-features px-3 py-3">
-                                    <div class="row row-cols-2 g-3 text-start">
-                                        <div class="col">
-                                            <div class="d-flex align-items-center gap-2"><span class="feature-icon bg-transparent"><i class="far fa-circle-check"></i></span><span>Benzyna</span></div>
-                                        </div>
-                                        <div class="col">
-                                            <div class="d-flex align-items-center gap-2"><span class="feature-icon bg-transparent"><i class="far fa-circle-check"></i></span><span>Manualna</span></div>
-                                        </div>
-                                        <div class="col">
-                                            <div class="d-flex align-items-center gap-2"><span class="feature-icon bg-transparent"><i class="far fa-circle-check"></i></span><span>5-osobowy</span></div>
-                                        </div>
-                                        <div class="col">
-                                            <div class="d-flex align-items-center gap-2"><span class="feature-icon bg-transparent"><i class="far fa-circle-check"></i></span><span>2-drzwiowy</span></div>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <div class="card-body pt-3">
-                                    <div class="h5 mb-3">Cena od: <strong>159 zł/dzień</strong></div>
-                                    <a class="btn btn-primary" href="#">Zarezerwuj</a>
-                                </div>
-                            </div>
-                        </div>
-
-                    </div>
-                </div>
-                <!-- /LISTA KART -->
-            </div>
+        <div class="d-flex align-items-end justify-content-between mb-3">
+            <h2 class="h4 mb-0">
+                Nasza flota
+                <?php if ($searchActive): ?>
+                    <span class="text-muted h6 ms-2">(wyniki wyszukiwania)</span>
+                <?php endif; ?>
+            </h2>
         </div>
+
+        <?php if (!$products): ?>
+            <div class="alert alert-info mb-0">Brak dostępnych pojazdów dla wybranych filtrów.</div>
+        <?php else: ?>
+            <div class="row g-3 g-md-4">
+                <?php foreach ($products as $p): ?>
+                    <?php
+                    $rel = !empty($p['image_path']) ? ltrim((string)$p['image_path'], '/') : $placeholderRel;
+                    $img = asset_url($rel);
+
+                    // Promocję pokazujemy tylko gdy to są wyniki wyszukiwania i rzeczywiście naliczono zniżkę
+                    $hasPromo   = $searchActive && !empty($p['discount_applied']);
+                    $promoLabel = $hasPromo ? ($p['discount_label'] ?? null) : null;
+
+                    $priceBase  = (float)($p['price'] ?? 0);
+                    $priceFinal = isset($p['price_final']) ? (float)$p['price_final'] : $priceBase;
+                    ?>
+                    <div class="col-12 col-sm-6 col-lg-4">
+                        <div class="card h-100 shadow-sm position-relative">
+
+                            <?php if ($hasPromo && $promoLabel): ?>
+                                <span class="badge text-bg-danger position-absolute" style="top:10px; right:10px; z-index:2;">
+                                    <?= htmlspecialchars($promoLabel) ?>
+                                </span>
+                            <?php endif; ?>
+
+                            <!-- Stabilny kadr 16:9 + cover, lazy-load -->
+                            <div class="ratio ratio-16x9 bg-light rounded-top overflow-hidden">
+                                <img
+                                    src="<?= htmlspecialchars($img) ?>"
+                                    alt="<?= htmlspecialchars((string)$p['name']) ?>"
+                                    class="w-100 h-100"
+                                    style="object-fit: cover;"
+                                    loading="lazy" decoding="async">
+                            </div>
+
+                            <div class="card-body d-flex flex-column">
+                                <div class="d-flex align-items-start justify-content-between mb-1">
+                                    <h3 class="h6 mb-0"><?= htmlspecialchars((string)$p['name']) ?></h3>
+                                    <?php if (!empty($p['category'])): ?>
+                                        <span class="badge text-bg-secondary ms-2">Klasa <?= htmlspecialchars(strtoupper((string)$p['category'])) ?></span>
+                                    <?php endif; ?>
+                                </div>
+
+                                <?php if ($spec = spec_line($p)): ?>
+                                    <div class="text-muted small mb-2"><?= htmlspecialchars($spec) ?></div>
+                                <?php endif; ?>
+
+                                <?php if (!empty($p['description'])): ?>
+                                    <p class="small text-muted mb-3" style="min-height: 2.5em; line-height:1.25em; overflow:hidden;">
+                                        <?= htmlspecialchars(mb_strimwidth((string)$p['description'], 0, 140, '…')) ?>
+                                    </p>
+                                <?php else: ?>
+                                    <div class="mb-3"></div>
+                                <?php endif; ?>
+
+                                <!-- Wiersz ceny z ustaloną wysokością i bez zawijania jednostki -->
+                                <div class="mt-auto d-flex align-items-center justify-content-between">
+                                    <div class="price-row d-flex align-items-baseline gap-2 me-2 flex-grow-1"
+                                        style="min-height:28px; white-space:nowrap;">
+                                        <?php if ($hasPromo && $priceFinal < $priceBase): ?>
+                                            <span class="text-muted text-decoration-line-through">
+                                                <?= number_format($priceBase, 2, ',', ' ') ?> PLN
+                                            </span>
+                                            <span class="fw-semibold">
+                                                <?= number_format($priceFinal, 2, ',', ' ') ?> PLN
+                                            </span>
+                                        <?php else: ?>
+                                            <span class="fw-semibold">
+                                                <?= number_format($priceBase, 2, ',', ' ') ?> PLN
+                                            </span>
+                                        <?php endif; ?>
+                                        <span class="text-muted small"><?= price_unit_label($p['price_unit'] ?? null) ?></span>
+                                    </div>
+
+                                    <div class="d-flex gap-2 flex-shrink-0">
+                                        <a class="btn btn-outline-primary btn-sm" href="index.php?page=product&sku=<?= urlencode((string)$p['sku']) ?>">Szczegóły</a>
+                                        <a class="btn btn-primary btn-sm" href="index.php?page=reserve&sku=<?= urlencode((string)$p['sku']) ?>">Zarezerwuj</a>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="card-footer bg-transparent d-flex align-items-center justify-content-between">
+                                <span class="text-muted small">SKU: <?= htmlspecialchars((string)$p['sku']) ?></span>
+                                <span class="badge <?= ((int)$p['stock'] > 0 ? 'text-bg-success' : 'text-bg-secondary') ?>">
+                                    <?= (int)$p['stock'] ?> szt.
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                <?php endforeach; ?>
+            </div>
+        <?php endif; ?>
     </div>
 </section>

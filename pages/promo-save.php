@@ -1,0 +1,152 @@
+<?php
+// /pages/promo-save.php
+require_once dirname(__DIR__) . '/auth/auth.php';
+$staff = require_staff();
+require_once dirname(__DIR__) . '/includes/db.php';
+
+csrf_verify();
+
+$BASE = defined('BASE_URL') ? rtrim(BASE_URL, '/') : '';
+
+$id            = (int)($_POST['id'] ?? 0);
+$name          = trim((string)($_POST['name'] ?? ''));
+$requiresCode  = (int)($_POST['requiresCode'] ?? 0); // przyjdzie z JS? nie – bierzemy z selectu na froncie
+// jeśli nie ma w POST (bo to select bez name), to nadrabiamy na podstawie 'code'
+$code          = trim((string)($_POST['code'] ?? ''));
+$is_active     = (int)($_POST['is_active'] ?? 1) === 1 ? 1 : 0;
+
+$scope_type    = (string)($_POST['scope_type'] ?? 'global');
+$valid_from    = trim((string)($_POST['valid_from'] ?? ''));
+$valid_to      = trim((string)($_POST['valid_to'] ?? ''));
+$min_days      = (int)($_POST['min_days'] ?? 1);
+$discount_type = (string)($_POST['discount_type'] ?? 'percent');
+$discount_val  = (float)($_POST['discount_val'] ?? 0);
+
+// walidacje
+$allowed_scope = ['global', 'product', 'category', 'pickup_location', 'return_location'];
+$allowed_disc  = ['percent', 'amount'];
+
+if ($name === '' || !in_array($scope_type, $allowed_scope, true) || !in_array($discount_type, $allowed_disc, true)) {
+    http_response_code(422);
+    exit('Błędne dane.');
+}
+if ($discount_type === 'percent' && ($discount_val < 0 || $discount_val > 100)) {
+    http_response_code(422);
+    exit('Procent poza zakresem (0–100).');
+}
+if ($discount_type === 'amount' && $discount_val < 0) {
+    http_response_code(422);
+    exit('Kwota rabatu nie może być ujemna.');
+}
+if ($min_days < 1 || $min_days > 10) {
+    http_response_code(422);
+    exit('Minimalna liczba dni poza zakresem 1–10.');
+}
+
+// scope_value jako JSON array wg typu
+$scope_values = [];
+switch ($scope_type) {
+    case 'product':
+        $scope_values = (array)($_POST['scope_value_product'] ?? []); // array of SKU
+        $scope_values = array_values(array_filter(array_map('strval', $scope_values), fn($s) => $s !== ''));
+        if (!$scope_values) {
+            http_response_code(422);
+            exit('Wybierz co najmniej jeden samochód.');
+        }
+        break;
+
+    case 'category':
+        $scope_values = (array)($_POST['scope_value_category'] ?? []); // array of category names
+        $scope_values = array_values(array_filter(array_map('strval', $scope_values), fn($s) => $s !== ''));
+        if (!$scope_values) {
+            http_response_code(422);
+            exit('Wybierz co najmniej jedną klasę.');
+        }
+        break;
+
+    case 'pickup_location':
+        // textarea -> wiele linii
+        $txt = (string)($_POST['scope_value_pickup'] ?? '');
+        $scope_values = array_values(array_filter(array_map('trim', preg_split('/\r\n|\r|\n/', $txt)), fn($s) => $s !== ''));
+        if (!$scope_values) {
+            http_response_code(422);
+            exit('Wpisz co najmniej jedno miejsce odbioru.');
+        }
+        break;
+
+    case 'return_location':
+        $txt = (string)($_POST['scope_value_return'] ?? '');
+        $scope_values = array_values(array_filter(array_map('trim', preg_split('/\r\n|\r|\n/', $txt)), fn($s) => $s !== ''));
+        if (!$scope_values) {
+            http_response_code(422);
+            exit('Wpisz co najmniej jedno miejsce zwrotu.');
+        }
+        break;
+
+    case 'global':
+    default:
+        $scope_values = []; // pusty zakres oznacza „wszystko”
+}
+
+$scope_value_json = json_encode($scope_values, JSON_UNESCAPED_UNICODE);
+
+// Daty (puste -> NULL)
+$vf = $valid_from !== '' ? date('Y-m-d H:i:s', strtotime($valid_from)) : null;
+$vt = $valid_to   !== '' ? date('Y-m-d H:i:s', strtotime($valid_to))   : null;
+
+// Jeśli pole kodu puste, nie wymaga kuponu
+$code = ($code !== '') ? $code : null;
+
+try {
+    if ($id > 0) {
+        $sql = "
+      UPDATE promotions
+         SET name = ?, code = ?, is_active = ?,
+             scope_type = ?, scope_value = ?,
+             valid_from = ?, valid_to = ?,
+             min_days = ?, discount_type = ?, discount_val = ?
+       WHERE id = ? LIMIT 1
+    ";
+        $params = [
+            $name,
+            $code,
+            $is_active,
+            $scope_type,
+            $scope_value_json,
+            $vf,
+            $vt,
+            $min_days,
+            $discount_type,
+            $discount_val,
+            $id
+        ];
+        $stmt = db()->prepare($sql);
+        $stmt->execute($params);
+    } else {
+        $sql = "
+      INSERT INTO promotions
+        (name, code, is_active, scope_type, scope_value, valid_from, valid_to, min_days, discount_type, discount_val)
+      VALUES
+        (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+    ";
+        $stmt = db()->prepare($sql);
+        $stmt->execute([
+            $name,
+            $code,
+            $is_active,
+            $scope_type,
+            $scope_value_json,
+            $vf,
+            $vt,
+            $min_days,
+            $discount_type,
+            $discount_val
+        ]);
+        $id = (int)db()->lastInsertId();
+    }
+} catch (PDOException $e) {
+    throw $e;
+}
+
+header('Location: ' . $BASE . '/index.php?page=dashboard-staff#pane-promos');
+exit;

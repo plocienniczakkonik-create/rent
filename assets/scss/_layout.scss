@@ -86,3 +86,54 @@ body#top {
 /* Navbar masz absolute – daj oddech na loginie, żeby się nie nakładał */
 .login-page { padding-top: clamp(3rem, 8vh, 6rem); }
 
+/* Odstęp pod navbarem absolutnym/fixed (dashboard, formularze itp.) */
+.mt-nav {
+  /* odstęp bezpieczny na różnych ekranach */
+  margin-top: clamp(64px, 10vw, 96px);
+}
+
+
+/* Kontener centrowany w pionie i poziomie, z uwzględnieniem wysokości navbara */
+.vh-center {
+  min-height: calc(100vh - var(--nav-h));
+  padding-top: var(--nav-h);          /* zabezpieczenie przed nachodzeniem */
+  display: flex;
+  align-items: center;                 /* centrowanie pionowe */
+}
+
+/* szerokość kolumny treści wewnątrz (opcjonalnie, dla ładnej szpalty) */
+.vh-center > .content-col {
+  width: 100%;
+  max-width: 1100px;                   /* ~col-xl-10 */
+  margin-inline: auto;                 /* wyśrodkuj w poziomie */
+}
+
+/* Fix białych kolumn obok gridu oferty */
+#offer .container::before,
+#offer .container::after {
+  content: none !important;
+  display: none !important;
+}
+
+html, body {
+  min-height: 100%;
+  background: $app-bg;           // fallback, gdy jakaś strona nie użyje .site-main
+}
+
+.site-main {
+  background: $app-bg;           // główne tło wszystkich widoków
+  min-height: calc(100vh - 72px); // opcjonalnie: dopasuj do wysokości headera jeśli chcesz
+}
+
+/* Upewnij się, że sekcje wewnątrz main nie nadpisują koloru */
+.site-main > section {
+  background: transparent;
+}
+
+/* Jeżeli jakieś komponenty dawały białe tło kontenerowi – wyczyść */
+.wyszukiwarkaCL > .container,
+.search-wrapper {
+  background: transparent;
+}
+
+
