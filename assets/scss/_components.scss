@@ -1,0 +1,222 @@
+/* ===== Navbar (prostą zmianę koloru traktujemy jako komponent) ===== */
+.navbar .nav-link { color: var(--color-black); }
+.navbar .nav-link:hover,
+.navbar .nav-link:focus { color: var(--color-black); opacity: .8; }
+
+
+/* ===== Maska w hero ===== */
+.mask {
+  background: rgba(0, 0, 0, 0.6);
+  color: var(--color-white);
+  padding: 1.25rem 1.5rem;
+  border-radius: 0.75rem; /* 12px */
+  box-shadow: var(--shadow-lg);
+  max-width: min(90vw, 560px);
+}
+
+/* ===== Karta produktu ===== */
+.card-product {
+  background: var(--color-card-bg);
+  border: 1px solid var(--color-card-border);
+  border-radius: var(--radius-12);
+  box-shadow: var(--shadow);
+}
+
+/* Zdjęcie bez „białego paska” i ładny crop */
+.card-product .card-img-top {
+  aspect-ratio: 16/9;
+  object-fit: cover;
+  border-top-left-radius: var(--radius-12);
+  border-top-right-radius: var(--radius-12);
+}
+
+/* Sekcja cech oddzielona subtelnie */
+.card-features {
+  background: rgba(0, 0, 0, 0.02);
+  border-block: 1px solid rgba(0, 0, 0, 0.08);
+}
+
+/* Placeholder pod ikony (wstaw <i> lub <img>) */
+.feature-icon {
+  width: 28px;
+  height: 28px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--radius-6);
+  background: var(--color-feature-icon-bg);
+  box-shadow: var(--shadow-sm);
+  flex: 0 0 28px;
+
+  i { font-size: 1rem; } /* gdy użyjesz Bootstrap Icons / Font Awesome */
+}
+
+/* ===== Karta wyszukiwarki ===== */
+#offer{
+    background-color:rgb(234, 234, 227);
+}
+
+.search-card {
+  border-radius: var(--radius-18);
+  box-shadow: 0 6px 24px rgba(0, 0, 0, 0.08);
+  border: 1px solid rgba(0, 0, 0, 0.06);
+  background: var(--color-search-bg);
+
+  .form-label {
+    font-size: 0.9rem;
+    color: var(--color-muted);
+    margin-bottom: 0.35rem;
+  }
+  .form-select,
+  .form-control {
+    border-radius: var(--radius-12);
+    padding: 0.55rem 0.75rem;
+    font-size: 0.95rem;
+  }
+  .input-group > .form-control,
+  .input-group > .form-select {
+    border-radius: var(--radius-12);
+  }
+}
+
+/* „Czipy” filtrów */
+.chip-group {
+  gap: 0.6rem;
+  overflow: auto;
+  white-space: nowrap;
+}
+.chip {
+  border-radius: var(--radius-pill) !important;
+  background: #f3f4f6;
+  border: 1px solid rgba(0, 0, 0, 0.06);
+  padding: 0.35rem 0.9rem;
+  font-weight: 500;
+
+  .dropdown-toggle::after { margin-left: 0.4rem; }
+}
+
+/* ===== Przyciski ===== */
+/* Globalny .btn (ostrożnie — nadpisuje Bootstrapa) */
+.search-card .btn {
+  border-color: transparent;
+  color: var(--color-white);
+  background-color: #7474743f; /* półprzezroczyste szare tło */
+}
+.btn:hover {
+  border-color: transparent;
+  background-color: #1b1b1b96;
+  color: var(--color-white) !important;
+}
+
+/* Akcentowy przycisk */
+.btn-accent {
+  background: var(--color-accent);
+  border-color: var(--color-accent);
+  color: var(--color-white);
+}
+.btn-accent:hover {
+  background: var(--color-accent-hover);
+  border-color: var(--color-accent-hover);
+}
+
+/* ===== Back to top (prawy dół) ===== */
+.back-to-top {
+  position: fixed;
+  right: 20px;
+  bottom: 20px;
+  width: 48px;
+  height: 48px;
+  border: 0;
+  border-radius: 50%;
+  background: var(--color-btt);
+  color: var(--color-white);
+  display: grid;
+  place-items: center;
+  box-shadow: var(--shadow-btt);
+  z-index: 99999;
+
+  /* ukryty na starcie */
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  transform: translateY(10px);
+  transition: opacity 0.4s ease, transform 0.4s ease, visibility 0s linear 0.4s;
+
+  &:hover { background: var(--color-btt-hover); }
+  &.show {
+    opacity: 1;
+    visibility: visible;
+    pointer-events: auto;
+    transform: translateY(0);
+    transition: opacity 0.4s ease, transform 0.4s ease, visibility 0s;
+  }
+
+  @media (max-width: 576px) {
+    bottom: 80px; /* jeżeli masz pływający chat/CTA */
+  }
+}
+
+
+.brand-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  /* elastyczne w poziomie */
+  height: 36px;
+  min-width: 36px;           /* dalej ładnie wygląda przy 1 literze */
+  padding: 0 .6rem;          /* poszerza się dla dłuższego tekstu */
+  white-space: nowrap;       /* nie łam tekstu */
+
+  border-radius: 999px;      /* pigułka */
+  background: var(--footer-badge-bg);
+  color: var(--footer-badge-fg);
+  font-weight: 800;
+  text-decoration: none;
+  box-shadow: var(--shadow-sm);
+  line-height: 1;
+
+  /* lekka kontrola rozmiaru przy dłuższych słowach */
+  font-size: clamp(.8rem, 1.4vw, .95rem);
+  letter-spacing: .5px;
+}
+
+.card.shadow-lg { box-shadow: 0 14px 40px rgba(0,0,0,.12) !important; }
+
+/* delikatny top-padding tylko dla loginu gdy navbar jest absolute */
+.login-page { padding-top: clamp(3rem, 8vh, 6rem); }
+
+
+#siteNav {
+  transition: background-color .25s ease, box-shadow .25s ease, backdrop-filter .25s ease;
+
+  /* STAN PO SCROLLU */
+  &.is-stuck {
+    position: fixed !important;
+    top: 0; left: 0; right: 0;
+    background-color: var(--nav-stuck-bg) !important;             /* jasne, półprzezroczyste tło */
+    backdrop-filter: saturate(140%) blur(6px);
+    box-shadow: 0 6px 24px rgba(0,0,0,.4);
+  }
+
+  /* linki w stanie sticky – CZARNE */
+  &.is-stuck .nav-link {
+    color: var(--nav-stuck-link) !important;
+  }
+  &.is-stuck .nav-link:hover,
+  &.is-stuck .nav-link:focus {
+    color: var(--nav-stuck-link-hover) !important;
+    opacity: .85;
+  }
+
+  /* przycisk „Zaloguj” w stanie sticky – dopasowany do jasnego tła */
+  &.is-stuck .btn-light {
+    background: #ebebeb; color: #1c1c1c; border-color: #111;
+  }
+  &.is-stuck .btn-outline-light {
+    color: #111; border-color: #111; /* jeśli użyjesz outline */
+  }
+}
+
+
+

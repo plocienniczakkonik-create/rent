@@ -1,0 +1,59 @@
+:root {
+  /* Teksty i tła */
+  --color-text: #212529;
+  --color-bg: #ffffff;
+
+  /* Akcenty */
+  --color-accent: #ff5a19;
+  --color-accent-hover: #e04e15;
+
+  /* Back to top */
+  --color-btt: #35a65b;
+  --color-btt-hover: #097739;
+
+  /* Komponenty */
+  --color-card-bg: #eaeae3;
+  --color-card-border: #424343;
+  --color-search-bg: #ffffff;
+  --color-feature-icon-bg: #ffffff;
+  --color-muted: #495057;
+
+  --nav-stuck-bg: rgba(154, 154, 154, 0.301); /* jasna „maska” po scrollu */
+  --nav-stuck-link: #111111;
+  --nav-stuck-link-hover: #000000;
+
+  /* Ogólne */
+  --color-black: #000000;
+  --color-white: #ffffff;
+
+  /* Cienie (jak w kodzie) */
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.221);
+  --shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+  --shadow-lg: 0 10px 30px rgba(0, 0, 0, 0.25);
+  --shadow-btt: 0 10px 24px rgba(0, 0, 0, 0.18);
+
+  /* Promienie */
+  --radius-6: 6px;
+  --radius-12: 12px;
+  --radius-18: 18px;
+  --radius-pill: 999px;
+
+  /* Spacing (przykładowo) */
+  --sp-2: .5rem;   /* 8px */
+  --sp-3: 1rem;    /* 16px */
+  --sp-4: 1.5rem;  /* 24px */
+  --sp-5: 2rem;    /* 32px */
+
+    --footer-bg: #5b5b5b;
+  --footer-text: rgba(255,255,255,.85);
+  --footer-link: rgba(255,255,255,.85);
+  --footer-link-hover: #ffffff;
+  --footer-border: rgba(255,255,255,.12);
+  --footer-badge-bg: #ffffff;
+  --footer-badge-fg: #111111;
+
+
+
+
+}
+

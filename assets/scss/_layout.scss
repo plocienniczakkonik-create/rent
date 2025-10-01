@@ -1,0 +1,88 @@
+/* ===== HERO ===== */
+.hero {
+  height: 100vh;
+  background-position: center;
+  background-size: cover;
+  display: flex;
+  align-items: center;
+  justify-content: space-around; /* start na desktopie */
+  padding-inline: clamp(16px, 6vw, 80px); /* odstęp od krawędzi */
+
+  @media (max-width: 800px) {
+    justify-content: center;
+  }
+}
+
+/* ===== SECTION: OFERTA ===== */
+.section-offer {
+  height: 100vh;
+  background-position: center;
+  background-size: cover;
+  display: flex;
+  align-items: top;
+  justify-content: space-around; /* start na desktopie */
+  padding-inline: clamp(16px, 6vw, 80px); /* odstęp od krawędzi */
+  padding-top: 5rem;
+}
+
+/* ===== GRID LAYOUT dla formularza wyszukiwania (desktop) ===== */
+@media (min-width: 992px) {
+  .grid-cols {
+    display: grid;
+    grid-template-columns: 1.2fr 1.2fr 0.9fr 0.9fr auto;
+    gap: 0.9rem;
+  }
+}
+@media (max-width: 991.98px) {
+  .grid-cols .btn-accent {
+    width: 100%;
+  }
+}
+
+/* ===== Kontener wyszukiwarki (wąski) ===== */
+.search-wrapper {
+  max-width: 1100px;
+  margin-inline: auto;
+}
+
+.site-footer {
+  background: var(--footer-bg);
+  color: var(--footer-text);
+  border-top: 1px solid var(--footer-border);
+
+  .footer-nav .nav-link {
+    color: var(--footer-link);
+    font-weight: 500;
+  }
+  .footer-nav .nav-link:hover,
+  .footer-nav .nav-link:focus {
+    color: var(--footer-link-hover);
+    opacity: .9;
+  }
+}
+
+/* Sticky footer layout */
+html, body { height: 100%; }
+
+body#top {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background: var(--color-bg);
+}
+
+/* Główna zawartość rozpycha się – footer jest na dole */
+.site-main {
+  flex: 1 0 auto;
+}
+
+/* Login: wycentrowane w pionie i poziomie w obszarze MAIN (footer zawsze widoczny) */
+.site-main.login-center {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Navbar masz absolute – daj oddech na loginie, żeby się nie nakładał */
+.login-page { padding-top: clamp(3rem, 8vh, 6rem); }
+
