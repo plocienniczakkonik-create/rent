@@ -1,8 +1,10 @@
 <?php
-// /pages/vehicles-manage.php — egzemplarze danego modelu
+// /pages/vehicles-manage.php — egzemplarze danego modelu (z sortowaniem + przycisk Wstecz)
 require_once dirname(__DIR__) . '/auth/auth.php';
 require_staff();
+
 require_once dirname(__DIR__) . '/includes/db.php';
+$db = db();
 
 $BASE = defined('BASE_URL') ? rtrim(BASE_URL, '/') : '';
 
@@ -22,9 +24,51 @@ if (!$product) {
     return;
 }
 
-$st = $db->prepare("SELECT * FROM vehicles WHERE product_id = :pid ORDER BY registration_number ASC");
+/* ——— SORTOWANIE ——— */
+$allowed = [
+    'reg'      => 'v.registration_number',
+    'vin'      => 'v.vin',
+    'status'   => 'v.status',
+    'insp'     => 'v.inspection_date',
+    'insur'    => 'v.insurance_expiry_date',
+    'mileage'  => 'v.mileage',
+    'location' => 'v.location',
+];
+$sort = $_GET['sort'] ?? 'reg';
+$orderCol = $allowed[$sort] ?? 'v.registration_number';
+$dir = strtolower($_GET['dir'] ?? 'asc');
+$dir = in_array($dir, ['asc', 'desc'], true) ? $dir : 'asc';
+
+$sql = "SELECT v.* 
+        FROM vehicles v 
+        WHERE v.product_id = :pid 
+        ORDER BY $orderCol $dir, v.registration_number ASC";
+$st = $db->prepare($sql);
 $st->execute([':pid' => $product_id]);
 $rows = $st->fetchAll(PDO::FETCH_ASSOC);
+
+/* ——— HELPER linków sortujących (▲▼) ——— */
+function sort_link_manage(string $key, string $label): string
+{
+    $currentSort = $_GET['sort'] ?? 'reg';
+    $currentDir  = strtolower($_GET['dir'] ?? 'asc');
+    $nextDir     = ($currentSort === $key && $currentDir === 'asc') ? 'desc' : 'asc';
+    $arrowUpActive   = ($currentSort === $key && $currentDir === 'asc');
+    $arrowDownActive = ($currentSort === $key && $currentDir === 'desc');
+
+    $BASE = defined('BASE_URL') ? rtrim(BASE_URL, '/') : '';
+    $qs = http_build_query([
+        'page'    => 'vehicles-manage',
+        'product' => (int)($_GET['product'] ?? 0),
+        'sort'    => $key,
+        'dir'     => $nextDir,
+    ]);
+
+    return '<a class="th-sort-link" href="' . htmlspecialchars($BASE . '/index.php?' . $qs) . '">'
+        . '<span class="label">' . htmlspecialchars($label) . '</span>'
+        . '<span class="chevs"><span class="chev ' . ($arrowUpActive ? 'active' : '') . '">▲</span><span class="chev ' . ($arrowDownActive ? 'active' : '') . '">▼</span></span>'
+        . '</a>';
+}
 
 function status_badge($s)
 {
@@ -48,8 +92,13 @@ function status_badge($s)
 
     <div class="d-flex align-items-center justify-content-between mb-3">
         <h1 class="h4 m-0">Egzemplarze: <?= htmlspecialchars($product['name']) ?></h1>
-        <a href="<?= $BASE ?>/index.php?page=vehicle-form&product_id=<?= (int)$product_id ?>"
-            class="btn btn-primary">+ Dodaj pojazd tego modelu</a>
+        <div class="d-flex gap-2">
+            <!-- NOWY: Wstecz -->
+            <a href="<?= $BASE ?>/index.php?page=dashboard-staff#pane-vehicles" class="btn btn-outline-secondary">← Wstecz</a>
+            <!-- Dodaj pojazd -->
+            <a href="<?= $BASE ?>/index.php?page=vehicle-form&product_id=<?= (int)$product_id ?>"
+                class="btn btn-primary">+ Dodaj pojazd tego modelu</a>
+        </div>
     </div>
 
     <div class="card">
@@ -57,13 +106,13 @@ function status_badge($s)
             <table class="table table-striped align-middle mb-0">
                 <thead>
                     <tr>
-                        <th>Nr rej.</th>
-                        <th>VIN</th>
-                        <th>Status</th>
-                        <th>Przegląd</th>
-                        <th>Ubezpieczenie</th>
-                        <th>Przebieg</th>
-                        <th>Lokalizacja</th>
+                        <th><?= sort_link_manage('reg', 'Nr rej.') ?></th>
+                        <th><?= sort_link_manage('vin', 'VIN') ?></th>
+                        <th><?= sort_link_manage('status', 'Status') ?></th>
+                        <th><?= sort_link_manage('insp', 'Przegląd') ?></th>
+                        <th><?= sort_link_manage('insur', 'Ubezpieczenie') ?></th>
+                        <th><?= sort_link_manage('mileage', 'Przebieg') ?></th>
+                        <th><?= sort_link_manage('location', 'Lokalizacja') ?></th>
                         <th class="text-end">Akcje</th>
                     </tr>
                 </thead>

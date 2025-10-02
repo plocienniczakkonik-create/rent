@@ -77,6 +77,11 @@ $reports = [
                         <button class="nav-link active" id="tab-products" data-bs-toggle="pill" data-bs-target="#pane-products" type="button" role="tab">Produkty</button>
                     </li>
                     <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="tab-vehicles" data-bs-toggle="pill" data-bs-target="#pane-vehicles" type="button" role="tab">
+                            Pojazdy
+                        </button>
+                    </li>
+                    <li class="nav-item" role="presentation">
                         <button class="nav-link" id="tab-orders" data-bs-toggle="pill" data-bs-target="#pane-orders" type="button" role="tab">Zamówienia</button>
                     </li>
                     <li class="nav-item" role="presentation">
@@ -102,6 +107,10 @@ $reports = [
 
                     <div class="tab-pane fade show active" id="pane-products" role="tabpanel" aria-labelledby="tab-products">
                         <?php include __DIR__ . '/staff/section-products.php'; ?>
+                    </div>
+
+                    <div class="tab-pane fade" id="pane-vehicles" role="tabpanel" aria-labelledby="tab-vehicles">
+                        <?php include __DIR__ . '/staff/section-vehicles.php'; ?>
                     </div>
 
                     <div class="tab-pane fade" id="pane-orders" role="tabpanel" aria-labelledby="tab-orders">

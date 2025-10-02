@@ -1,10 +1,13 @@
 <?php
-// /pages/vehicle-detail.php — karta pojedynczego pojazdu
+// /pages/vehicles-manage.php — egzemplarze danego modelu
 require_once dirname(__DIR__) . '/auth/auth.php';
 require_staff();
+
 require_once dirname(__DIR__) . '/includes/db.php';
+$db = db(); // <<< KLUCZOWE: pobiera PDO i przypisuje do $db
 
 $BASE = defined('BASE_URL') ? rtrim(BASE_URL, '/') : '';
+
 $id = isset($_GET['id']) ? (int)$_GET['id'] : 0;
 
 $stmt = $db->prepare("SELECT v.*, p.name AS product_name

@@ -66,13 +66,13 @@ function sort_link(string $key, string $label): string
 <div class="container py-4">
     <div class="d-flex pt-5 align-items-center justify-content-between mb-3">
         <h1 class="h3 m-0">Pojazdy — modele</h1>
-        <a href="<?= $BASE ?>/index.php?page=products" class="btn btn-outline-secondary">Przejdź do produktów</a>
+        <a href="<?= $BASE ?>/index.php?page=dashboard-staff" class="btn btn-outline-secondary">Wstecz</a>
     </div>
 
     <div class="card">
         <div class="card-header d-flex justify-content-between align-items-center">
             <span>Modele</span>
-            <a href="<?= $BASE ?>/index.php?page=products" class="btn btn-sm btn-primary">Dodaj model</a>
+            <a href="<?= $BASE ?>/index.php?page=product-form" class="btn btn-sm btn-primary">Dodaj model</a>
         </div>
         <div class="table-responsive">
             <table class="table table-hover align-middle mb-0">

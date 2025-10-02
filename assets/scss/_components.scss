@@ -290,7 +290,7 @@
 // Statusy w jednym wierszu, ale mogą się łamać
 .fleet-status {
   display: flex;
-  flex-wrap: wrap;
+  flex-wrap: nowrap;
   gap: .4rem;
 
   .badge { white-space: nowrap; }
@@ -301,6 +301,58 @@
   .th-name { min-width: 200px; max-width: 300px; }
   .th-sku  { width: 140px; }
 }
+
+
+/* Nagłówki sortujące (używane też w vehicles-manage) */
+.th-sort-link {
+  display: inline-flex;
+  align-items: center;
+  gap: .4rem;
+  text-decoration: none;
+
+  .label { color: var(--bs-link-color, #0d6efd); }
+  .chevs { display: inline-flex; flex-direction: column; line-height: .8; }
+  .chev  { opacity: .35; font-size: .75em; margin-top: -2px; }
+  .chev.active { opacity: 1; }
+}
+
+/* TAB: Pojazdy (flota) */
+.fleet-table {
+  th, td { vertical-align: middle; }
+  tbody td, thead th { padding-top: .9rem; padding-bottom: .9rem; }
+
+  .th-id      { width: 84px; white-space: nowrap; }
+  .th-name    { min-width: 260px; max-width: 420px; } /* delikatnie węższa nazwa */
+  .th-sku     { width: 180px; }
+  .th-total   { width: 150px; text-align: right; }
+  .th-actions { width: 160px; text-align: right; }
+
+  /* link sortujący */
+  .th-sort-link {
+    display:inline-flex; align-items:center; gap:.45rem; text-decoration:none;
+    .label { color: var(--bs-link-color, #0d6efd); }
+    .chevs { display:inline-flex; flex-direction:column; line-height:.8; }
+    .chev { opacity:.35; font-size:.75em; margin-top:-2px; }
+    .chev.active { opacity:1; }
+  }
+
+  /* statusy w JEDNEJ linii, bez zawijania */
+  .fleet-status {
+    display: flex;
+    flex-wrap: nowrap; /* kluczowe */
+    gap: .5rem;
+    align-items: center;
+    white-space: nowrap; /* nie łam badges */
+    overflow-x: auto;    /* gdy ciasno, pojawi się przewijanie poziome w komórce */
+    scrollbar-width: thin;
+
+    .badge { font-weight: 600; }
+  }
+}
+
+
+/* jeśli używasz floty także poza kartą, możesz dodać .fleet-status globalnie */
+
 
 
 

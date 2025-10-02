@@ -4,6 +4,9 @@ require_once dirname(__DIR__) . '/auth/auth.php';
 require_staff();
 
 require_once dirname(__DIR__) . '/includes/db.php';
+$db = db(); // <<< KLUCZ: pobieramy PDO i przypisujemy do $db
+
+// dopiero po przygotowaniu $db wczytujemy head i header
 require_once dirname(__DIR__) . '/partials/head.php';
 require_once dirname(__DIR__) . '/partials/header.php';
 
@@ -21,6 +24,7 @@ function csrf_field_local()
 }
 
 $BASE = defined('BASE_URL') ? rtrim(BASE_URL, '/') : '';
+
 
 // --- Prefill z ?product_id=... (gdy wchodzimy z „Zarządzaj → Dodaj pojazd tego modelu”)
 $prefill_product_id = isset($_GET['product_id']) ? (int)$_GET['product_id'] : 0;
