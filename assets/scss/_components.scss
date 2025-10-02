@@ -253,4 +253,54 @@
   }
 }
 
+// Tabela „Flota — modele”
+.table {
+  th, td { vertical-align: middle; }
+}
+
+.th-id      { width: 80px; white-space: nowrap; }
+.th-name    { min-width: 240px; max-width: 360px; }
+.th-sku     { width: 170px; }
+.th-total   { width: 140px; text-align: right; }
+.th-actions { width: 160px; text-align: right; }
+
+// Link sortujący (nagłówki)
+.th-sort-link {
+  display: inline-flex;
+  align-items: center;
+  gap: .4rem;
+  text-decoration: none;
+
+  .label { color: var(--bs-link-color, #0d6efd); }
+  .chevs {
+    display: inline-flex;
+    flex-direction: column;
+    line-height: .8;
+
+    .chev {
+      opacity: .35;
+      font-size: .75em;
+      margin-top: -2px;
+
+      &.active { opacity: 1; }
+    }
+  }
+}
+
+// Statusy w jednym wierszu, ale mogą się łamać
+.fleet-status {
+  display: flex;
+  flex-wrap: wrap;
+  gap: .4rem;
+
+  .badge { white-space: nowrap; }
+}
+
+// Responsywka — na węższych ekranach delikatnie zwężamy nazwy/SKU
+@media (max-width: 992px) {
+  .th-name { min-width: 200px; max-width: 300px; }
+  .th-sku  { width: 140px; }
+}
+
+
 

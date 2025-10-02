@@ -21,6 +21,12 @@ $routes = [
     'dashboard-staff'  => __DIR__ . '/pages/dashboard-staff.php',
     // NOWE: strona wyników wyszukiwania (bez hero)
     'search-results'   => __DIR__ . '/pages/search-results.php',
+
+    // === NOWE: Flota / Pojazdy ===
+    'vehicles'         => __DIR__ . '/pages/vehicles.php',           // przegląd modeli (flota)
+    'vehicles-manage'  => __DIR__ . '/pages/vehicles-manage.php',    // egzemplarze dla wybranego modelu
+    'vehicle-form'     => __DIR__ . '/pages/vehicle-form.php',       // dodawanie/edycja egzemplarza
+    'vehicle-detail'    => __DIR__ . '/pages/vehicle-detail.php',    // karta egzemplarza
 ];
 
 // Fallback na home, jeśli nieznana strona

@@ -451,6 +451,75 @@ html, body {
     transition: none;
   }
 }
+.table th, .table td {
+  vertical-align: middle;
+}
+
+.th-id {
+  width: 80px;
+  white-space: nowrap;
+}
+
+.th-name {
+  min-width: 240px;
+  max-width: 360px;
+}
+
+.th-sku {
+  width: 170px;
+}
+
+.th-total {
+  width: 140px;
+  text-align: right;
+}
+
+.th-actions {
+  width: 160px;
+  text-align: right;
+}
+
+.th-sort-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  text-decoration: none;
+}
+.th-sort-link .label {
+  color: var(--bs-link-color, #0d6efd);
+}
+.th-sort-link .chevs {
+  display: inline-flex;
+  flex-direction: column;
+  line-height: 0.8;
+}
+.th-sort-link .chevs .chev {
+  opacity: 0.35;
+  font-size: 0.75em;
+  margin-top: -2px;
+}
+.th-sort-link .chevs .chev.active {
+  opacity: 1;
+}
+
+.fleet-status {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+}
+.fleet-status .badge {
+  white-space: nowrap;
+}
+
+@media (max-width: 992px) {
+  .th-name {
+    min-width: 200px;
+    max-width: 300px;
+  }
+  .th-sku {
+    width: 140px;
+  }
+}
 /* Delikatny separator linii */
 .divider {
   height: 1px;
