@@ -1,11 +1,12 @@
+/* global background */
+  $app-bg: rgb(234, 234, 227); // 
+
 :root {
 
-  /* global background */
-  $app-bg: rgb(234, 234, 227); // #EAEAE3
-
+  
   /* Teksty i tła */
   --color-text: #212529;
-  --color-bg: #ffffff;
+  --color-bg: rgb(234, 234, 227);
 
   /* Akcenty */
   --color-accent: #ff5a19;

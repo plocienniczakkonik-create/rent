@@ -54,11 +54,17 @@ if ($usingSearch) {
 
 // placeholder (bez wiodącego slasha – dołączymy BASE_URL helperem)
 $placeholderRel = 'assets/img/placeholder-car.webp';
+
+// Toolbar (pod nagłówkiem „Nasza flota”)
+// - prawa strona: HTML formularza sortowania przekazany z /pages/search-results.php
+// - lewa strona: liczba pojazdów (jeśli nie przekazano własnego tekstu)
+$GRID_TOOLBAR_LEFT  = $GRID_TOOLBAR_LEFT  ?? (count($products) . ' pojazdów');
+$GRID_TOOLBAR_RIGHT = $GRID_TOOLBAR_RIGHT ?? null;
 ?>
 <section id="offer" class="py-5">
     <div class="container">
 
-        <div class="d-flex align-items-end justify-content-between mb-3">
+        <div class="d-flex align-items-end justify-content-between mb-2">
             <h2 class="h4 mb-0">
                 Nasza flota
                 <?php if ($searchActive): ?>
@@ -66,6 +72,17 @@ $placeholderRel = 'assets/img/placeholder-car.webp';
                 <?php endif; ?>
             </h2>
         </div>
+
+        <?php if (!empty($GRID_TOOLBAR_LEFT) || !empty($GRID_TOOLBAR_RIGHT)): ?>
+            <div class="results-toolbar d-flex align-items-center justify-content-between gap-2 mb-3">
+                <div class="results-left text-muted small">
+                    <?= htmlspecialchars((string)$GRID_TOOLBAR_LEFT) ?>
+                </div>
+                <div class="results-right">
+                    <?= !empty($GRID_TOOLBAR_RIGHT) ? $GRID_TOOLBAR_RIGHT : '' ?>
+                </div>
+            </div>
+        <?php endif; ?>
 
         <?php if (!$products): ?>
             <div class="alert alert-info mb-0">Brak dostępnych pojazdów dla wybranych filtrów.</div>

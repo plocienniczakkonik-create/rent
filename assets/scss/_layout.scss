@@ -118,11 +118,12 @@ body#top {
 html, body {
   min-height: 100%;
   background: $app-bg;           // fallback, gdy jakaś strona nie użyje .site-main
+  background: var(--color-bg);
 }
 
 .site-main {
   background: $app-bg;           // główne tło wszystkich widoków
-  min-height: calc(100vh - 72px); // opcjonalnie: dopasuj do wysokości headera jeśli chcesz
+  
 }
 
 /* Upewnij się, że sekcje wewnątrz main nie nadpisują koloru */

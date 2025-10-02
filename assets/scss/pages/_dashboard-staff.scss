@@ -1,0 +1,39 @@
+/* ===== Panel pracownika ===== */
+.staff-main {
+  /* większy oddech od nawigacji + dół strony */
+  padding-top: clamp(104px, 8vw, 144px);
+  padding-bottom: 64px;
+
+  /* karta na treść zakładek (ładny panel zamiast gołej tab-content) */
+  .tab-content {
+    background: white;
+    border: 1px solid var(--color-card-border);
+    border-radius: var(--radius-12);
+    box-shadow: var(--shadow);
+    padding: 16px;
+
+    @media (min-width: 768px) { padding: 24px; }
+    @media (min-width: 1200px) { padding: 28px; }
+  }
+
+  /* oddech nad kartą (między pigułkami a treścią) */
+  #staffTabs { margin-bottom: 12px; }
+
+  /* czytelniejsza tabela w karcie */
+  .table {
+    margin-bottom: 0; /* żeby nie robiła „dziury” pod kartą */
+  }
+  .table th,
+  .table td {
+    padding: .75rem 1rem;       /* większy padding w komórkach */
+    vertical-align: middle;
+  }
+  .table thead th:first-child,
+  .table tbody td:first-child { padding-left: 1.25rem; }
+  .table thead th:last-child,
+  .table tbody td:last-child { padding-right: 1.25rem; }
+
+  /* drobne dopieszczenia akcji/statusów */
+  .badge { border-radius: var(--radius-pill); padding: .35rem .6rem; }
+  .btn-sm { padding: .35rem .6rem; }
+}

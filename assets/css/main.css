@@ -1,8 +1,9 @@
 @charset "UTF-8";
+/* global background */
 :root {
   /* Teksty i tła */
   --color-text: #212529;
-  --color-bg: #ffffff;
+  --color-bg: rgb(234, 234, 227);
   /* Akcenty */
   --color-accent: #ff5a19;
   --color-accent-hover: #e04e15;
@@ -136,6 +137,55 @@ body#top {
   padding-top: clamp(3rem, 8vh, 6rem);
 }
 
+/* Odstęp pod navbarem absolutnym/fixed (dashboard, formularze itp.) */
+.mt-nav {
+  /* odstęp bezpieczny na różnych ekranach */
+  margin-top: clamp(64px, 10vw, 96px);
+}
+
+/* Kontener centrowany w pionie i poziomie, z uwzględnieniem wysokości navbara */
+.vh-center {
+  min-height: calc(100vh - var(--nav-h));
+  padding-top: var(--nav-h); /* zabezpieczenie przed nachodzeniem */
+  display: flex;
+  align-items: center; /* centrowanie pionowe */
+}
+
+/* szerokość kolumny treści wewnątrz (opcjonalnie, dla ładnej szpalty) */
+.vh-center > .content-col {
+  width: 100%;
+  max-width: 1100px; /* ~col-xl-10 */
+  margin-inline: auto; /* wyśrodkuj w poziomie */
+}
+
+/* Fix białych kolumn obok gridu oferty */
+#offer .container::before,
+#offer .container::after {
+  content: none !important;
+  display: none !important;
+}
+
+html, body {
+  min-height: 100%;
+  background: rgb(234, 234, 227);
+  background: var(--color-bg);
+}
+
+.site-main {
+  background: rgb(234, 234, 227);
+}
+
+/* Upewnij się, że sekcje wewnątrz main nie nadpisują koloru */
+.site-main > section {
+  background: transparent;
+}
+
+/* Jeżeli jakieś komponenty dawały białe tło kontenerowi – wyczyść */
+.wyszukiwarkaCL > .container,
+.search-wrapper {
+  background: transparent;
+}
+
 /* ===== Navbar (prostą zmianę koloru traktujemy jako komponent) ===== */
 .navbar .nav-link {
   color: var(--color-black);
@@ -195,11 +245,6 @@ body#top {
   font-size: 1rem;
 }
 .feature-icon { /* gdy użyjesz Bootstrap Icons / Font Awesome */ }
-
-/* ===== Karta wyszukiwarki ===== */
-#offer {
-  background-color: rgb(234, 234, 227);
-}
 
 .search-card {
   border-radius: var(--radius-18);
@@ -371,10 +416,212 @@ body#top {
   border-color: #111; /* jeśli użyjesz outline */
 }
 
+/* assets/scss/components/_flash.scss */
+/* Flash alerts (komunikaty po Dodaj/Usuń) — wyrównanie X i bez kolizji z treścią */
+.js-flash {
+  /* zapas z prawej, żeby tekst nie wpadał pod X; korzystamy z zmiennych Bootstrapa */
+  padding-right: calc(var(--bs-alert-padding-x, 1rem) + 1.5rem);
+}
+.js-flash.alert-dismissible {
+  position: relative;
+}
+.js-flash .btn-close {
+  position: absolute;
+  right: var(--bs-alert-padding-x, 1rem);
+  top: 50%;
+  transform: translateY(-50%);
+  padding: 0.5rem; /* mniejsze, ale wygodne pole kliknięcia */
+  line-height: 1; /* stabilny „X” */
+}
+
+/* Flash fade-out — miękkie zanikanie i delikatne uniesienie */
+.js-flash.fade {
+  transition: opacity 0.38s ease-out, transform 0.38s ease-out;
+}
+
+/* Gdy Bootstrap usuwa .show, następuje płynne znikanie */
+.js-flash.fade:not(.show) {
+  opacity: 0;
+  transform: translateY(-4px);
+}
+
+/* Szacunek dla prefers-reduced-motion */
+@media (prefers-reduced-motion: reduce) {
+  .js-flash.fade {
+    transition: none;
+  }
+}
 /* Delikatny separator linii */
 .divider {
   height: 1px;
   background: rgba(0, 0, 0, 0.08);
+}
+
+/* /assets/scss/pages/_search-results.scss */
+#search-results-shell {
+  background: rgb(234, 234, 227);
+}
+#search-results-shell .search-hero {
+  padding-block: 72px 24px;
+  background: rgb(234, 234, 227);
+}
+#search-results-shell .search-hero .page-title {
+  text-align: center;
+  margin: 0 0 16px;
+  font-size: clamp(1.4rem, 1.1rem + 1vw, 2rem);
+  font-weight: 700;
+}
+#search-results-shell .search-hero .search-panel {
+  max-width: 1100px;
+  margin-inline: auto;
+}
+#search-results-shell .search-hero .wyszukiwarkaCL > .container {
+  max-width: 100%;
+  padding-inline: 0;
+  background: transparent;
+}
+#search-results-shell .search-hero .search-wrapper .card {
+  border-radius: 18px;
+  box-shadow: 0 6px 24px rgba(0, 0, 0, 0.08);
+  border: 1px solid rgba(0, 0, 0, 0.06);
+  padding: clamp(12px, 1.2vw, 18px);
+}
+#search-results-shell .after-form {
+  padding-top: 16px;
+  background: rgb(234, 234, 227);
+}
+#search-results-shell section#offer {
+  padding-top: 0;
+}
+
+/* Pasek sortowania nad wynikami */
+.search-sortbar {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+  justify-content: flex-end;
+  margin: 0.5rem 0 1rem;
+}
+.search-sortbar .form-select {
+  min-width: 180px;
+}
+
+/* Pasek ponad kartami: tytuł lewo, filtr prawo */
+.results-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  margin: 0 0 12px;
+}
+.results-head .section-title {
+  margin: 0;
+  font-weight: 600;
+  letter-spacing: 0.2px;
+}
+.results-head .search-sortbar {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin: 0;
+}
+.results-head .search-sortbar .form-select {
+  min-width: 180px;
+}
+
+/* Drobny oddech i spójne tło sekcji z wynikami */
+#search-results-shell .after-form {
+  padding-top: 8px;
+}
+
+/* Mobile: ułóż w dwie linie, filtr pod tytułem, ale wyrównany do prawej */
+@media (max-width: 576px) {
+  .results-head {
+    flex-wrap: wrap;
+  }
+  .results-head .search-sortbar {
+    margin-left: auto;
+  }
+}
+/* Pasek pod nagłówkiem: lewo – metryka, prawo – sort */
+.results-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  margin: 0.25rem 0 1rem;
+}
+.results-toolbar .results-left {
+  color: var(--color-muted);
+  font-size: 0.95rem;
+}
+.results-toolbar .results-right .form-select {
+  min-width: 180px;
+}
+
+/* Delikatny oddech sekcji z kartami */
+#search-results-shell .after-form {
+  padding-top: 8px;
+}
+
+/* ===== Panel pracownika ===== */
+.staff-main {
+  /* większy oddech od nawigacji + dół strony */
+  padding-top: clamp(104px, 8vw, 144px);
+  padding-bottom: 64px;
+  /* karta na treść zakładek (ładny panel zamiast gołej tab-content) */
+}
+.staff-main .tab-content {
+  background: white;
+  border: 1px solid var(--color-card-border);
+  border-radius: var(--radius-12);
+  box-shadow: var(--shadow);
+  padding: 16px;
+}
+@media (min-width: 768px) {
+  .staff-main .tab-content {
+    padding: 24px;
+  }
+}
+@media (min-width: 1200px) {
+  .staff-main .tab-content {
+    padding: 28px;
+  }
+}
+.staff-main {
+  /* oddech nad kartą (między pigułkami a treścią) */
+}
+.staff-main #staffTabs {
+  margin-bottom: 12px;
+}
+.staff-main {
+  /* czytelniejsza tabela w karcie */
+}
+.staff-main .table {
+  margin-bottom: 0; /* żeby nie robiła „dziury” pod kartą */
+}
+.staff-main .table th,
+.staff-main .table td {
+  padding: 0.75rem 1rem; /* większy padding w komórkach */
+  vertical-align: middle;
+}
+.staff-main .table thead th:first-child,
+.staff-main .table tbody td:first-child {
+  padding-left: 1.25rem;
+}
+.staff-main .table thead th:last-child,
+.staff-main .table tbody td:last-child {
+  padding-right: 1.25rem;
+}
+.staff-main {
+  /* drobne dopieszczenia akcji/statusów */
+}
+.staff-main .badge {
+  border-radius: var(--radius-pill);
+  padding: 0.35rem 0.6rem;
+}
+.staff-main .btn-sm {
+  padding: 0.35rem 0.6rem;
 }
 
 /*# sourceMappingURL=main.css.map */

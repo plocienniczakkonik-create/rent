@@ -51,8 +51,8 @@ $reports = [
     'top_product'   => 'Toyota Corolla',
 ];
 ?>
-<main class="container-xl py-4 d-flex align-items-center justify-content-center"
-    style="min-height: calc(100vh - 72px); padding-top: 72px;">
+<main class="container-xl staff-main"
+    style="padding-top: 72px;">
     <div class="w-100" style="max-width: 1200px; margin: 0 auto;">
         <div class="row g-3">
             <div class="col-12">
@@ -85,6 +85,12 @@ $reports = [
                     <li class="nav-item" role="presentation">
                         <button class="nav-link" id="tab-reports" data-bs-toggle="pill" data-bs-target="#pane-reports" type="button" role="tab">Raporty</button>
                     </li>
+
+                    <!-- NOWE: zakładka "Słowniki" między Raporty a Ustawienia -->
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="tab-dicts" data-bs-toggle="pill" data-bs-target="#pane-dicts" type="button" role="tab">Słowniki</button>
+                    </li>
+
                     <li class="nav-item" role="presentation">
                         <button class="nav-link" id="tab-settings" data-bs-toggle="pill" data-bs-target="#pane-settings" type="button" role="tab">Ustawienia</button>
                     </li>
@@ -108,6 +114,11 @@ $reports = [
 
                     <div class="tab-pane fade" id="pane-reports" role="tabpanel" aria-labelledby="tab-reports">
                         <?php include __DIR__ . '/staff/section-reports.php'; ?>
+                    </div>
+
+                    <!-- NOWE: kontent zakładki "Słowniki" -->
+                    <div class="tab-pane fade" id="pane-dicts" role="tabpanel" aria-labelledby="tab-dicts">
+                        <?php include __DIR__ . '/staff/section-dicts.php'; ?>
                     </div>
 
                     <div class="tab-pane fade" id="pane-settings" role="tabpanel" aria-labelledby="tab-settings">

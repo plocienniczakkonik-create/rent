@@ -51,11 +51,6 @@
   i { font-size: 1rem; } /* gdy użyjesz Bootstrap Icons / Font Awesome */
 }
 
-/* ===== Karta wyszukiwarki ===== */
-#offer{
-    background-color:rgb(234, 234, 227);
-}
-
 .search-card {
   border-radius: var(--radius-18);
   box-shadow: 0 6px 24px rgba(0, 0, 0, 0.08);
@@ -218,5 +213,44 @@
   }
 }
 
+/* assets/scss/components/_flash.scss */
+/* Flash alerts (komunikaty po Dodaj/Usuń) — wyrównanie X i bez kolizji z treścią */
+.js-flash {
+  /* zapas z prawej, żeby tekst nie wpadał pod X; korzystamy z zmiennych Bootstrapa */
+  padding-right: calc(var(--bs-alert-padding-x, 1rem) + 1.5rem);
+
+  &.alert-dismissible {
+    position: relative;
+  }
+
+  .btn-close {
+    position: absolute;
+    right: var(--bs-alert-padding-x, 1rem);
+    top: 50%;
+    transform: translateY(-50%);
+    padding: .5rem;   /* mniejsze, ale wygodne pole kliknięcia */
+    line-height: 1;   /* stabilny „X” */
+  }
+}
+
+/* Flash fade-out — miękkie zanikanie i delikatne uniesienie */
+.js-flash.fade {
+  transition:
+    opacity .38s ease-out,
+    transform .38s ease-out;
+}
+
+/* Gdy Bootstrap usuwa .show, następuje płynne znikanie */
+.js-flash.fade:not(.show) {
+  opacity: 0;
+  transform: translateY(-4px);
+}
+
+/* Szacunek dla prefers-reduced-motion */
+@media (prefers-reduced-motion: reduce) {
+  .js-flash.fade {
+    transition: none;
+  }
+}
 
 
