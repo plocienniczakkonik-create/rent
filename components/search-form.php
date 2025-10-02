@@ -1,6 +1,8 @@
 <?php
 // /components/search-form.php
 
+require_once dirname(__DIR__) . '/includes/db.php';
+
 // Wspólny index z BASE_URL (niezależnie skąd include)
 $BASE = defined('BASE_URL') ? rtrim(BASE_URL, '/') : '';
 $ROOT_INDEX = ($BASE ? $BASE . '/' : '') . 'index.php';
@@ -50,7 +52,26 @@ $labelFuel = [
     'elektryczny' => 'Elektryczny',
 ];
 
-$locations = ['Warszawa Lotnisko', 'Warszawa Centrum', 'Kraków', 'Gdańsk', 'Wrocław', 'Poznań', 'Katowice'];
+/** ⬇️ Dynamiczne lokalizacje ze słownika 'location' (tylko aktywne) */
+$locations = [];
+try {
+    $pdo = db();
+    $stmt = $pdo->prepare("
+        SELECT t.name
+        FROM dict_terms t
+        JOIN dict_types dt ON dt.id = t.dict_type_id
+        WHERE dt.slug = :slug AND t.status = 'active'
+        ORDER BY t.sort_order ASC, t.name ASC
+    ");
+    $stmt->execute([':slug' => 'location']);
+    $rows = $stmt->fetchAll(PDO::FETCH_COLUMN);
+    if ($rows) {
+        // upewnijmy się, że to stringi i bez duplikatów
+        $locations = array_values(array_unique(array_map('strval', $rows)));
+    }
+} catch (Throwable $e) {
+    $locations = [];
+}
 
 $anyFilterOn = ($pickupLoc || $dropoffLoc || $pickupAt || $returnAt || $vehicleType || $trans || $seatsMin || $fuel);
 
