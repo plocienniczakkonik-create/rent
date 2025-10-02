@@ -11,38 +11,37 @@ $BASE = defined('BASE_URL') ? rtrim(BASE_URL, '/') : '';
 
 $id = isset($_GET['id']) ? (int)$_GET['id'] : 0;
 
-// Domyślne wartości (gdy nowy produkt)
+// Domyślne wartości (gdy nowy produkt) — selekty puste, żeby wymusić świadomy wybór
 $product = [
     'id'          => 0,
     'name'        => '',
     'sku'         => '',
     'price'       => '0.00',
-    'price_unit'  => 'per_day',       // per_day | per_hour (na przyszłość)
+    'price_unit'  => '',              // ⬅️ było: 'per_day'
     'stock'       => 0,
-    'status'      => 'active',        // active | inactive
-    'category'    => 'Klasa A',       // Klasa A-E
-    'seats'       => 5,               // 2,3,4,5
-    'doors'       => 4,               // 2,4
-    'gearbox'     => 'Manualna',      // Manualna | Automatyczna
-    'fuel'        => 'Benzyna',       // Benzyna | Diesel | Hybryda | Elektryczny
+    'status'      => 'active',        // zostawiamy domyślnie active
+    'category'    => '',              // ⬅️ było: 'Klasa A'
+    'car_type'    => '',              // typ samochodu
+    'seats'       => '',              // ⬅️ było: 5
+    'doors'       => '',              // ⬅️ było: 4
+    'gearbox'     => '',              // ⬅️ było: 'Manualna'
+    'fuel'        => '',              // ⬅️ było: 'Benzyna'
     'description' => '',
-    'image_path'  => null,            // ścieżka do pliku (jeśli mamy w DB)
+    'image_path'  => null,
 ];
 
-// Jeśli edycja – pobierz co się da (jeśli w DB jeszcze nie ma kolumn, nie szkodzi)
+// Jeśli edycja – pobierz co się da
 if ($id > 0) {
     $stmt = db()->prepare("
-    SELECT
-      id, name, sku, price, stock, status,
-      -- poniższe kolumny mogą jeszcze nie istnieć; gdy będą, SELECT zwróci wartości
-      /* optional */ category, seats, doors, gearbox, fuel, price_unit, description, image_path
-    FROM products
-    WHERE id = ?
-  ");
+        SELECT
+          id, name, sku, price, stock, status,
+          /* optional */ category, car_type, seats, doors, gearbox, fuel, price_unit, description, image_path
+        FROM products
+        WHERE id = ?
+    ");
     $stmt->execute([$id]);
     $row = $stmt->fetch(PDO::FETCH_ASSOC) ?: [];
 
-    // bezpieczne scalenie (jeśli czegoś nie ma w $row – zostaje domyślne)
     foreach ($product as $key => $def) {
         if (array_key_exists($key, $row) && $row[$key] !== null) {
             $product[$key] = $row[$key];
@@ -50,8 +49,28 @@ if ($id > 0) {
     }
 }
 
-// słowniki
-$categories = ['Klasa A', 'Klasa B', 'Klasa C', 'Klasa D', 'Klasa E'];
+/* =========================
+   DYNAMICZNE SŁOWNIKI
+   ========================= */
+function dict_names_active(PDO $pdo, string $typeSlug): array {
+    $sql = "
+        SELECT t.name
+        FROM dict_terms t
+        JOIN dict_types dt ON dt.id = t.dict_type_id
+        WHERE dt.slug = :slug AND t.status = 'active'
+        ORDER BY t.sort_order ASC, t.name ASC
+    ";
+    $st = $pdo->prepare($sql);
+    $st->execute([':slug' => $typeSlug]);
+    $rows = $st->fetchAll(PDO::FETCH_COLUMN);
+    return $rows ? array_values(array_unique(array_map('strval', $rows))) : [];
+}
+
+$pdo = db();
+$categories = dict_names_active($pdo, 'car_class'); // Klasy samochodu
+$carTypes   = dict_names_active($pdo, 'car_type');  // Typy samochodu
+
+// słowniki stałe (bez zmian)
 $seatOpts   = [2, 3, 4, 5];
 $doorOpts   = [2, 4];
 $gearboxes  = ['Manualna', 'Automatyczna'];
@@ -93,7 +112,8 @@ $units      = ['per_day' => 'za dzień', 'per_hour' => 'za godzinę']; // na prz
             <div class="row g-3 mt-1">
                 <div class="col-md-4">
                     <label class="form-label">Klasa</label>
-                    <select name="category" class="form-select">
+                    <select name="category" class="form-select" required>
+                        <option value="" <?= $product['category'] === '' ? 'selected' : '' ?> disabled>— wybierz —</option>
                         <?php foreach ($categories as $opt): ?>
                             <option value="<?= htmlspecialchars($opt) ?>"
                                 <?= $product['category'] === $opt ? 'selected' : ''; ?>><?= htmlspecialchars($opt) ?></option>
@@ -103,27 +123,44 @@ $units      = ['per_day' => 'za dzień', 'per_hour' => 'za godzinę']; // na prz
 
                 <div class="col-md-4">
                     <label class="form-label">Ilość miejsc</label>
-                    <select name="seats" class="form-select">
+                    <select name="seats" class="form-select" required>
+                        <option value="" <?= $product['seats'] === '' ? 'selected' : '' ?> disabled>— wybierz —</option>
                         <?php foreach ($seatOpts as $n): ?>
-                            <option value="<?= $n ?>" <?= (int)$product['seats'] === $n ? 'selected' : ''; ?>><?= $n ?></option>
+                            <option value="<?= $n ?>" <?= ((string)$product['seats'] === (string)$n) ? 'selected' : ''; ?>><?= $n ?></option>
                         <?php endforeach; ?>
                     </select>
                 </div>
 
                 <div class="col-md-4">
                     <label class="form-label">Ilość drzwi</label>
-                    <select name="doors" class="form-select">
+                    <select name="doors" class="form-select" required>
+                        <option value="" <?= $product['doors'] === '' ? 'selected' : '' ?> disabled>— wybierz —</option>
                         <?php foreach ($doorOpts as $n): ?>
-                            <option value="<?= $n ?>" <?= (int)$product['doors'] === $n ? 'selected' : ''; ?>><?= $n ?></option>
+                            <option value="<?= $n ?>" <?= ((string)$product['doors'] === (string)$n) ? 'selected' : ''; ?>><?= $n ?></option>
                         <?php endforeach; ?>
                     </select>
                 </div>
             </div>
 
+            <!-- Typ samochodu -->
             <div class="row g-3 mt-1">
-                <div class="col-md-6">
+                <div class="col-md-4">
+                    <label class="form-label">Typ samochodu</label>
+                    <select name="car_type" class="form-select" required>
+                        <option value="" <?= $product['car_type'] === '' ? 'selected' : '' ?> disabled>— wybierz —</option>
+                        <?php foreach ($carTypes as $opt): ?>
+                            <option value="<?= htmlspecialchars($opt) ?>"
+                                <?= ($product['car_type'] === $opt) ? 'selected' : ''; ?>>
+                                <?= htmlspecialchars($opt) ?>
+                            </option>
+                        <?php endforeach; ?>
+                    </select>
+                </div>
+
+                <div class="col-md-4">
                     <label class="form-label">Skrzynia biegów</label>
-                    <select name="gearbox" class="form-select">
+                    <select name="gearbox" class="form-select" required>
+                        <option value="" <?= $product['gearbox'] === '' ? 'selected' : '' ?> disabled>— wybierz —</option>
                         <?php foreach ($gearboxes as $opt): ?>
                             <option value="<?= htmlspecialchars($opt) ?>"
                                 <?= $product['gearbox'] === $opt ? 'selected' : ''; ?>><?= htmlspecialchars($opt) ?></option>
@@ -131,9 +168,10 @@ $units      = ['per_day' => 'za dzień', 'per_hour' => 'za godzinę']; // na prz
                     </select>
                 </div>
 
-                <div class="col-md-6">
+                <div class="col-md-4">
                     <label class="form-label">Rodzaj paliwa</label>
-                    <select name="fuel" class="form-select">
+                    <select name="fuel" class="form-select" required>
+                        <option value="" <?= $product['fuel'] === '' ? 'selected' : '' ?> disabled>— wybierz —</option>
                         <?php foreach ($fuels as $opt): ?>
                             <option value="<?= htmlspecialchars($opt) ?>"
                                 <?= $product['fuel'] === $opt ? 'selected' : ''; ?>><?= htmlspecialchars($opt) ?></option>
@@ -155,7 +193,8 @@ $units      = ['per_day' => 'za dzień', 'per_hour' => 'za godzinę']; // na prz
 
                 <div class="col-md-4">
                     <label class="form-label">Jednostka</label>
-                    <select name="price_unit" class="form-select">
+                    <select name="price_unit" class="form-select" required>
+                        <option value="" <?= $product['price_unit'] === '' ? 'selected' : '' ?> disabled>— wybierz —</option>
                         <?php foreach ($units as $key => $label): ?>
                             <option value="<?= $key ?>" <?= $product['price_unit'] === $key ? 'selected' : ''; ?>><?= $label ?></option>
                         <?php endforeach; ?>
@@ -169,7 +208,7 @@ $units      = ['per_day' => 'za dzień', 'per_hour' => 'za godzinę']; // na prz
                 </div>
             </div>
 
-            <!-- Status -->
+            <!-- Status (zostawiamy domyślnie active; jeśli chcesz też wymuszać wybór, dodaj required i placeholder) -->
             <div class="mt-3">
                 <label class="form-label">Status</label>
                 <select name="status" class="form-select">

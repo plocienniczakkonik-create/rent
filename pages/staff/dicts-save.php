@@ -12,7 +12,6 @@ require_staff();
 if (session_status() !== PHP_SESSION_ACTIVE) {
     session_start();
 }
-
 function posted_csrf_token(): ?string {
     foreach (['csrf', '_token', 'csrf_token', 'token'] as $k) {
         if (!empty($_POST[$k])) return (string)$_POST[$k];
@@ -33,7 +32,7 @@ function verify_csrf_or_fail(): void {
 }
 if (function_exists('csrf_verify')) { csrf_verify(); } else { verify_csrf_or_fail(); }
 
-/* ===== Parametry + helper redirectu (z kotwicą) ===== */
+/* ===== Parametry + redirect z #pane-dicts ===== */
 $BASE   = defined('BASE_URL') ? rtrim(BASE_URL, '/') : '';
 $kind   = $_POST['kind']   ?? 'location';
 $action = $_POST['action'] ?? 'create';
@@ -47,50 +46,65 @@ function redirect_back(string $kind, string $msg = '', string $err = ''): never 
         'msg'  => $msg ?: null,
         'err'  => $err ?: null,
     ]));
-    header('Location: ' . ($base !== '' ? $base : '') . '/index.php?' . $qs . '#pane-dicts');
+    header('Location: ' . $base . '/index.php?' . $qs . '#pane-dicts');
     exit;
 }
 
 /* ===== Utils ===== */
-/** Stabilne slugify z polską mapą znaków (bez iconv). */
+/** Stabilne slugify PL (bez iconv) */
 function slugify(string $s): string {
     $s = trim($s);
     if ($s === '') return 'item';
-
-    // małe litery w UTF-8
-    if (function_exists('mb_strtolower')) {
-        $s = mb_strtolower($s, 'UTF-8');
-    } else {
-        $s = strtolower($s);
-    }
-
-    // mapowanie PL znaków (także gdyby przyszły wielkie litery)
+    $s = function_exists('mb_strtolower') ? mb_strtolower($s, 'UTF-8') : strtolower($s);
     $map = [
         'ą'=>'a','ć'=>'c','ę'=>'e','ł'=>'l','ń'=>'n','ó'=>'o','ś'=>'s','ż'=>'z','ź'=>'z',
         'Ą'=>'a','Ć'=>'c','Ę'=>'e','Ł'=>'l','Ń'=>'n','Ó'=>'o','Ś'=>'s','Ż'=>'z','Ź'=>'z',
     ];
     $s = strtr($s, $map);
-
-    // sprowadź inne separatory/whitespace do spacji
     $s = preg_replace('/[^\S\r\n]+/u', ' ', $s);
-    // usuń wszystko poza a-z0-9, zamień sekwencje na myślnik
     $s = preg_replace('/[^a-z0-9]+/u', '-', $s);
     $s = trim($s, '-');
-
     return $s ?: 'item';
+}
+
+/**
+ * Zapewnia istnienie typu słownika; gdy brak – tworzy go.
+ * Zwraca tablicę: ['id'=>int, 'slug'=>string, 'is_hierarchical'=>int]
+ */
+function ensure_dict_type(PDO $pdo, string $slug): array {
+    $q = $pdo->prepare('SELECT id, slug, is_hierarchical FROM dict_types WHERE slug = :s LIMIT 1');
+    $q->execute([':s' => $slug]);
+    $row = $q->fetch(PDO::FETCH_ASSOC);
+    if ($row) return $row;
+
+    // Domyślne etykiety i hierarchia
+    $labels = [
+        'location'  => 'Lokalizacje',
+        'car_class' => 'Klasa samochodu',
+        'car_type'  => 'Typ samochodu',
+    ];
+    $name   = $labels[$slug] ?? ucfirst(str_replace('_', ' ', $slug));
+    // dla car_class i car_type wymuszamy brak hierarchii; dla pozostałych domyślnie też 0
+    $isHier = in_array($slug, ['car_class','car_type'], true) ? 0 : 0;
+
+    $ins = $pdo->prepare('INSERT INTO dict_types (slug, name, is_hierarchical) VALUES (:slug, :name, :h)');
+    $ins->execute([':slug' => $slug, ':name' => $name, ':h' => $isHier]);
+
+    return ['id' => (int)$pdo->lastInsertId(), 'slug' => $slug, 'is_hierarchical' => $isHier];
 }
 
 $pdo = db();
 
 try {
-    // Typ słownika
-    $qType = $pdo->prepare('SELECT id, slug, is_hierarchical FROM dict_types WHERE slug = :slug LIMIT 1');
-    $qType->execute([':slug' => $kind]);
-    $dictType = $qType->fetch(PDO::FETCH_ASSOC);
-    if (!$dictType) redirect_back($kind, '', 'Nie znaleziono typu słownika.');
-
+    // Upewnij się, że typ istnieje (np. car_type) — jeśli nie, utworzymy go.
+    $dictType = ensure_dict_type($pdo, $kind);
     $dictTypeId = (int)$dictType['id'];
     $isHier     = (bool)$dictType['is_hierarchical'];
+
+    // W UI nie używamy hierarchii dla klas i typów
+    if (in_array($kind, ['car_class','car_type'], true)) {
+        $isHier = false;
+    }
 
     // Dane z formularza
     $id        = isset($_POST['id']) ? (int)$_POST['id'] : null;

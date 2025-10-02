@@ -7,7 +7,6 @@ require_staff();
 
 $BASE = defined('BASE_URL') ? rtrim(BASE_URL, '/') : '';
 
-/** Budowanie URL przez router: query -> #hash */
 function panel_url(array $params = []): string {
     $base = defined('BASE_URL') ? rtrim(BASE_URL, '/') : '';
     $q = http_build_query(array_merge(['page' => 'dashboard-staff', 'tab' => 'dicts'], $params));
@@ -17,6 +16,7 @@ function panel_url(array $params = []): string {
 $validKinds = [
     'location'  => 'Lokalizacje',
     'car_class' => 'Klasa samochodu',
+    'car_type'  => 'Typ samochodu',     // ⬅️ NOWE
 ];
 
 $kind = $_GET['kind'] ?? 'location';
@@ -24,7 +24,7 @@ if (!isset($validKinds[$kind])) $kind = 'location';
 
 $pdo = db();
 
-// Typ słownika i hierarchia
+// typ i hierarchia
 $isHier = false;
 $dictType = null;
 $stmt = $pdo->prepare("SELECT id, slug, name, is_hierarchical FROM dict_types WHERE slug = :s LIMIT 1");
@@ -32,7 +32,12 @@ $stmt->execute([':s' => $kind]);
 $dictType = $stmt->fetch(PDO::FETCH_ASSOC);
 if ($dictType) $isHier = (bool)$dictType['is_hierarchical'];
 
-// Termy
+// ⬇️ Dla „Klasa samochodu” i „Typ samochodu” wymuszamy brak hierarchii w UI
+if (in_array($kind, ['car_class','car_type'], true)) {
+    $isHier = false;
+}
+
+// termy
 $terms = [];
 if ($dictType) {
     $stmt = $pdo->prepare("
@@ -45,7 +50,6 @@ if ($dictType) {
     $terms = $stmt->fetchAll(PDO::FETCH_ASSOC);
 }
 
-// Map do nazw rodziców
 $byId = [];
 foreach ($terms as $t) $byId[(int)$t['id']] = $t;
 
@@ -62,49 +66,43 @@ function isActiveRow(array $row): bool {
     <div class="d-flex gap-2">
       <a class="btn btn-outline-secondary btn-sm" href="<?= panel_url(['kind' => 'location']) ?>">Lokalizacje</a>
       <a class="btn btn-outline-secondary btn-sm" href="<?= panel_url(['kind' => 'car_class']) ?>">Klasa samochodu</a>
+      <a class="btn btn-outline-secondary btn-sm" href="<?= panel_url(['kind' => 'car_type']) ?>">Typ samochodu</a> <!-- ⬅️ NOWE -->
     </div>
   </div>
 
   <div class="card-body">
+
     <?php if (!empty($_GET['msg'])): ?>
-      <div class="alert alert-success alert-dismissible fade show py-2 js-flash" role="alert">
+      <div class="alert alert-success alert-dismissible fade show js-flash" role="alert">
         <?= htmlspecialchars((string)$_GET['msg']) ?>
         <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
       </div>
     <?php endif; ?>
     <?php if (!empty($_GET['err'])): ?>
-      <div class="alert alert-danger alert-dismissible fade show py-2 js-flash" role="alert">
+      <div class="alert alert-danger alert-dismissible fade show js-flash" role="alert">
         <?= htmlspecialchars((string)$_GET['err']) ?>
         <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
       </div>
     <?php endif; ?>
 
-    <!-- Po wyświetleniu wiadomości usuń msg/err z adresu, aby nie wracały po odświeżeniu -->
     <script>
       (function () {
         try {
           var url = new URL(window.location.href);
           var had = false;
-          ['msg','err'].forEach(function(k){
-            if (url.searchParams.has(k)) { url.searchParams.delete(k); had = true; }
-          });
+          ['msg','err'].forEach(function(k){ if (url.searchParams.has(k)) { url.searchParams.delete(k); had = true; }});
           if (had) {
             var qs = url.searchParams.toString();
             var newUrl = url.pathname + (qs ? '?' + qs : '') + url.hash;
-            window.history.replaceState(null, '', newUrl);
-            // Opcjonalnie: auto-zamknij flash po 4s (wymaga bootstrap.bundle.js)
+            history.replaceState(null, '', newUrl);
             setTimeout(function(){
               document.querySelectorAll('.js-flash').forEach(function(el){
-                if (window.bootstrap && bootstrap.Alert) {
-                  var inst = bootstrap.Alert.getOrCreateInstance(el);
-                  inst.close();
-                } else {
-                  el.remove();
-                }
+                if (window.bootstrap && bootstrap.Alert) bootstrap.Alert.getOrCreateInstance(el).close();
+                else el.remove();
               });
             }, 4000);
           }
-        } catch(e) { /* no-op */ }
+        } catch(e) {}
       })();
     </script>
 
@@ -115,7 +113,7 @@ function isActiveRow(array $row): bool {
       </button>
     </div>
 
-    <!-- ADD FORM -->
+    <!-- ADD -->
     <div class="collapse mb-3" id="dictAddForm">
       <form method="post" action="<?= $BASE ?>/pages/staff/dicts-save.php">
         <?= csrf_field(); ?>
@@ -179,15 +177,11 @@ function isActiveRow(array $row): bool {
           </thead>
           <tbody>
           <?php foreach ($terms as $row): ?>
-            <!-- Wiersz odczytowy -->
             <tr>
               <td class="text-muted"><?= (int)$row['id'] ?></td>
               <?php if ($isHier): ?>
                 <td class="text-muted">
-                  <?php
-                    $pid = $row['parent_id'];
-                    echo $pid && isset($byId[(int)$pid]) ? htmlspecialchars($byId[(int)$pid]['name']) : '—';
-                  ?>
+                  <?php $pid = $row['parent_id']; echo $pid && isset($byId[(int)$pid]) ? htmlspecialchars($byId[(int)$pid]['name']) : '—'; ?>
                 </td>
               <?php endif; ?>
               <td><?= htmlspecialchars($row['name']) ?></td>
@@ -202,12 +196,7 @@ function isActiveRow(array $row): bool {
               </td>
               <td class="text-end">
                 <div class="d-inline-flex gap-2">
-                  <button class="btn btn-outline-primary btn-sm"
-                          type="button"
-                          data-bs-toggle="collapse"
-                          data-bs-target="#editRow<?= (int)$row['id'] ?>">
-                    Edytuj
-                  </button>
+                  <button class="btn btn-outline-primary btn-sm" type="button" data-bs-toggle="collapse" data-bs-target="#editRow<?= (int)$row['id'] ?>">Edytuj</button>
                   <form method="post" action="<?= $BASE ?>/pages/staff/dicts-delete.php" onsubmit="return confirm('Usunąć pozycję?');" class="d-inline">
                     <?= csrf_field(); ?>
                     <input type="hidden" name="id" value="<?= (int)$row['id'] ?>">
@@ -218,7 +207,6 @@ function isActiveRow(array $row): bool {
               </td>
             </tr>
 
-            <!-- Wiersz edycyjny (collapse pod wierszem) -->
             <tr class="collapse bg-body-tertiary" id="editRow<?= (int)$row['id'] ?>">
               <td colspan="<?= $isHier ? 7 : 6 ?>">
                 <form class="row g-2 align-items-end" method="post" action="<?= $BASE ?>/pages/staff/dicts-save.php">
@@ -242,9 +230,7 @@ function isActiveRow(array $row): bool {
                     <select name="parent_id" class="form-select form-select-sm">
                       <option value="">— brak —</option>
                       <?php foreach ($terms as $p): ?>
-                        <option value="<?= (int)$p['id'] ?>" <?= ((string)$p['id'] === (string)$row['parent_id']) ? 'selected' : '' ?>>
-                          <?= htmlspecialchars($p['name']) ?>
-                        </option>
+                        <option value="<?= (int)$p['id'] ?>" <?= ((string)$p['id'] === (string)$row['parent_id']) ? 'selected' : '' ?>><?= htmlspecialchars($p['name']) ?></option>
                       <?php endforeach; ?>
                     </select>
                   </div>
@@ -279,7 +265,8 @@ function isActiveRow(array $row): bool {
     <p class="small text-muted mb-0">
       Podsekcje:
       <a href="<?= panel_url(['kind' => 'location']) ?>">Lokalizacje</a> •
-      <a href="<?= panel_url(['kind' => 'car_class']) ?>">Klasa samochodu</a>
+      <a href="<?= panel_url(['kind' => 'car_class']) ?>">Klasa samochodu</a> •
+      <a href="<?= panel_url(['kind' => 'car_type']) ?>">Typ samochodu</a>
     </p>
   </div>
 </div>
