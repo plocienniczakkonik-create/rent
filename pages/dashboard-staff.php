@@ -99,6 +99,7 @@ $reports = [
                         <button class="nav-link" id="tab-dicts" data-bs-toggle="pill" data-bs-target="#pane-dicts" type="button" role="tab">Słowniki</button>
                     </li>
 
+
                     <li class="nav-item" role="presentation">
                         <button class="nav-link" id="tab-settings" data-bs-toggle="pill" data-bs-target="#pane-settings" type="button" role="tab">Ustawienia</button>
                     </li>
@@ -137,6 +138,7 @@ $reports = [
                     <div class="tab-pane fade" id="pane-dicts" role="tabpanel" aria-labelledby="tab-dicts">
                         <?php include __DIR__ . '/staff/section-dicts.php'; ?>
                     </div>
+
 
                     <div class="tab-pane fade" id="pane-settings" role="tabpanel" aria-labelledby="tab-settings">
                         <?php include __DIR__ . '/staff/section-settings.php'; ?>

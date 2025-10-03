@@ -17,6 +17,7 @@ $validKinds = [
     'location'  => 'Lokalizacje',
     'car_class' => 'Klasa samochodu',
     'car_type'  => 'Typ samochodu',     // ⬅️ NOWE
+  'addon'     => 'Dodatki',           // ⬅️ NOWE
 ];
 
 $kind = $_GET['kind'] ?? 'location';
@@ -40,14 +41,23 @@ if (in_array($kind, ['car_class','car_type'], true)) {
 // termy
 $terms = [];
 if ($dictType) {
+  if ($kind === 'addon') {
     $stmt = $pdo->prepare("
-        SELECT id, parent_id, name, slug, sort_order, status
-        FROM dict_terms
-        WHERE dict_type_id = :t
-        ORDER BY sort_order ASC, name ASC
+      SELECT id, parent_id, name, slug, sort_order, status, price, charge_type
+      FROM dict_terms
+      WHERE dict_type_id = :t
+      ORDER BY sort_order ASC, name ASC
     ");
-    $stmt->execute([':t' => $dictType['id']]);
-    $terms = $stmt->fetchAll(PDO::FETCH_ASSOC);
+  } else {
+    $stmt = $pdo->prepare("
+      SELECT id, parent_id, name, slug, sort_order, status
+      FROM dict_terms
+      WHERE dict_type_id = :t
+      ORDER BY sort_order ASC, name ASC
+    ");
+  }
+  $stmt->execute([':t' => $dictType['id']]);
+  $terms = $stmt->fetchAll(PDO::FETCH_ASSOC);
 }
 
 $byId = [];
@@ -67,6 +77,7 @@ function isActiveRow(array $row): bool {
       <a class="btn btn-outline-secondary btn-sm" href="<?= panel_url(['kind' => 'location']) ?>">Lokalizacje</a>
       <a class="btn btn-outline-secondary btn-sm" href="<?= panel_url(['kind' => 'car_class']) ?>">Klasa samochodu</a>
       <a class="btn btn-outline-secondary btn-sm" href="<?= panel_url(['kind' => 'car_type']) ?>">Typ samochodu</a> <!-- ⬅️ NOWE -->
+       <a class="btn btn-outline-secondary btn-sm" href="<?= panel_url(['kind' => 'addon']) ?>">Dodatki</a> <!-- ⬅️ NOWE -->
     </div>
   </div>
 
@@ -139,10 +150,24 @@ function isActiveRow(array $row): bool {
             </select>
           </div>
           <?php endif; ?>
+          <?php if ($kind === 'addon'): ?>
+          <div class="col-md-2">
+            <label class="form-label">Kwota (w zł)</label>
+            <input type="number" name="price" class="form-control" step="0.01" min="0" value="0">
+          </div>
+          <div class="col-md-2">
+            <label class="form-label">Sposób naliczania</label>
+            <select name="charge_type" class="form-select">
+              <option value="per_day">Za każdy dzień</option>
+              <option value="once">Jednorazowo</option>
+            </select>
+          </div>
+          <?php else: ?>
           <div class="col-md-2">
             <label class="form-label">Sort</label>
             <input type="number" name="sort_order" class="form-control" value="0" step="1">
           </div>
+          <?php endif; ?>
           <div class="col-md-2">
             <label class="form-label">Status</label>
             <select name="status" class="form-select">
@@ -170,6 +195,10 @@ function isActiveRow(array $row): bool {
               <?php if ($isHier): ?><th style="width:180px;">Nadrzędny</th><?php endif; ?>
               <th>Nazwa</th>
               <th style="width:200px;">Slug</th>
+              <?php if ($kind === 'addon'): ?>
+                <th style="width:100px;">Cena</th>
+                <th style="width:120px;">Sposób naliczania</th>
+              <?php endif; ?>
               <th style="width:90px;">Sort</th>
               <th style="width:140px;">Status</th>
               <th style="width:210px;" class="text-end">Akcje</th>
@@ -186,6 +215,18 @@ function isActiveRow(array $row): bool {
               <?php endif; ?>
               <td><?= htmlspecialchars($row['name']) ?></td>
               <td><code><?= htmlspecialchars($row['slug']) ?></code></td>
+              <?php if ($kind === 'addon'): ?>
+                <td><?= isset($row['price']) ? number_format($row['price'], 2) : '' ?></td>
+                <td><?php
+                  if (isset($row['charge_type'])) {
+                    if ($row['charge_type'] === 'per_day') echo 'Za każdy dzień';
+                    elseif ($row['charge_type'] === 'once') echo 'Jednorazowo';
+                    else echo '';
+                  } else {
+                    echo '';
+                  }
+                ?></td>
+              <?php endif; ?>
               <td><?= (int)$row['sort_order'] ?></td>
               <td>
                 <?php if (isActiveRow($row)): ?>
@@ -223,7 +264,6 @@ function isActiveRow(array $row): bool {
                     <label class="form-label">Slug</label>
                     <input type="text" name="slug" value="<?= htmlspecialchars($row['slug']) ?>" class="form-control form-control-sm" maxlength="128">
                   </div>
-
                   <?php if ($isHier): ?>
                   <div class="col-md-3">
                     <label class="form-label">Nadrzędny</label>
@@ -235,11 +275,24 @@ function isActiveRow(array $row): bool {
                     </select>
                   </div>
                   <?php endif; ?>
-
+                  <?php if ($kind === 'addon'): ?>
+                  <div class="col-md-2">
+                    <label class="form-label">Kwota (w zł)</label>
+                    <input type="number" name="price" value="<?= htmlspecialchars($row['price'] ?? '') ?>" class="form-control form-control-sm" step="0.01" min="0">
+                  </div>
+                  <div class="col-md-2">
+                    <label class="form-label">Sposób naliczania</label>
+                    <select name="charge_type" class="form-select form-select-sm">
+                      <option value="per_day" <?= ($row['charge_type'] ?? '')==='per_day' ? 'selected' : '' ?>>Za każdy dzień</option>
+                      <option value="once" <?= ($row['charge_type'] ?? '')==='once' ? 'selected' : '' ?>>Jednorazowo</option>
+                    </select>
+                  </div>
+                  <?php else: ?>
                   <div class="col-md-2">
                     <label class="form-label">Sort</label>
                     <input type="number" name="sort_order" value="<?= (int)$row['sort_order'] ?>" class="form-control form-control-sm" step="1">
                   </div>
+                  <?php endif; ?>
                   <div class="col-md-2">
                     <label class="form-label">Status</label>
                     <select name="status" class="form-select form-select-sm">
@@ -247,7 +300,6 @@ function isActiveRow(array $row): bool {
                       <option value="archived" <?= $row['status']==='archived' ? 'selected' : '' ?>>archived</option>
                     </select>
                   </div>
-
                   <div class="col-12 d-flex gap-2">
                     <button type="submit" class="btn btn-primary btn-sm">Zapisz zmiany</button>
                     <button type="button" class="btn btn-outline-secondary btn-sm" data-bs-toggle="collapse" data-bs-target="#editRow<?= (int)$row['id'] ?>">Zamknij edycję</button>

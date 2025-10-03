@@ -5,5 +5,8 @@
   "scripts": {
     "watch": "sass assets/scss:assets/css --watch --source-map",
     "build": "sass assets/scss:assets/css --style=compressed"
+  },
+  "dependencies": {
+    "flatpickr": "^4.6.13"
   }
 }

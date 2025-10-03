@@ -1,0 +1,273 @@
+// Kalendarz rezerwacji
+.calendar-placeholder {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 320px;
+  height: 100%;
+  padding: 1.5rem 0.5rem;
+}
+.calendar-placeholder .flatpickr-calendar {
+  width: 100% !important;
+  min-width: 320px;
+  max-width: 100%;
+  min-height: 320px;
+  border-radius: 1rem;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+  border: none;
+  font-size: 1rem;
+  margin: 0 auto;
+}
+.calendar-day-price {
+  display: block;
+  font-size: 0.95rem;
+  color: #198754;
+  margin-top: 18px;
+  font-weight: 700;
+  background: #f8fafc;
+  border-radius: 0.5rem;
+  padding: 2px 0;
+  text-align: center;
+  position: relative;
+  z-index: 2;
+}
+.calendar-day-price.promo {
+  color: #d63384;
+}
+.calendar-price-box {
+  font-size: 2rem;
+  font-weight: 800;
+  color: #198754;
+  margin-top: 1.2rem;
+  width: 100%;
+  padding: 0.7rem 0;
+  background: #f8fafc;
+  border-radius: 1rem;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+  text-align: center;
+  display: block;
+}
+.promo-price {
+  color: #d63384;
+  font-weight: 700;
+}
+// SCSS dla nowoczesnej karty produktu na stronie szczegółów pojazdu
+
+.product-details {
+  &.product-details-main {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding-top: 6rem;
+    padding-bottom: 2.5rem;
+    padding-left: 1.5rem;
+    padding-right: 1.5rem;
+    @media (max-width: 991.98px) {
+      max-width: 100%;
+      padding-left: 0.5rem;
+      padding-right: 0.5rem;
+      padding-top: 2.5rem;
+      padding-bottom: 1.2rem;
+    }
+  }
+  .product-details-row {
+    display: flex;
+    flex-wrap: wrap;
+  }
+  .product-details-left {
+    width: 100%;
+    @media (min-width: 992px) {
+      width: 50%;
+      max-width: 50%;
+      flex: 0 0 50%;
+      padding-right: 2rem;
+    }
+  }
+  .product-details-right {
+    width: 100%;
+    @media (min-width: 992px) {
+      width: 50%;
+      max-width: 50%;
+      flex: 0 0 50%;
+      padding-left: 0;
+    }
+  }
+  .img-fluid {
+    max-height: 320px;
+    min-height: 220px;
+    height: 220px;
+    object-fit: cover;
+    background: #f3f4f6;
+    border-radius: 1rem;
+    box-shadow: 0 2px 16px rgba(0,0,0,0.08);
+    width: 100%;
+    aspect-ratio: 16/9;
+  }
+  .advantages {
+    background: #f8fafc;
+    border-radius: 1rem;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+    border: none;
+    font-size: 1.08rem;
+    color: #222;
+    min-height: 220px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    h5 {
+      font-size: 1.15rem;
+      font-weight: 600;
+      margin-bottom: 1rem;
+    }
+    ul {
+      padding-left: 0;
+      margin-bottom: 0;
+    }
+    li {
+      font-size: 1.05rem;
+      margin-bottom: 0.5rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+  }
+  .param-box {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.4rem;
+    background: #f3f4f6;
+    border-radius: 1.5rem;
+    padding: 0.35rem 0.85rem;
+    font-size: 0.98rem;
+    font-weight: 500;
+    color: #222;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+    min-width: 90px;
+    min-height: 32px;
+    margin-bottom: 1.1rem;
+    .icon-circle {
+      width: 22px;
+      height: 22px;
+      border-radius: 50%;
+      background: #e9ecef;
+      display: inline-block;
+      margin-right: 0.3rem;
+    }
+  }
+  .price-box {
+    background: #f3f4f6;
+    border-radius: 1rem;
+    padding: 1rem 0.5rem;
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #198754;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+    .price-label {
+      font-size: 1.1rem;
+      color: #222;
+      font-weight: 500;
+      margin-right: 0.5rem;
+    }
+    .price-value {
+      font-size: 2.1rem;
+      font-weight: 800;
+      color: #198754;
+      margin-right: 0.5rem;
+    }
+    .price-unit {
+      font-size: 1.1rem;
+      color: #222;
+      font-weight: 500;
+    }
+  }
+  .calendar-placeholder {
+    min-height: 180px;
+    background: #e9ecef;
+    border: 2px dashed #b0b6be;
+    color: #6c757d;
+    border-radius: 1rem;
+    font-size: 1.1rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-top: 0 !important;
+  }
+  h1 {
+    font-size: 2.2rem;
+    font-weight: 700;
+    margin-bottom: 2.2rem;
+    letter-spacing: -1px;
+  }
+  .advantages {
+    background: #f8fafc;
+    border-radius: 1rem;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+    border: none;
+    font-size: 1.08rem;
+    color: #222;
+    min-height: 220px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    margin-top: 0 !important;
+    h5 {
+      font-size: 1.15rem;
+      font-weight: 600;
+      margin-bottom: 1rem;
+    }
+    ul {
+      padding-left: 0;
+      margin-bottom: 0;
+    }
+    li {
+      font-size: 1.05rem;
+      margin-bottom: 0.5rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+  }
+  .main-desc {
+    background: #f8fafc;
+    border-radius: 1rem;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+    border: none;
+    font-size: 1.15rem;
+    color: #222;
+  }
+  .short-desc {
+    font-size: 1.08rem;
+    color: #444;
+    margin-bottom: 1.2rem;
+  }
+  @media (max-width: 991.98px) {
+    .row.g-4.align-items-stretch > .col-lg-5,
+    .row.g-4.align-items-stretch > .col-lg-7 {
+      min-height: unset;
+    }
+    .main-desc {
+      font-size: 1rem;
+    }
+  }
+  @media (min-width: 992px) {
+    .row.g-4.align-items-stretch > .col-lg-5,
+    .row.g-4.align-items-stretch > .col-lg-7 {
+      min-height: 540px;
+      display: flex;
+      flex-direction: column;
+      justify-content: stretch;
+      /* Wyrównanie wysokości kalendarza i formularza */
+      > .row.g-3 {
+        min-height: 240px;
+        display: flex;
+        flex-direction: row;
+        gap: 2rem;
+        align-items: stretch;
+        .calendar-placeholder,
+        .card {
+          height: 100%;
+        }
+      }
+    }
+  }
+}

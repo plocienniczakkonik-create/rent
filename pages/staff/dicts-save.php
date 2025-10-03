@@ -107,10 +107,11 @@ function ensure_dict_type(PDO $pdo, string $slug): array
         'location'  => 'Lokalizacje',
         'car_class' => 'Klasa samochodu',
         'car_type'  => 'Typ samochodu',
+           'addon'     => 'Dodatki',
     ];
     $name   = $labels[$slug] ?? ucfirst(str_replace('_', ' ', $slug));
     // dla car_class i car_type wymuszamy brak hierarchii; dla pozostałych domyślnie też 0
-    $isHier = in_array($slug, ['car_class', 'car_type'], true) ? 0 : 0;
+       $isHier = in_array($slug, ['car_class', 'car_type', 'addon'], true) ? 0 : 0;
 
     $ins = $pdo->prepare('INSERT INTO dict_types (slug, name, is_hierarchical) VALUES (:slug, :name, :h)');
     $ins->execute([':slug' => $slug, ':name' => $name, ':h' => $isHier]);
@@ -139,6 +140,8 @@ try {
     $status    = in_array($statusRaw, ['active', 'inactive', 'archived'], true) ? $statusRaw : 'active';
     $sortOrder = isset($_POST['sort_order']) ? (int)$_POST['sort_order'] : 0;
     $parent_id = ($isHier && isset($_POST['parent_id']) && $_POST['parent_id'] !== '') ? (int)$_POST['parent_id'] : null;
+    $price = ($kind === 'addon' && isset($_POST['price'])) ? floatval($_POST['price']) : null;
+    $chargeType = ($kind === 'addon' && isset($_POST['charge_type'])) ? $_POST['charge_type'] : null;
 
     if ($name === '') redirect_back($kind, '', 'Nazwa nie może być pusta.');
     if ($slug === '') $slug = slugify($name);
@@ -156,20 +159,39 @@ try {
             redirect_back($kind, '', 'Pozycja nie może być swoim własnym rodzicem.');
         }
 
-        $u = $pdo->prepare('
-            UPDATE dict_terms
-            SET parent_id = :p, name = :n, slug = :s, sort_order = :so, status = :st
-            WHERE id = :id AND dict_type_id = :t
-        ');
-        $u->execute([
-            ':p'  => $isHier ? $parent_id : null,
-            ':n'  => $name,
-            ':s'  => $slug,
-            ':so' => $sortOrder,
-            ':st' => $status,
-            ':id' => $id,
-            ':t'  => $dictTypeId,
-        ]);
+        if ($kind === 'addon') {
+            $u = $pdo->prepare('
+                UPDATE dict_terms
+                SET parent_id = :p, name = :n, slug = :s, sort_order = :so, status = :st, price = :price, charge_type = :charge_type
+                WHERE id = :id AND dict_type_id = :t
+            ');
+            $u->execute([
+                ':p'  => $isHier ? $parent_id : null,
+                ':n'  => $name,
+                ':s'  => $slug,
+                ':so' => $sortOrder,
+                ':st' => $status,
+                ':price' => $price,
+                ':charge_type' => $chargeType,
+                ':id' => $id,
+                ':t'  => $dictTypeId,
+            ]);
+        } else {
+            $u = $pdo->prepare('
+                UPDATE dict_terms
+                SET parent_id = :p, name = :n, slug = :s, sort_order = :so, status = :st
+                WHERE id = :id AND dict_type_id = :t
+            ');
+            $u->execute([
+                ':p'  => $isHier ? $parent_id : null,
+                ':n'  => $name,
+                ':s'  => $slug,
+                ':so' => $sortOrder,
+                ':st' => $status,
+                ':id' => $id,
+                ':t'  => $dictTypeId,
+            ]);
+        }
 
         redirect_back($kind, 'Zaktualizowano pozycję.');
     } else {
@@ -178,18 +200,35 @@ try {
         $q->execute([':t' => $dictTypeId, ':s' => $slug]);
         if ($q->fetch()) redirect_back($kind, '', 'Slug już istnieje dla tego typu.');
 
-        $ins = $pdo->prepare('
-            INSERT INTO dict_terms (dict_type_id, parent_id, name, slug, sort_order, status)
-            VALUES (:t, :p, :n, :s, :so, :st)
-        ');
-        $ins->execute([
-            ':t'  => $dictTypeId,
-            ':p'  => $isHier ? $parent_id : null,
-            ':n'  => $name,
-            ':s'  => $slug,
-            ':so' => $sortOrder,
-            ':st' => $status,
-        ]);
+        if ($kind === 'addon') {
+            $ins = $pdo->prepare('
+                INSERT INTO dict_terms (dict_type_id, parent_id, name, slug, sort_order, status, price, charge_type)
+                VALUES (:t, :p, :n, :s, :so, :st, :price, :charge_type)
+            ');
+            $ins->execute([
+                ':t'  => $dictTypeId,
+                ':p'  => $isHier ? $parent_id : null,
+                ':n'  => $name,
+                ':s'  => $slug,
+                ':so' => $sortOrder,
+                ':st' => $status,
+                ':price' => $price,
+                ':charge_type' => $chargeType,
+            ]);
+        } else {
+            $ins = $pdo->prepare('
+                INSERT INTO dict_terms (dict_type_id, parent_id, name, slug, sort_order, status)
+                VALUES (:t, :p, :n, :s, :so, :st)
+            ');
+            $ins->execute([
+                ':t'  => $dictTypeId,
+                ':p'  => $isHier ? $parent_id : null,
+                ':n'  => $name,
+                ':s'  => $slug,
+                ':so' => $sortOrder,
+                ':st' => $status,
+            ]);
+        }
 
         redirect_back($kind, 'Dodano pozycję.');
     }

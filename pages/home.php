@@ -10,11 +10,5 @@ $SEARCH = null;
 // kluczowe: ustaw gdzie ma POST/GET lecieć po kliknięciu "Pokaż samochody"
 $SEARCH_FORM_ACTION = 'index.php?page=search-results';
 
-// HERO
+// HERO z wyszukiwarką
 include __DIR__ . '/../components/hero.php';
-
-// WYSZUKIWARKA (skierowana na search-results)
-include __DIR__ . '/../components/search-form.php';
-
-// GRID KART (opcjonalnie: na home możesz pokazywać „polecane” – wtedy nie korzystaj z $SEARCH)
-include __DIR__ . '/../components/product-grid.php';

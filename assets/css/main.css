@@ -268,6 +268,50 @@ html, body {
   border-radius: var(--radius-12);
 }
 
+.hero .search-card, .hero form {
+  width: 100% !important;
+  max-width: 100% !important;
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 24px;
+}
+
+.hero .form-row, .hero .row {
+  flex-wrap: nowrap !important;
+  gap: 24px !important;
+}
+
+.hero .form-control, .hero .form-select {
+  min-width: 140px;
+  max-width: 220px;
+  padding: 0.7rem 1.1rem;
+  font-size: 1.08rem;
+}
+
+.hero input[type=date], .hero input[type=datetime-local] {
+  min-width: 120px;
+  max-width: 180px;
+}
+
+.hero .btn {
+  padding: 0.7rem 2.2rem;
+  font-size: 1.08rem;
+  margin-left: 24px;
+}
+
+/* Nadpisanie stylu .search-card tylko w hero */
+.hero .search-card {
+  background: none !important;
+  box-shadow: none !important;
+  border-radius: 0 !important;
+  border: none !important;
+  width: 100% !important;
+  max-width: 100% !important;
+  padding: 0 !important;
+}
+
 /* „Czipy” filtrów */
 .chip-group {
   gap: 0.6rem;
@@ -479,140 +523,6 @@ html, body {
   text-align: right;
 }
 
-.th-sort-link {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.4rem;
-  text-decoration: none;
-}
-.th-sort-link .label {
-  color: var(--bs-link-color, #0d6efd);
-}
-.th-sort-link .chevs {
-  display: inline-flex;
-  flex-direction: column;
-  line-height: 0.8;
-}
-.th-sort-link .chevs .chev {
-  opacity: 0.35;
-  font-size: 0.75em;
-  margin-top: -2px;
-}
-.th-sort-link .chevs .chev.active {
-  opacity: 1;
-}
-
-.fleet-status {
-  display: flex;
-  flex-wrap: nowrap;
-  gap: 0.4rem;
-}
-.fleet-status .badge {
-  white-space: nowrap;
-}
-
-@media (max-width: 992px) {
-  .th-name {
-    min-width: 200px;
-    max-width: 300px;
-  }
-  .th-sku {
-    width: 140px;
-  }
-}
-/* Nagłówki sortujące (używane też w vehicles-manage) */
-.th-sort-link {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.4rem;
-  text-decoration: none;
-}
-.th-sort-link .label {
-  color: var(--bs-link-color, #0d6efd);
-}
-.th-sort-link .chevs {
-  display: inline-flex;
-  flex-direction: column;
-  line-height: 0.8;
-}
-.th-sort-link .chev {
-  opacity: 0.35;
-  font-size: 0.75em;
-  margin-top: -2px;
-}
-.th-sort-link .chev.active {
-  opacity: 1;
-}
-
-/* TAB: Pojazdy (flota) */
-.fleet-table th, .fleet-table td {
-  vertical-align: middle;
-}
-.fleet-table tbody td, .fleet-table thead th {
-  padding-top: 0.9rem;
-  padding-bottom: 0.9rem;
-}
-.fleet-table .th-id {
-  width: 84px;
-  white-space: nowrap;
-}
-.fleet-table .th-name {
-  min-width: 260px;
-  max-width: 420px;
-}
-.fleet-table { /* delikatnie węższa nazwa */ }
-.fleet-table .th-sku {
-  width: 180px;
-}
-.fleet-table .th-total {
-  width: 150px;
-  text-align: right;
-}
-.fleet-table .th-actions {
-  width: 160px;
-  text-align: right;
-}
-.fleet-table {
-  /* link sortujący */
-}
-.fleet-table .th-sort-link {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.45rem;
-  text-decoration: none;
-}
-.fleet-table .th-sort-link .label {
-  color: var(--bs-link-color, #0d6efd);
-}
-.fleet-table .th-sort-link .chevs {
-  display: inline-flex;
-  flex-direction: column;
-  line-height: 0.8;
-}
-.fleet-table .th-sort-link .chev {
-  opacity: 0.35;
-  font-size: 0.75em;
-  margin-top: -2px;
-}
-.fleet-table .th-sort-link .chev.active {
-  opacity: 1;
-}
-.fleet-table {
-  /* statusy w JEDNEJ linii, bez zawijania */
-}
-.fleet-table .fleet-status {
-  display: flex;
-  flex-wrap: nowrap; /* kluczowe */
-  gap: 0.5rem;
-  align-items: center;
-  white-space: nowrap; /* nie łam badges */
-  overflow-x: auto; /* gdy ciasno, pojawi się przewijanie poziome w komórce */
-  scrollbar-width: thin;
-}
-.fleet-table .fleet-status .badge {
-  font-weight: 600;
-}
-
 /* ===== Vehicle Stats Table ===== */
 .vehicle-stats-card {
   padding: 1.5rem 2rem;
@@ -642,6 +552,59 @@ html, body {
 .vehicle-section-table.services thead th:last-child,
 .vehicle-section-table.services tbody td:last-child {
   padding-right: 1.25rem !important;
+}
+
+.card.p-3.p-md-4 {
+  background: rgba(255, 255, 255, 0.92) !important;
+}
+
+/* Nowoczesny styl dla .product-card */
+.product-card {
+  border-radius: 20px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.08);
+  background: #fff;
+  overflow: hidden;
+  transition: box-shadow 0.2s;
+}
+.product-card:hover {
+  box-shadow: 0 16px 48px rgba(0, 0, 0, 0.12);
+}
+.product-card .product-image {
+  width: 100%;
+  height: 180px;
+  object-fit: contain;
+  background: #f8f9fa;
+  margin-bottom: 0.5rem;
+  display: block;
+}
+.product-card .product-title {
+  font-size: 1.2rem;
+  font-weight: 600;
+  margin-bottom: 0.25rem;
+}
+.product-card .product-meta {
+  font-size: 0.95rem;
+  color: #666;
+  margin-bottom: 0.5rem;
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+.product-card .product-price {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: #198754;
+  margin-bottom: 0.5rem;
+}
+.product-card .product-actions {
+  display: flex;
+  gap: 8px;
+  margin-top: 0.5rem;
+}
+.product-card .product-actions .btn {
+  flex: 1;
+  border-radius: 12px;
+  font-weight: 500;
 }
 
 /* Delikatny separator linii */
@@ -817,4 +780,280 @@ html, body {
   padding: 0.35rem 0.6rem;
 }
 
-/*# sourceMappingURL=main.css.map */
+.calendar-placeholder {
+  display: flex;
+  align-items: stretch;
+  justify-content: stretch;
+  min-height: 540px;
+  height: 100%;
+  width: 100%;
+  padding: 0;
+  background: #e9ecef;
+  border-radius: 2rem;
+  box-shadow: 0 4px 24px rgba(0,0,0,0.08);
+}
+#flatpickr-calendar {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: stretch;
+  justify-content: stretch;
+}
+  font-weight: 700;
+  background: #f8fafc;
+  border-radius: 0.5rem;
+  padding: 2px 0;
+  text-align: center;
+  position: relative;
+  z-index: 2;
+}
+
+.calendar-day-price.promo {
+  color: #d63384;
+}
+
+.calendar-price-box {
+  font-size: 2rem;
+  font-weight: 800;
+  color: #198754;
+  margin-top: 1.2rem;
+  width: 100%;
+  padding: 0.7rem 0;
+  background: #f8fafc;
+  border-radius: 1rem;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+  text-align: center;
+  display: block;
+}
+
+.promo-price {
+  color: #d63384;
+  font-weight: 700;
+}
+
+.product-details.product-details-main {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding-top: 6rem;
+  padding-bottom: 2.5rem;
+  padding-left: 1.5rem;
+  padding-right: 1.5rem;
+}
+@media (max-width: 991.98px) {
+  .product-details.product-details-main {
+    max-width: 100%;
+    padding-left: 0.5rem;
+    padding-right: 0.5rem;
+    padding-top: 2.5rem;
+    padding-bottom: 1.2rem;
+  }
+}
+.product-details .product-details-row {
+  display: flex;
+  flex-wrap: wrap;
+}
+.product-details .product-details-left {
+  width: 100%;
+}
+@media (min-width: 992px) {
+  .product-details .product-details-left {
+    width: 50%;
+    max-width: 50%;
+    flex: 0 0 50%;
+    padding-right: 2rem;
+  }
+}
+.product-details .product-details-right {
+  width: 100%;
+}
+@media (min-width: 992px) {
+  .product-details .product-details-right {
+    width: 50%;
+    max-width: 50%;
+    flex: 0 0 50%;
+    padding-left: 0;
+  }
+}
+.product-details .img-fluid {
+  max-height: 320px;
+  min-height: 220px;
+  height: 220px;
+  object-fit: cover;
+  background: #f3f4f6;
+  border-radius: 1rem;
+  box-shadow: 0 2px 16px rgba(0, 0, 0, 0.08);
+  width: 100%;
+  aspect-ratio: 16/9;
+}
+.product-details .advantages {
+  background: #f8fafc;
+  border-radius: 1rem;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
+  border: none;
+  font-size: 1.08rem;
+  color: #222;
+  min-height: 220px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+.product-details .advantages h5 {
+  font-size: 1.15rem;
+  font-weight: 600;
+  margin-bottom: 1rem;
+}
+.product-details .advantages ul {
+  padding-left: 0;
+  margin-bottom: 0;
+}
+.product-details .advantages li {
+  font-size: 1.05rem;
+  margin-bottom: 0.5rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+.product-details .param-box {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+  background: #f3f4f6;
+  border-radius: 1.5rem;
+  padding: 0.35rem 0.85rem;
+  font-size: 0.98rem;
+  font-weight: 500;
+  color: #222;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+  min-width: 90px;
+  min-height: 32px;
+  margin-bottom: 1.1rem;
+}
+.product-details .param-box .icon-circle {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: #e9ecef;
+  display: inline-block;
+  margin-right: 0.3rem;
+}
+.product-details .price-box {
+  background: #f3f4f6;
+  border-radius: 1rem;
+  padding: 1rem 0.5rem;
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #198754;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+}
+.product-details .price-box .price-label {
+  font-size: 1.1rem;
+  color: #222;
+  font-weight: 500;
+  margin-right: 0.5rem;
+}
+.product-details .price-box .price-value {
+  font-size: 2.1rem;
+  font-weight: 800;
+  color: #198754;
+  margin-right: 0.5rem;
+}
+.product-details .price-box .price-unit {
+  font-size: 1.1rem;
+  color: #222;
+  font-weight: 500;
+}
+.product-details .calendar-placeholder {
+  min-height: 400px;
+  background: #e9ecef;
+  border: 2px dashed #b0b6be;
+  color: #6c757d;
+  border-radius: 1.5rem;
+  font-size: 1.18rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: 0 !important;
+  box-shadow: 0 4px 24px rgba(0,0,0,0.08);
+}
+.product-details h1 {
+  font-size: 2.2rem;
+  font-weight: 700;
+  margin-bottom: 2.2rem;
+  letter-spacing: -1px;
+}
+.product-details .advantages {
+  background: #f8fafc;
+  border-radius: 1rem;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
+  border: none;
+  font-size: 1.08rem;
+  color: #222;
+  min-height: 220px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  margin-top: 0 !important;
+}
+.product-details .advantages h5 {
+  font-size: 1.15rem;
+  font-weight: 600;
+  margin-bottom: 1rem;
+}
+.product-details .advantages ul {
+  padding-left: 0;
+  margin-bottom: 0;
+}
+.product-details .advantages li {
+  font-size: 1.05rem;
+  margin-bottom: 0.5rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+.product-details .main-desc {
+  background: #f8fafc;
+  border-radius: 1rem;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
+  border: none;
+  font-size: 1.15rem;
+  color: #222;
+}
+.product-details .short-desc {
+  font-size: 1.08rem;
+  color: #444;
+  margin-bottom: 1.2rem;
+}
+@media (max-width: 991.98px) {
+  .product-details .row.g-4.align-items-stretch > .col-lg-5,
+  .product-details .row.g-4.align-items-stretch > .col-lg-7 {
+    min-height: unset;
+  }
+  .product-details .main-desc {
+    font-size: 1rem;
+  }
+}
+@media (min-width: 992px) {
+  .product-details .row.g-4.align-items-stretch > .col-lg-5,
+  .product-details .row.g-4.align-items-stretch > .col-lg-7 {
+    min-height: 540px;
+    display: flex;
+    flex-direction: column;
+    justify-content: stretch;
+    /* Wyrównanie wysokości kalendarza i formularza */
+  }
+  .product-details .row.g-4.align-items-stretch > .col-lg-5 > .row.g-3,
+  .product-details .row.g-4.align-items-stretch > .col-lg-7 > .row.g-3 {
+    min-height: 240px;
+    display: flex;
+    flex-direction: row;
+    gap: 2rem;
+    align-items: stretch;
+  }
+  .product-details .row.g-4.align-items-stretch > .col-lg-5 > .row.g-3 .calendar-placeholder,
+  .product-details .row.g-4.align-items-stretch > .col-lg-5 > .row.g-3 .card,
+  .product-details .row.g-4.align-items-stretch > .col-lg-7 > .row.g-3 .calendar-placeholder,
+  .product-details .row.g-4.align-items-stretch > .col-lg-7 > .row.g-3 .card {
+    height: 100%;
+  }
+}

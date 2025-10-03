@@ -38,8 +38,7 @@ if (function_exists('csrf_verify')) {
     verify_csrf_or_fail();
 }
 
-/* ===== Parametry + redirect z kotwicą do zakładki ===== */
-$kind = $_POST['kind'] ?? 'location';
+$kind = $_POST['kind'] ?? 'location'; // obsługuje też 'addon'
 $id   = isset($_POST['id']) ? (int)$_POST['id'] : 0;
 
 function redirect_back(string $kind, string $msg = '', string $err = ''): never

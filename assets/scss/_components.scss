@@ -74,6 +74,47 @@
   }
 }
 
+// Poprawa odstępów i szerokości pól wyszukiwarki na stronie głównej
+.hero .search-card, .hero form {
+  width: 100% !important;
+  max-width: 100% !important;
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 24px;
+}
+.hero .form-row, .hero .row {
+  flex-wrap: nowrap !important;
+  gap: 24px !important;
+}
+.hero .form-control, .hero .form-select {
+  min-width: 140px;
+  max-width: 220px;
+  padding: 0.7rem 1.1rem;
+  font-size: 1.08rem;
+}
+.hero input[type="date"], .hero input[type="datetime-local"] {
+  min-width: 120px;
+  max-width: 180px;
+}
+.hero .btn {
+  padding: 0.7rem 2.2rem;
+  font-size: 1.08rem;
+  margin-left: 24px;
+}
+
+/* Nadpisanie stylu .search-card tylko w hero */
+.hero .search-card {
+  background: none !important;
+  box-shadow: none !important;
+  border-radius: 0 !important;
+  border: none !important;
+  width: 100% !important;
+  max-width: 100% !important;
+  padding: 0 !important;
+}
+
 /* „Czipy” filtrów */
 .chip-group {
   gap: 0.6rem;
@@ -264,92 +305,6 @@
 .th-total   { width: 140px; text-align: right; }
 .th-actions { width: 160px; text-align: right; }
 
-// Link sortujący (nagłówki)
-.th-sort-link {
-  display: inline-flex;
-  align-items: center;
-  gap: .4rem;
-  text-decoration: none;
-
-  .label { color: var(--bs-link-color, #0d6efd); }
-  .chevs {
-    display: inline-flex;
-    flex-direction: column;
-    line-height: .8;
-
-    .chev {
-      opacity: .35;
-      font-size: .75em;
-      margin-top: -2px;
-
-      &.active { opacity: 1; }
-    }
-  }
-}
-
-// Statusy w jednym wierszu, ale mogą się łamać
-.fleet-status {
-  display: flex;
-  flex-wrap: nowrap;
-  gap: .4rem;
-
-  .badge { white-space: nowrap; }
-}
-
-// Responsywka — na węższych ekranach delikatnie zwężamy nazwy/SKU
-@media (max-width: 992px) {
-  .th-name { min-width: 200px; max-width: 300px; }
-  .th-sku  { width: 140px; }
-}
-
-
-/* Nagłówki sortujące (używane też w vehicles-manage) */
-.th-sort-link {
-  display: inline-flex;
-  align-items: center;
-  gap: .4rem;
-  text-decoration: none;
-
-  .label { color: var(--bs-link-color, #0d6efd); }
-  .chevs { display: inline-flex; flex-direction: column; line-height: .8; }
-  .chev  { opacity: .35; font-size: .75em; margin-top: -2px; }
-  .chev.active { opacity: 1; }
-}
-
-/* TAB: Pojazdy (flota) */
-.fleet-table {
-  th, td { vertical-align: middle; }
-  tbody td, thead th { padding-top: .9rem; padding-bottom: .9rem; }
-
-  .th-id      { width: 84px; white-space: nowrap; }
-  .th-name    { min-width: 260px; max-width: 420px; } /* delikatnie węższa nazwa */
-  .th-sku     { width: 180px; }
-  .th-total   { width: 150px; text-align: right; }
-  .th-actions { width: 160px; text-align: right; }
-
-  /* link sortujący */
-  .th-sort-link {
-    display:inline-flex; align-items:center; gap:.45rem; text-decoration:none;
-    .label { color: var(--bs-link-color, #0d6efd); }
-    .chevs { display:inline-flex; flex-direction:column; line-height:.8; }
-    .chev { opacity:.35; font-size:.75em; margin-top:-2px; }
-    .chev.active { opacity:1; }
-  }
-
-  /* statusy w JEDNEJ linii, bez zawijania */
-  .fleet-status {
-    display: flex;
-    flex-wrap: nowrap; /* kluczowe */
-    gap: .5rem;
-    align-items: center;
-    white-space: nowrap; /* nie łam badges */
-    overflow-x: auto;    /* gdy ciasno, pojawi się przewijanie poziome w komórce */
-    scrollbar-width: thin;
-
-    .badge { font-weight: 600; }
-  }
-}
-
 /* ===== Vehicle Stats Table ===== */
 .vehicle-stats-card {
   padding: 1.5rem 2rem;
@@ -379,6 +334,66 @@
 .vehicle-section-table.services thead th:last-child,
 .vehicle-section-table.services tbody td:last-child {
   padding-right: 1.25rem !important;
+}
+
+.card.p-3.p-md-4 {
+  background: rgba(255,255,255,0.92) !important;
+}
+
+/* Nowoczesny styl dla .product-card */
+.product-card {
+  border-radius: 20px;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.08);
+  background: #fff;
+  overflow: hidden;
+  transition: box-shadow 0.2s;
+
+  &:hover {
+    box-shadow: 0 16px 48px rgba(0,0,0,0.12);
+  }
+
+  .product-image {
+    width: 100%;
+    height: 180px;
+    object-fit: contain;
+    background: #f8f9fa;
+    margin-bottom: 0.5rem;
+    display: block;
+  }
+
+  .product-title {
+    font-size: 1.2rem;
+    font-weight: 600;
+    margin-bottom: 0.25rem;
+  }
+
+  .product-meta {
+    font-size: 0.95rem;
+    color: #666;
+    margin-bottom: 0.5rem;
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+  }
+
+  .product-price {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: #198754;
+    margin-bottom: 0.5rem;
+  }
+
+  .product-actions {
+    display: flex;
+    gap: 8px;
+    margin-top: 0.5rem;
+
+    .btn {
+      flex: 1;
+      border-radius: 12px;
+      font-weight: 500;
+    }
+  }
 }
 
 

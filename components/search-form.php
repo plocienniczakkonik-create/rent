@@ -80,6 +80,11 @@ $currentPage = $_GET['page'] ?? 'home';
 $clearToPage = ($currentPage === 'search-results') ? 'search-results' : 'home';
 $clearUrl = $ROOT_INDEX . '?page=' . $clearToPage;
 ?>
+<!-- Flatpickr JS CDN -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+<script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.js"></script>
+<script src="/rental/assets/js/components/searchFlatpickr.js"></script>
+
 <section aria-label="Wyszukiwarka" id="offer" class="wyszukiwarkaCL pt-4">
     <div class="container py-4 search-wrapper ">
         <div class="card p-3 p-md-4" style="border-radius:18px; box-shadow:0 6px 24px rgba(0,0,0,.08); border:1px solid rgba(0,0,0,.06); overflow: visible;">
@@ -116,12 +121,12 @@ $clearUrl = $ROOT_INDEX . '?page=' . $clearToPage;
 
                     <div class="col-12 col-lg-3">
                         <label class="form-label mb-1">Data odbioru</label>
-                        <input type="datetime-local" class="form-control" name="pickup_at" value="<?= htmlspecialchars($pickupAt) ?>">
+                        <input type="text" class="form-select search-date" name="pickup_at" value="<?= htmlspecialchars($pickupAt) ?>" placeholder="Data odbioru">
                     </div>
 
                     <div class="col-12 col-lg-3">
                         <label class="form-label mb-1">Data zwrotu</label>
-                        <input type="datetime-local" class="form-control" name="return_at" value="<?= htmlspecialchars($returnAt) ?>">
+                        <input type="text" class="form-select search-date" name="return_at" value="<?= htmlspecialchars($returnAt) ?>" placeholder="Data zwrotu">
                     </div>
                 </div>
 

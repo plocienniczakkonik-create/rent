@@ -61,6 +61,7 @@ if (preg_match('/-(save|delete)$/', $page)) {
 }
 
 /** === WIDOKI (render z layoutem) === */
+// Dodaj widok rezerwacji pojazdu
 $routes = [
     'home'             => __DIR__ . '/pages/home.php',
     'login'            => __DIR__ . '/pages/login.php',
@@ -73,6 +74,7 @@ $routes = [
     'vehicles-manage'  => __DIR__ . '/pages/vehicles-manage.php',
     'vehicle-form'     => __DIR__ . '/pages/vehicle-form.php',
     'vehicle-detail'   => __DIR__ . '/pages/vehicle-detail.php',
+    'reserve'          => __DIR__ . '/pages/reserve.php',
 
     // >>> DODANE (formularze serwisów i kolizji)
     'vehicle-service-form'   => __DIR__ . '/pages/vehicle-service-form.php',
