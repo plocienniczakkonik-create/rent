@@ -5,7 +5,7 @@ $staff = require_staff();
 require_once dirname(__DIR__) . '/includes/db.php';
 
 // CSRF można przekazywać GET-em przy uważnym użyciu (link + confirm)
-if (!isset($_GET['csrf']) || !hash_equals($_SESSION['csrf_token'] ?? '', (string)$_GET['csrf'])) {
+if (!isset($_GET['_token']) || !hash_equals($_SESSION['_token'] ?? '', (string)$_GET['_token'])) {
     http_response_code(403);
     exit('Invalid CSRF token');
 }

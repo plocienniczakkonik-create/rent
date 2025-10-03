@@ -12,32 +12,39 @@ require_staff();
 if (session_status() !== PHP_SESSION_ACTIVE) {
     session_start();
 }
-function posted_csrf_token(): ?string {
-    foreach (['csrf', '_token', 'csrf_token', 'token'] as $k) {
-        if (!empty($_POST[$k])) return (string)$_POST[$k];
-    }
-    return null;
+function posted_csrf_token(): ?string
+{
+    return !empty($_POST['_token']) ? (string)$_POST['_token'] : null;
 }
-function session_csrf_tokens(): array {
+function session_csrf_tokens(): array
+{
     $out = [];
-    if (!empty($_SESSION['csrf_token'])) $out[] = (string)$_SESSION['csrf_token'];
-    if (!empty($_SESSION['_token']))     $out[] = (string)$_SESSION['_token'];
+    if (!empty($_SESSION['_token'])) $out[] = (string)$_SESSION['_token'];
     return array_values(array_unique($out));
 }
-function verify_csrf_or_fail(): void {
+function verify_csrf_or_fail(): void
+{
     $posted = posted_csrf_token();
     $valids = session_csrf_tokens();
-    $ok = $posted && $valids && array_reduce($valids, fn($c,$v)=>$c||hash_equals($v,$posted), false);
-    if (!$ok) { http_response_code(403); exit('Invalid CSRF token'); }
+    $ok = $posted && $valids && array_reduce($valids, fn($c, $v) => $c || hash_equals($v, $posted), false);
+    if (!$ok) {
+        http_response_code(403);
+        exit('Invalid CSRF token');
+    }
 }
-if (function_exists('csrf_verify')) { csrf_verify(); } else { verify_csrf_or_fail(); }
+if (function_exists('csrf_verify')) {
+    csrf_verify();
+} else {
+    verify_csrf_or_fail();
+}
 
 /* ===== Parametry + redirect z #pane-dicts ===== */
 $BASE   = defined('BASE_URL') ? rtrim(BASE_URL, '/') : '';
 $kind   = $_POST['kind']   ?? 'location';
 $action = $_POST['action'] ?? 'create';
 
-function redirect_back(string $kind, string $msg = '', string $err = ''): never {
+function redirect_back(string $kind, string $msg = '', string $err = ''): never
+{
     $base = defined('BASE_URL') ? rtrim(BASE_URL, '/') : '';
     $qs   = http_build_query(array_filter([
         'page' => 'dashboard-staff',
@@ -52,13 +59,30 @@ function redirect_back(string $kind, string $msg = '', string $err = ''): never 
 
 /* ===== Utils ===== */
 /** Stabilne slugify PL (bez iconv) */
-function slugify(string $s): string {
+function slugify(string $s): string
+{
     $s = trim($s);
     if ($s === '') return 'item';
     $s = function_exists('mb_strtolower') ? mb_strtolower($s, 'UTF-8') : strtolower($s);
     $map = [
-        'ą'=>'a','ć'=>'c','ę'=>'e','ł'=>'l','ń'=>'n','ó'=>'o','ś'=>'s','ż'=>'z','ź'=>'z',
-        'Ą'=>'a','Ć'=>'c','Ę'=>'e','Ł'=>'l','Ń'=>'n','Ó'=>'o','Ś'=>'s','Ż'=>'z','Ź'=>'z',
+        'ą' => 'a',
+        'ć' => 'c',
+        'ę' => 'e',
+        'ł' => 'l',
+        'ń' => 'n',
+        'ó' => 'o',
+        'ś' => 's',
+        'ż' => 'z',
+        'ź' => 'z',
+        'Ą' => 'a',
+        'Ć' => 'c',
+        'Ę' => 'e',
+        'Ł' => 'l',
+        'Ń' => 'n',
+        'Ó' => 'o',
+        'Ś' => 's',
+        'Ż' => 'z',
+        'Ź' => 'z',
     ];
     $s = strtr($s, $map);
     $s = preg_replace('/[^\S\r\n]+/u', ' ', $s);
@@ -71,7 +95,8 @@ function slugify(string $s): string {
  * Zapewnia istnienie typu słownika; gdy brak – tworzy go.
  * Zwraca tablicę: ['id'=>int, 'slug'=>string, 'is_hierarchical'=>int]
  */
-function ensure_dict_type(PDO $pdo, string $slug): array {
+function ensure_dict_type(PDO $pdo, string $slug): array
+{
     $q = $pdo->prepare('SELECT id, slug, is_hierarchical FROM dict_types WHERE slug = :s LIMIT 1');
     $q->execute([':s' => $slug]);
     $row = $q->fetch(PDO::FETCH_ASSOC);
@@ -85,7 +110,7 @@ function ensure_dict_type(PDO $pdo, string $slug): array {
     ];
     $name   = $labels[$slug] ?? ucfirst(str_replace('_', ' ', $slug));
     // dla car_class i car_type wymuszamy brak hierarchii; dla pozostałych domyślnie też 0
-    $isHier = in_array($slug, ['car_class','car_type'], true) ? 0 : 0;
+    $isHier = in_array($slug, ['car_class', 'car_type'], true) ? 0 : 0;
 
     $ins = $pdo->prepare('INSERT INTO dict_types (slug, name, is_hierarchical) VALUES (:slug, :name, :h)');
     $ins->execute([':slug' => $slug, ':name' => $name, ':h' => $isHier]);
@@ -102,7 +127,7 @@ try {
     $isHier     = (bool)$dictType['is_hierarchical'];
 
     // W UI nie używamy hierarchii dla klas i typów
-    if (in_array($kind, ['car_class','car_type'], true)) {
+    if (in_array($kind, ['car_class', 'car_type'], true)) {
         $isHier = false;
     }
 
@@ -116,7 +141,8 @@ try {
     $parent_id = ($isHier && isset($_POST['parent_id']) && $_POST['parent_id'] !== '') ? (int)$_POST['parent_id'] : null;
 
     if ($name === '') redirect_back($kind, '', 'Nazwa nie może być pusta.');
-    if ($slug === '') $slug = slugify($name); else $slug = slugify($slug);
+    if ($slug === '') $slug = slugify($name);
+    else $slug = slugify($slug);
 
     if ($action === 'update') {
         if (!$id) redirect_back($kind, '', 'Brak identyfikatora pozycji do edycji.');

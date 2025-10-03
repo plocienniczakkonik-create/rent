@@ -42,7 +42,7 @@
                                     <!-- Istniejące akcje -->
                                     <a href="<?= $BASE ?>/index.php?page=product-form&id=<?= (int)$p['id'] ?>"
                                         class="btn btn-outline-primary btn-sm">Edytuj</a>
-                                    <a href="<?= $BASE ?>/pages/product-delete.php?id=<?= (int)$p['id'] ?>&csrf=<?= htmlspecialchars(csrf_token()) ?>"
+                                    <a href="<?= $BASE ?>/pages/product-delete.php?id=<?= (int)$p['id'] ?>&_token=<?= htmlspecialchars(csrf_token()) ?>"
                                         class="btn btn-outline-danger btn-sm"
                                         onclick="return confirm('Usunąć produkt #<?= (int)$p['id'] ?>?');">Usuń</a>
                                 </td>

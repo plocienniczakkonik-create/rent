@@ -87,20 +87,20 @@ function require_staff(): array
 /* --- CSRF helpery --- */
 function csrf_token(): string
 {
-    if (empty($_SESSION['csrf_token'])) {
-        $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
+    if (empty($_SESSION['_token'])) {
+        $_SESSION['_token'] = bin2hex(random_bytes(32));
     }
-    return $_SESSION['csrf_token'];
+    return $_SESSION['_token'];
 }
 
 function csrf_field(): string
 {
-    return '<input type="hidden" name="csrf" value="' . htmlspecialchars(csrf_token(), ENT_QUOTES) . '">';
+    return '<input type="hidden" name="_token" value="' . htmlspecialchars(csrf_token(), ENT_QUOTES) . '">';
 }
 
 function csrf_verify(): void
 {
-    $ok = isset($_POST['csrf'], $_SESSION['csrf_token']) && hash_equals($_SESSION['csrf_token'], (string)$_POST['csrf']);
+    $ok = isset($_POST['_token'], $_SESSION['_token']) && hash_equals($_SESSION['_token'], (string)$_POST['_token']);
     if (!$ok) {
         http_response_code(403);
         exit('Invalid CSRF token');

@@ -88,6 +88,9 @@ $reports = [
                         <button class="nav-link" id="tab-promos" data-bs-toggle="pill" data-bs-target="#pane-promos" type="button" role="tab">Promocje</button>
                     </li>
                     <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="tab-upcoming" data-bs-toggle="pill" data-bs-target="#pane-upcoming" type="button" role="tab">Najbliższe terminy</button>
+                    </li>
+                    <li class="nav-item" role="presentation">
                         <button class="nav-link" id="tab-reports" data-bs-toggle="pill" data-bs-target="#pane-reports" type="button" role="tab">Raporty</button>
                     </li>
 
@@ -119,6 +122,11 @@ $reports = [
 
                     <div class="tab-pane fade" id="pane-promos" role="tabpanel" aria-labelledby="tab-promos">
                         <?php include __DIR__ . '/staff/section-promos.php'; ?>
+                    </div>
+
+
+                    <div class="tab-pane fade" id="pane-upcoming" role="tabpanel" aria-labelledby="tab-upcoming">
+                        <?php include __DIR__ . '/staff/section-upcoming.php'; ?>
                     </div>
 
                     <div class="tab-pane fade" id="pane-reports" role="tabpanel" aria-labelledby="tab-reports">

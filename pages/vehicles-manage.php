@@ -122,10 +122,11 @@ function status_badge($s)
                             <td colspan="8" class="text-center py-5 text-muted">Brak egzemplarzy tego modelu. Dodaj pierwszy.</td>
                         </tr>
                         <?php else: foreach ($rows as $r): ?>
+                            <?php $vid = (int)$r['id']; ?>
                             <tr>
                                 <td class="fw-semibold">
                                     <a class="text-decoration-none"
-                                        href="<?= $BASE ?>/index.php?page=vehicle-detail&id=<?= (int)$r['id'] ?>">
+                                        href="<?= $BASE ?>/index.php?page=vehicle-detail&id=<?= $vid ?>">
                                         <?= htmlspecialchars($r['registration_number']) ?>
                                     </a>
                                 </td>
@@ -136,8 +137,17 @@ function status_badge($s)
                                 <td><?= $r['mileage'] !== null ? (int)$r['mileage'] . ' km' : '<span class="text-muted">—</span>' ?></td>
                                 <td><?= $r['location'] ? htmlspecialchars($r['location']) : '<span class="text-muted">—</span>' ?></td>
                                 <td class="text-end">
-                                    <a href="<?= $BASE ?>/index.php?page=vehicle-detail&id=<?= (int)$r['id'] ?>" class="btn btn-sm btn-outline-primary">Szczegóły</a>
-                                    <a href="<?= $BASE ?>/index.php?page=vehicle-form&id=<?= (int)$r['id'] ?>" class="btn btn-sm btn-outline-secondary">Edytuj</a>
+                                    <a class="btn btn-sm btn-outline-secondary"
+                                        href="<?= $BASE ?>/index.php?page=vehicle-detail&id=<?= $vid ?>">Szczegóły</a>
+
+                                    <a class="btn btn-sm btn-outline-primary"
+                                        href="<?= $BASE ?>/index.php?page=vehicle-form&id=<?= $vid ?>">Edytuj</a>
+
+                                    <a class="btn btn-sm btn-outline-danger"
+                                        href="<?= $BASE ?>/index.php?page=vehicle-delete&id=<?= $vid ?>&csrf=<?= htmlspecialchars(csrf_token()) ?>"
+                                        onclick="return confirm('Usunąć egzemplarz #<?= $vid ?>? Tej operacji nie można cofnąć.');">
+                                        Usuń
+                                    </a>
                                 </td>
                             </tr>
                     <?php endforeach;

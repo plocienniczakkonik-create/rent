@@ -1,14 +1,23 @@
 <?php
+
+declare(strict_types=1);
+
 // /pages/staff/_helpers.php
 // TYLKO funkcje pomocnicze — BEZ require/include!
 
-function status_badge($s)
+/** Bezpieczny escape do HTML (UTF-8) */
+function e(string $v): string
+{
+    return htmlspecialchars($v, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
+}
+
+function status_badge(string $s): string
 {
     return match ($s) {
         'active', 'paid', 'completed' => 'text-bg-success',
-        'pending', 'draft'           => 'text-bg-warning',
-        'inactive', 'cancelled'      => 'text-bg-secondary',
-        default                      => 'text-bg-light',
+        'pending', 'draft'            => 'text-bg-warning',
+        'inactive', 'cancelled'       => 'text-bg-secondary',
+        default                       => 'text-bg-light',
     };
 }
 
@@ -38,39 +47,45 @@ function promo_values_for_scope(
     $arr = json_decode($json, true);
     if (!is_array($arr) || !$arr) return '—';
 
+    if ($max < 1) $max = 1;
+
     $labels = [];
     foreach ($arr as $raw) {
+        $rawStr = trim((string)$raw);
+
         switch ($scopeType) {
             case 'product':
-                if (is_numeric($raw)) {
-                    $id = (int)$raw;
-                    $labels[] = $maps['byId'][$id] ?? (string)$raw;
+                if ($rawStr !== '' && is_numeric($rawStr)) {
+                    $id = (int)$rawStr;
+                    $labels[] = isset($maps['byId'][$id]) ? (string)$maps['byId'][$id] : (string)$id;
                 } else {
-                    $sku = (string)$raw;
-                    $labels[] = $maps['bySku'][$sku] ?? $sku;
+                    $labels[] = isset($maps['bySku'][$rawStr]) ? (string)$maps['bySku'][$rawStr] : $rawStr;
                 }
                 break;
 
             case 'category':
-                $code = (string)$raw;
-                $labels[] = $maps['class'][$code] ?? ('Klasa ' . strtoupper($code));
+                $labels[] = isset($maps['class'][$rawStr]) ? (string)$maps['class'][$rawStr] : ('Klasa ' . strtoupper($rawStr));
                 break;
 
             case 'pickup_location':
             case 'return_location':
-                $labels[] = (string)$raw;
+                $labels[] = $rawStr;
                 break;
 
             default:
-                $labels[] = (string)$raw;
+                $labels[] = $rawStr;
         }
     }
 
     if (!$labels) return '—';
+
     $first = array_slice($labels, 0, $max);
     $rest  = max(count($labels) - $max, 0);
-    $txt   = htmlspecialchars(implode(', ', $first));
-    if ($rest > 0) $txt .= ' <span class="badge text-bg-light">+' . $rest . '</span>';
+    $txt   = e(implode(', ', $first));
+
+    if ($rest > 0) {
+        $txt .= ' <span class="badge text-bg-light">+' . (int)$rest . '</span>';
+    }
     return $txt;
 }
 
@@ -85,7 +100,11 @@ function promo_discount(string $type, float $val): string
 
 function promo_period(?string $from, ?string $to): string
 {
-    $f = $from ? date('Y-m-d', strtotime($from)) : '—';
-    $t = $to   ? date('Y-m-d', strtotime($to))   : '—';
+    $fTs = $from ? strtotime($from) : null;
+    $tTs = $to   ? strtotime($to)   : null;
+
+    $f = $fTs ? date('Y-m-d', $fTs) : '—';
+    $t = $tTs ? date('Y-m-d', $tTs) : '—';
+
     return $f . ' → ' . $t;
 }

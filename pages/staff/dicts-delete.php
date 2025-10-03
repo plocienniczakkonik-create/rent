@@ -12,31 +12,38 @@ require_staff();
 if (session_status() !== PHP_SESSION_ACTIVE) {
     session_start();
 }
-function posted_csrf_token(): ?string {
-    foreach (['csrf', '_token', 'csrf_token', 'token'] as $k) {
-        if (!empty($_POST[$k])) return (string)$_POST[$k];
-    }
-    return null;
+function posted_csrf_token(): ?string
+{
+    return !empty($_POST['_token']) ? (string)$_POST['_token'] : null;
 }
-function session_csrf_tokens(): array {
+function session_csrf_tokens(): array
+{
     $out = [];
-    if (!empty($_SESSION['csrf_token'])) $out[] = (string)$_SESSION['csrf_token'];
-    if (!empty($_SESSION['_token']))     $out[] = (string)$_SESSION['_token'];
+    if (!empty($_SESSION['_token'])) $out[] = (string)$_SESSION['_token'];
     return array_values(array_unique($out));
 }
-function verify_csrf_or_fail(): void {
+function verify_csrf_or_fail(): void
+{
     $posted = posted_csrf_token();
     $valids = session_csrf_tokens();
-    $ok = $posted && $valids && array_reduce($valids, fn($c,$v)=>$c||hash_equals($v,$posted), false);
-    if (!$ok) { http_response_code(403); exit('Invalid CSRF token'); }
+    $ok = $posted && $valids && array_reduce($valids, fn($c, $v) => $c || hash_equals($v, $posted), false);
+    if (!$ok) {
+        http_response_code(403);
+        exit('Invalid CSRF token');
+    }
 }
-if (function_exists('csrf_verify')) { csrf_verify(); } else { verify_csrf_or_fail(); }
+if (function_exists('csrf_verify')) {
+    csrf_verify();
+} else {
+    verify_csrf_or_fail();
+}
 
 /* ===== Parametry + redirect z kotwicą do zakładki ===== */
 $kind = $_POST['kind'] ?? 'location';
 $id   = isset($_POST['id']) ? (int)$_POST['id'] : 0;
 
-function redirect_back(string $kind, string $msg = '', string $err = ''): never {
+function redirect_back(string $kind, string $msg = '', string $err = ''): never
+{
     $base = defined('BASE_URL') ? rtrim(BASE_URL, '/') : '';
     $qs   = http_build_query(array_filter([
         'page' => 'dashboard-staff',

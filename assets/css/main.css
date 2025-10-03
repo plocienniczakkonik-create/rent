@@ -613,7 +613,37 @@ html, body {
   font-weight: 600;
 }
 
-/* jeśli używasz floty także poza kartą, możesz dodać .fleet-status globalnie */
+/* ===== Vehicle Stats Table ===== */
+.vehicle-stats-card {
+  padding: 1.5rem 2rem;
+}
+
+.vehicle-section-table tbody tr td:first-child {
+  padding-left: 1.25rem !important;
+}
+
+.vehicle-section-table tbody tr td:last-child {
+  padding-right: 1.25rem !important;
+}
+
+.vehicle-section-table thead th:first-child {
+  padding-left: 1.25rem !important;
+}
+
+.vehicle-section-table thead th:last-child {
+  padding-right: 1.25rem !important;
+}
+
+.vehicle-section-table.services thead th:first-child,
+.vehicle-section-table.services tbody td:first-child {
+  padding-left: 1.25rem !important;
+}
+
+.vehicle-section-table.services thead th:last-child,
+.vehicle-section-table.services tbody td:last-child {
+  padding-right: 1.25rem !important;
+}
+
 /* Delikatny separator linii */
 .divider {
   height: 1px;

@@ -1,32 +1,84 @@
 <?php
 // /index.php
 
-// Start sesji (raz, bez duplikatów)
+// 1) Najpierw config (żeby mieć BASE_URL)
+require_once __DIR__ . '/includes/config.php';
+
+// 2) Ustaw ścieżkę ciasteczka sesji na BASE_URL (ważne przy subfolderze, np. /rental)
+if (defined('BASE_URL')) {
+    @ini_set('session.cookie_path', rtrim((string)BASE_URL, '/') . '/');
+}
+// (opcjonalnie, ale pomocne)
+@ini_set('session.cookie_httponly', '1');
+@ini_set('session.use_strict_mode', '1');
+
+// 3) Start sesji DOPIERO teraz (raz, bez duplikatów)
 if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
 
-// Konfiguracja i auth (BASE_URL, db, helpery usera)
-require_once __DIR__ . '/includes/config.php';
+// 4) Dalej standardowe include’y
 require_once __DIR__ . '/auth/auth.php';
+
+// CSRF helper tylko z auth.php
+
 
 // Prosty router po ?page=
 $page = $_GET['page'] ?? 'home';
 
-// Biała lista widoków -> pliki
+/**
+ * === AKCJE (POST/GET) — obsługujemy PRZED renderem HTML ===
+ * Akcje nie renderują layoutu — wykonują logikę i same robią redirect.
+ */
+$actionRoutes = [
+    'vehicle-save'            => __DIR__ . '/pages/vehicle-save.php',
+    'vehicle-delete'          => __DIR__ . '/pages/vehicle-delete.php', // <— DODANE wcześniej przez Ciebie
+
+    // >>> DODANE (serwisy i kolizje)
+    'vehicle-service-save'    => __DIR__ . '/pages/vehicle-service-save.php',
+    'vehicle-service-delete'  => __DIR__ . '/pages/vehicle-service-delete.php',
+    'vehicle-incident-save'   => __DIR__ . '/pages/vehicle-incident-save.php',
+    'vehicle-incident-delete' => __DIR__ . '/pages/vehicle-incident-delete.php',
+    // >>> DODANE (zamówienia/wynajem)
+    'vehicle-order-save'      => __DIR__ . '/pages/vehicle-order-save.php',
+    'vehicle-order-delete'    => __DIR__ . '/pages/vehicle-order-delete.php',
+];
+
+// 1) Biała lista akcji
+if (isset($actionRoutes[$page])) {
+    require $actionRoutes[$page];
+    exit;
+}
+
+// 2) Auto-detekcja akcji: jeśli nazwa kończy się na -save lub -delete
+//    i istnieje plik /pages/<page>.php, traktuj jako akcję.
+if (preg_match('/-(save|delete)$/', $page)) {
+    $maybeActionFile = __DIR__ . '/pages/' . $page . '.php';
+    if (is_file($maybeActionFile)) {
+        require $maybeActionFile;
+        exit;
+    }
+}
+
+/** === WIDOKI (render z layoutem) === */
 $routes = [
     'home'             => __DIR__ . '/pages/home.php',
     'login'            => __DIR__ . '/pages/login.php',
     'dashboard-client' => __DIR__ . '/pages/dashboard-client.php',
     'dashboard-staff'  => __DIR__ . '/pages/dashboard-staff.php',
-    // NOWE: strona wyników wyszukiwania (bez hero)
     'search-results'   => __DIR__ . '/pages/search-results.php',
 
-    // === NOWE: Flota / Pojazdy ===
-    'vehicles'         => __DIR__ . '/pages/vehicles.php',           // przegląd modeli (flota)
-    'vehicles-manage'  => __DIR__ . '/pages/vehicles-manage.php',    // egzemplarze dla wybranego modelu
-    'vehicle-form'     => __DIR__ . '/pages/vehicle-form.php',       // dodawanie/edycja egzemplarza
-    'vehicle-detail'    => __DIR__ . '/pages/vehicle-detail.php',    // karta egzemplarza
+    // Flota / Pojazdy (widoki)
+    'vehicles'         => __DIR__ . '/pages/vehicles.php',
+    'vehicles-manage'  => __DIR__ . '/pages/vehicles-manage.php',
+    'vehicle-form'     => __DIR__ . '/pages/vehicle-form.php',
+    'vehicle-detail'   => __DIR__ . '/pages/vehicle-detail.php',
+
+    // >>> DODANE (formularze serwisów i kolizji)
+    'vehicle-service-form'   => __DIR__ . '/pages/vehicle-service-form.php',
+    'vehicle-incident-form'  => __DIR__ . '/pages/vehicle-incident-form.php',
+    // >>> DODANE (zamówienia/wynajem)
+    'vehicle-order-form'     => __DIR__ . '/pages/vehicle-order-form.php',
 ];
 
 // Fallback na home, jeśli nieznana strona
@@ -42,10 +94,7 @@ include __DIR__ . '/partials/head.php';
     <?php include __DIR__ . '/partials/header.php'; ?>
 
     <main class="site-main">
-        <?php
-        // Wczytaj stronę (każdy dashboard sam pilnuje uprawnień: require_auth()/require_staff())
-        include $viewFile;
-        ?>
+        <?php include $viewFile; ?>
     </main>
 
     <?php
