@@ -1,6 +1,17 @@
-<?php // expects: $reports 
+<?php
+// expects: $reports 
+$reports = $reports ?? [
+    'revenue_today' => 0.0,
+    'orders_today' => 0,
+    'top_product' => 'Brak danych'
+];
 ?>
-<div class="row g-3">
+<div class="card section-reports">
+    <div class="card-header">
+        <h2 class="h6 mb-0">Raporty</h2>
+    </div>
+    <div class="card-body">
+        <div class="row g-3">
     <div class="col-12 col-md-4">
         <div class="card h-100">
             <div class="card-body">
@@ -28,4 +39,6 @@
 </div>
 <div class="alert alert-info mt-3 mb-0 small">
     W kolejnych krokach dorzucimy wykresy (miesięczny przychód, liczba rezerwacji, średnia wartość koszyka).
+</div>
+    </div>
 </div>

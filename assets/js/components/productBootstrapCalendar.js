@@ -10,43 +10,52 @@ var prices = {
 };
 var promoDays = ["2025-10-06"];
 
-
 function getDayPrice(date) {
   var y = date.getFullYear();
-  var m = (date.getMonth() + 1).toString().padStart(2, '0');
-  var d = date.getDate().toString().padStart(2, '0');
+  var m = (date.getMonth() + 1).toString().padStart(2, "0");
+  var d = date.getDate().toString().padStart(2, "0");
   var key = `${y}-${m}-${d}`;
   var price = prices[key];
   return price ? price : null;
 }
 
-$(function() {
-  if ($('#bootstrap-calendar').length) {
-    $('#bootstrap-calendar').datepicker({
-      format: 'yyyy-mm-dd',
+$(function () {
+  if ($("#bootstrap-calendar").length) {
+    $("#bootstrap-calendar").datepicker({
+      format: "yyyy-mm-dd",
       todayHighlight: true,
       autoclose: true,
       templates: {
-        leftArrow: '&laquo;',
-        rightArrow: '&raquo;'
+        leftArrow: "&laquo;",
+        rightArrow: "&raquo;",
       },
-      beforeShowDay: function(date) {
+      beforeShowDay: function (date) {
         var price = getDayPrice(date);
-        var tooltip = price ? (promoDays.includes(date.toISOString().slice(0,10)) ? `Promocja: ${price} PLN` : `Cena: ${price} PLN`) : '';
-        var classes = price ? (promoDays.includes(date.toISOString().slice(0,10)) ? 'promo-day' : 'price-day') : '';
+        var tooltip = price
+          ? promoDays.includes(date.toISOString().slice(0, 10))
+            ? `Promocja: ${price} PLN`
+            : `Cena: ${price} PLN`
+          : "";
+        var classes = price
+          ? promoDays.includes(date.toISOString().slice(0, 10))
+            ? "promo-day"
+            : "price-day"
+          : "";
         return {
           tooltip: tooltip,
-          classes: classes
+          classes: classes,
         };
       },
-      inline: true
+      inline: true,
     });
     // Inicjalizacja Bootstrap Tooltip na dniach kalendarza
-    setTimeout(function() {
-      $('#bootstrap-calendar td.day, #bootstrap-calendar td.price-day, #bootstrap-calendar td.promo-day').each(function() {
-        var title = $(this).attr('title');
+    setTimeout(function () {
+      $(
+        "#bootstrap-calendar td.day, #bootstrap-calendar td.price-day, #bootstrap-calendar td.promo-day"
+      ).each(function () {
+        var title = $(this).attr("title");
         if (title) {
-          $(this).tooltip({container: 'body', placement: 'top'});
+          $(this).tooltip({ container: "body", placement: "top" });
         }
       });
     }, 500);

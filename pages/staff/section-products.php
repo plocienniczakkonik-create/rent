@@ -1,6 +1,6 @@
 <?php // expects: $products, $BASE 
 ?>
-<div class="card">
+<div class="card section-products">
     <div class="card-header d-flex align-items-center justify-content-between">
         <h2 class="h6 mb-0">Produkty</h2>
         <!-- usunięto lokalny przycisk "Dodaj produkt" -->

@@ -19,17 +19,17 @@ $addons = $pdo->query('SELECT * FROM addons ORDER BY name')->fetchAll(PDO::FETCH
         </thead>
         <tbody>
             <?php foreach ($addons as $addon): ?>
-            <tr>
-                <td><?= htmlspecialchars($addon['name']) ?></td>
-                <td><?= htmlspecialchars($addon['type']) ?></td>
-                <td><?= number_format($addon['price'], 2) ?></td>
-                <td><?= htmlspecialchars($addon['unit']) ?></td>
-                <td><?= $addon['active'] ? 'Tak' : 'Nie' ?></td>
-                <td>
-                    <a href="../addon-form.php?id=<?= $addon['id'] ?>" class="btn btn-sm btn-primary">Edytuj</a>
-                    <a href="../addon-delete.php?id=<?= $addon['id'] ?>" class="btn btn-sm btn-danger" onclick="return confirm('Usunąć dodatek?')">Usuń</a>
-                </td>
-            </tr>
+                <tr>
+                    <td><?= htmlspecialchars($addon['name']) ?></td>
+                    <td><?= htmlspecialchars($addon['type']) ?></td>
+                    <td><?= number_format($addon['price'], 2) ?></td>
+                    <td><?= htmlspecialchars($addon['unit']) ?></td>
+                    <td><?= $addon['active'] ? 'Tak' : 'Nie' ?></td>
+                    <td>
+                        <a href="../addon-form.php?id=<?= $addon['id'] ?>" class="btn btn-sm btn-primary">Edytuj</a>
+                        <a href="../addon-delete.php?id=<?= $addon['id'] ?>" class="btn btn-sm btn-danger" onclick="return confirm('Usunąć dodatek?')">Usuń</a>
+                    </td>
+                </tr>
             <?php endforeach; ?>
         </tbody>
     </table>

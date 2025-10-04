@@ -1,6 +1,7 @@
 
 
 <?php
+require_once __DIR__ . '/../includes/_helpers.php';
 require_once __DIR__ . '/../auth/auth.php';
 require_staff();
 

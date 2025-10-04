@@ -6,6 +6,7 @@ $staff = require_staff();
 require_once dirname(__DIR__) . '/partials/head.php';
 require_once dirname(__DIR__) . '/partials/header.php';
 require_once dirname(__DIR__) . '/includes/db.php';
+require_once dirname(__DIR__) . '/includes/_helpers.php';
 require_once __DIR__ . '/staff/_helpers.php';
 
 $BASE = defined('BASE_URL') ? rtrim(BASE_URL, '/') : '';
@@ -94,7 +95,6 @@ $reports = [
                         <button class="nav-link" id="tab-reports" data-bs-toggle="pill" data-bs-target="#pane-reports" type="button" role="tab">Raporty</button>
                     </li>
 
-                    <!-- NOWE: zakładka "Słowniki" między Raporty a Ustawienia -->
                     <li class="nav-item" role="presentation">
                         <button class="nav-link" id="tab-dicts" data-bs-toggle="pill" data-bs-target="#pane-dicts" type="button" role="tab">Słowniki</button>
                     </li>
@@ -108,42 +108,30 @@ $reports = [
 
             <div class="col-12">
                 <div class="tab-content">
-
                     <div class="tab-pane fade show active" id="pane-products" role="tabpanel" aria-labelledby="tab-products">
                         <?php include __DIR__ . '/staff/section-products.php'; ?>
                     </div>
-
                     <div class="tab-pane fade" id="pane-vehicles" role="tabpanel" aria-labelledby="tab-vehicles">
                         <?php include __DIR__ . '/staff/section-vehicles.php'; ?>
                     </div>
-
                     <div class="tab-pane fade" id="pane-orders" role="tabpanel" aria-labelledby="tab-orders">
                         <?php include __DIR__ . '/staff/section-orders.php'; ?>
                     </div>
-
                     <div class="tab-pane fade" id="pane-promos" role="tabpanel" aria-labelledby="tab-promos">
                         <?php include __DIR__ . '/staff/section-promos.php'; ?>
                     </div>
-
-
                     <div class="tab-pane fade" id="pane-upcoming" role="tabpanel" aria-labelledby="tab-upcoming">
                         <?php include __DIR__ . '/staff/section-upcoming.php'; ?>
                     </div>
-
                     <div class="tab-pane fade" id="pane-reports" role="tabpanel" aria-labelledby="tab-reports">
                         <?php include __DIR__ . '/staff/section-reports.php'; ?>
                     </div>
-
-                    <!-- NOWE: kontent zakładki "Słowniki" -->
                     <div class="tab-pane fade" id="pane-dicts" role="tabpanel" aria-labelledby="tab-dicts">
                         <?php include __DIR__ . '/staff/section-dicts.php'; ?>
                     </div>
-
-
                     <div class="tab-pane fade" id="pane-settings" role="tabpanel" aria-labelledby="tab-settings">
                         <?php include __DIR__ . '/staff/section-settings.php'; ?>
                     </div>
-
                 </div>
             </div>
         </div>
@@ -152,19 +140,19 @@ $reports = [
 
 <script>
     document.addEventListener('DOMContentLoaded', function() {
-        var hash = window.location.hash;
-        if (hash) {
-            var trigger = document.querySelector('button[data-bs-target="' + hash + '"]');
-            if (trigger) {
-                new bootstrap.Tab(trigger).show();
+        // Małe opóźnienie dla Bootstrap
+        setTimeout(function() {
+            // Obsługa hash URL - tylko przy załadowaniu strony
+            var hash = window.location.hash;
+            if (hash) {
+                var trigger = document.querySelector('button[data-bs-target="' + hash + '"]');
+                if (trigger) {
+                    // Użyj Bootstrap Tab API
+                    var tab = new bootstrap.Tab(trigger);
+                    tab.show();
+                }
             }
-        }
-        document.querySelectorAll('button[data-bs-toggle="pill"]').forEach(function(btn) {
-            btn.addEventListener('shown.bs.tab', function(e) {
-                var target = e.target.getAttribute('data-bs-target');
-                if (target) history.replaceState(null, '', target);
-            });
-        });
+        }, 100);
     });
 </script>
 

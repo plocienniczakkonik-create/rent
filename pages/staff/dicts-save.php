@@ -107,11 +107,11 @@ function ensure_dict_type(PDO $pdo, string $slug): array
         'location'  => 'Lokalizacje',
         'car_class' => 'Klasa samochodu',
         'car_type'  => 'Typ samochodu',
-           'addon'     => 'Dodatki',
+        'addon'     => 'Dodatki',
     ];
     $name   = $labels[$slug] ?? ucfirst(str_replace('_', ' ', $slug));
     // dla car_class i car_type wymuszamy brak hierarchii; dla pozostałych domyślnie też 0
-       $isHier = in_array($slug, ['car_class', 'car_type', 'addon'], true) ? 0 : 0;
+    $isHier = in_array($slug, ['car_class', 'car_type', 'addon'], true) ? 0 : 0;
 
     $ins = $pdo->prepare('INSERT INTO dict_types (slug, name, is_hierarchical) VALUES (:slug, :name, :h)');
     $ins->execute([':slug' => $slug, ':name' => $name, ':h' => $isHier]);

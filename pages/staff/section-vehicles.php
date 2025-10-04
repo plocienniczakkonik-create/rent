@@ -1,6 +1,6 @@
 <?php
 // /pages/staff/section-vehicles.php
-require_once dirname(__DIR__) . '/../includes/db.php';
+require_once dirname(__DIR__, 2) . '/includes/db.php';
 $db = db();
 
 $BASE = defined('BASE_URL') ? rtrim(BASE_URL, '/') : '';
@@ -122,73 +122,74 @@ function v_sort_link(string $key, string $label): string
     }
 </style>
 
-<div class="card">
+<div class="card section-vehicles">
     <div class="card-header d-flex align-items-center justify-content-between">
         <h2 class="h6 mb-0">Zarządzaj flotą</h2>
     </div>
-
-    <div class="table-responsive">
-        <table class="table table-hover align-middle mb-0 table-vehicles">
-            <thead>
-                <tr>
-                    <th class="th-id th-narrow"><?= v_sort_link('id', 'ID') ?></th>
-                    <th class="th-name"><?= v_sort_link('name', 'Nazwa') ?></th>
-                    <th class="th-sku th-narrow"><?= v_sort_link('sku', 'SKU') ?></th>
-                    <th class="th-total th-narrow text-end"><?= v_sort_link('total', 'Egzemplarze') ?></th>
-
-                    <th class="th-narrow text-center"><?= v_sort_link('available', 'Dostępne') ?></th>
-                    <th class="th-narrow text-center"><?= v_sort_link('maintenance', 'Serwis') ?></th>
-                    <th class="th-narrow text-center"><?= v_sort_link('booked', 'Rezerwacje') ?></th>
-                    <th class="th-narrow text-center"><?= v_sort_link('unavailable', 'Niedostępne') ?></th>
-
-                    <th class="th-actions th-narrow text-end">Akcje</th>
-                </tr>
-            </thead>
-            <tbody>
-                <?php if (!$rows): ?>
+    <div class="card-body p-0">
+        <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0 table-vehicles">
+                <thead>
                     <tr>
-                        <td colspan="9" class="text-center py-5 text-muted">Brak modeli. Dodaj pierwszy w „Dodaj model”.</td>
+                        <th class="th-id th-narrow"><?= v_sort_link('id', 'ID') ?></th>
+                        <th class="th-name"><?= v_sort_link('name', 'Nazwa') ?></th>
+                        <th class="th-sku th-narrow"><?= v_sort_link('sku', 'SKU') ?></th>
+                        <th class="th-total th-narrow text-end"><?= v_sort_link('total', 'Egzemplarze') ?></th>
+
+                        <th class="th-narrow text-center"><?= v_sort_link('available', 'Dostępne') ?></th>
+                        <th class="th-narrow text-center"><?= v_sort_link('maintenance', 'Serwis') ?></th>
+                        <th class="th-narrow text-center"><?= v_sort_link('booked', 'Rezerwacje') ?></th>
+                        <th class="th-narrow text-center"><?= v_sort_link('unavailable', 'Niedostępne') ?></th>
+
+                        <th class="th-actions th-narrow text-end">Akcje</th>
                     </tr>
-                    <?php else: foreach ($rows as $r): ?>
+                </thead>
+                <tbody>
+                    <?php if (!$rows): ?>
                         <tr>
-                            <td class="text-muted">#<?= (int)$r['id'] ?></td>
-
-                            <td class="fw-semibold">
-                                <a class="text-decoration-none" href="<?= $BASE ?>/index.php?page=product-form&id=<?= (int)$r['id'] ?>">
-                                    <?= htmlspecialchars($r['name']) ?>
-                                </a>
-                            </td>
-
-                            <td class="text-muted"><?= htmlspecialchars($r['sku'] ?? '') ?></td>
-
-                            <td class="text-end">
-                                <span class="badge bg-secondary badge-count"><?= (int)$r['total'] ?> egz.</span>
-                            </td>
-
-                            <!-- statusy w osobnych, wycentrowanych kolumnach -->
-                            <td class="text-center">
-                                <span class="badge bg-success badge-dot"><?= (int)$r['available'] ?></span>
-                            </td>
-                            <td class="text-center">
-                                <span class="badge bg-warning text-dark badge-dot"><?= (int)$r['maintenance'] ?></span>
-                            </td>
-                            <td class="text-center">
-                                <span class="badge bg-secondary badge-dot"><?= (int)$r['booked'] ?></span>
-                            </td>
-                            <td class="text-center">
-                                <span class="badge bg-danger badge-dot"><?= (int)$r['unavailable'] ?></span>
-                            </td>
-
-                            <td class="text-end">
-                                <a class="btn btn-sm btn-outline-primary"
-                                    href="<?= $BASE ?>/index.php?page=vehicles-manage&product=<?= (int)$r['id'] ?>">
-                                    Zarządzaj
-                                </a>
-                            </td>
+                            <td colspan="9" class="text-center py-5 text-muted">Brak modeli. Dodaj pierwszy w „Dodaj model”.</td>
                         </tr>
-                <?php endforeach;
-                endif; ?>
-            </tbody>
-        </table>
+                        <?php else: foreach ($rows as $r): ?>
+                            <tr>
+                                <td class="text-muted">#<?= (int)$r['id'] ?></td>
+
+                                <td class="fw-semibold">
+                                    <a class="text-decoration-none" href="<?= $BASE ?>/index.php?page=product-form&id=<?= (int)$r['id'] ?>">
+                                        <?= htmlspecialchars($r['name']) ?>
+                                    </a>
+                                </td>
+
+                                <td class="text-muted"><?= htmlspecialchars($r['sku'] ?? '') ?></td>
+
+                                <td class="text-end">
+                                    <span class="badge bg-secondary badge-count"><?= (int)$r['total'] ?> egz.</span>
+                                </td>
+
+                                <!-- statusy w osobnych, wycentrowanych kolumnach -->
+                                <td class="text-center">
+                                    <span class="badge bg-success badge-dot"><?= (int)$r['available'] ?></span>
+                                </td>
+                                <td class="text-center">
+                                    <span class="badge bg-warning text-dark badge-dot"><?= (int)$r['maintenance'] ?></span>
+                                </td>
+                                <td class="text-center">
+                                    <span class="badge bg-secondary badge-dot"><?= (int)$r['booked'] ?></span>
+                                </td>
+                                <td class="text-center">
+                                    <span class="badge bg-danger badge-dot"><?= (int)$r['unavailable'] ?></span>
+                                </td>
+
+                                <td class="text-end">
+                                    <a class="btn btn-sm btn-outline-primary"
+                                        href="<?= $BASE ?>/index.php?page=vehicles-manage&product=<?= (int)$r['id'] ?>">
+                                        Zarządzaj
+                                    </a>
+                                </td>
+                            </tr>
+                    <?php endforeach;
+                    endif; ?>
+                </tbody>
+            </table>
+        </div>
     </div>
 </div>

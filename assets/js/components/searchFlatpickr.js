@@ -1,25 +1,17 @@
-// Flatpickr na polach daty w wyszukiwarce
-// Wymaga: https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.js
+// XDSoft DateTimePicker na polach daty w wyszukiwarce
+// Wymaga: jQuery i XDSoft DateTimePicker
 
-document.addEventListener('DOMContentLoaded', function() {
-  document.querySelectorAll('input.search-date').forEach(function(input) {
-    flatpickr(input, {
-      enableTime: true,
-      time_24hr: true,
-      minuteIncrement: 10,
-      timeInput: true,
-      locale: "pl",
-      minDate: "today",
-      disableMobile: true,
-      dateFormat: "Y-m-d H:i",
-      onChange: function(selectedDates, dateStr, instance) {
-        if (selectedDates.length && instance.isOpen && instance.config.enableTime) {
-          var d = selectedDates[0];
-          if (d instanceof Date && typeof d.getHours === 'function') {
-            instance.close();
-          }
-        }
-      }
-    });
+$(document).ready(function () {
+  $("input.search-date").datetimepicker({
+    format: "Y-m-d H:i",
+    formatTime: "H:i",
+    step: 10,
+    minDate: 0,
+    lang: "pl",
+    timepicker: true,
+    datepicker: true,
+    closeOnDateSelect: false,
+    validateOnBlur: false,
+    mask: false,
   });
 });

@@ -16,10 +16,18 @@ if (!$product) {
 }
 $search = $_SESSION['search'] ?? [];
 // Nadpisz wartości z GET jeśli są dostępne (np. po przejściu z wyszukiwarki)
-foreach ([
-    'pickup_location', 'dropoff_location', 'pickup_at', 'return_at',
-    'vehicle_type', 'transmission', 'seats_min', 'fuel'
-] as $key) {
+foreach (
+    [
+        'pickup_location',
+        'dropoff_location',
+        'pickup_at',
+        'return_at',
+        'vehicle_type',
+        'transmission',
+        'seats_min',
+        'fuel'
+    ] as $key
+) {
     if (isset($_GET[$key])) {
         $search[$key] = $_GET[$key];
     }

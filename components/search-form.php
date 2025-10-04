@@ -80,17 +80,25 @@ $currentPage = $_GET['page'] ?? 'home';
 $clearToPage = ($currentPage === 'search-results') ? 'search-results' : 'home';
 $clearUrl = $ROOT_INDEX . '?page=' . $clearToPage;
 ?>
-<!-- Flatpickr JS CDN -->
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
-<script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.js"></script>
-<script src="/rental/assets/js/components/searchFlatpickr.js"></script>
+<!-- XDSoft DateTimePicker CDN -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery-datetimepicker/2.5.20/jquery.datetimepicker.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-datetimepicker/2.5.20/jquery.datetimepicker.full.min.js"></script>
+<script src="<?= $BASE ?>/assets/js/components/searchDateTimePicker.js"></script>
+<style>
+    /* Kursor łapka dla wszystkich pól formularza */
+    .search-wrapper .form-select,
+    .search-wrapper input.search-date {
+        cursor: pointer !important;
+    }
+</style>
 
 <section aria-label="Wyszukiwarka" id="offer" class="wyszukiwarkaCL pt-4">
     <div class="container py-4 search-wrapper ">
         <div class="card p-3 p-md-4" style="border-radius:18px; box-shadow:0 6px 24px rgba(0,0,0,.08); border:1px solid rgba(0,0,0,.06); overflow: visible;">
 
             <!-- Akcja zawsze na index.php; stronę wyników wymuszamy ukrytym polem page=search-results -->
-            <form id="search-form" action="<?= htmlspecialchars($__formAction) ?>" method="get" novalidate>
+            <form id="search-form" action="<?= htmlspecialchars($__formAction) ?>" method="get" novalidate autocomplete="off">
                 <input type="hidden" name="page" value="search-results">
 
                 <div class="row g-3 align-items-end">
@@ -121,12 +129,12 @@ $clearUrl = $ROOT_INDEX . '?page=' . $clearToPage;
 
                     <div class="col-12 col-lg-3">
                         <label class="form-label mb-1">Data odbioru</label>
-                        <input type="text" class="form-select search-date" name="pickup_at" value="<?= htmlspecialchars($pickupAt) ?>" placeholder="Data odbioru">
+                        <input type="text" class="form-select search-date" name="pickup_at" value="<?= htmlspecialchars($pickupAt) ?>" placeholder="Data odbioru" autocomplete="off" spellcheck="false" inputmode="none" readonly>
                     </div>
 
                     <div class="col-12 col-lg-3">
                         <label class="form-label mb-1">Data zwrotu</label>
-                        <input type="text" class="form-select search-date" name="return_at" value="<?= htmlspecialchars($returnAt) ?>" placeholder="Data zwrotu">
+                        <input type="text" class="form-select search-date" name="return_at" value="<?= htmlspecialchars($returnAt) ?>" placeholder="Data zwrotu" autocomplete="off" spellcheck="false" inputmode="none" readonly>
                     </div>
                 </div>
 

@@ -1,4 +1,5 @@
 <?php
+require_once __DIR__ . '/../includes/_helpers.php';
 require_once __DIR__ . '/../auth/auth.php';
 require_staff();
 echo '<pre style="color:red">DEBUG: SESSION _token = ' . htmlspecialchars($_SESSION['_token'] ?? '') . "\n" .

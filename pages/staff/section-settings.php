@@ -1,6 +1,6 @@
 <?php // expects: $staff, $BASE 
 ?>
-<div class="card">
+<div class="card section-settings">
     <div class="card-header">
         <h2 class="h6 mb-0">Ustawienia konta</h2>
     </div>

@@ -10,6 +10,10 @@ if (session_status() !== PHP_SESSION_ACTIVE) {
     // Jeżeli aplikacja działa w subfolderze (np. /rental), możesz wymusić ścieżkę ciasteczka:
     // if (defined('BASE_URL')) { @ini_set('session.cookie_path', rtrim((string)BASE_URL, '/') . '/'); }
     session_start();
+    // Wymuś token CSRF na starcie sesji
+    if (empty($_SESSION['_token'])) {
+        $_SESSION['_token'] = bin2hex(random_bytes(32));
+    }
 }
 
 
@@ -64,5 +68,15 @@ if (!function_exists('csrf_verify')) {
 
         // (opcjonalnie) regeneracja tokenu po udanym sprawdzeniu:
         // $_SESSION['_token'] = bin2hex(random_bytes(32));
+    }
+}
+// Uniwersalne pole CSRF do formularzy
+if (!function_exists('csrf_field')) {
+    function csrf_field(): void
+    {
+        if (empty($_SESSION['_token'])) {
+            $_SESSION['_token'] = bin2hex(random_bytes(32));
+        }
+        echo '<input type="hidden" name="_token" value="' . htmlspecialchars($_SESSION['_token'], ENT_QUOTES) . '">';
     }
 }

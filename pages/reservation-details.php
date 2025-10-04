@@ -1,0 +1,120 @@
+<?php
+require_once __DIR__ . '/../includes/config.php';
+require_once __DIR__ . '/../includes/db.php';
+
+$BASE = defined('BASE_URL') ? rtrim(BASE_URL, '/') : '';
+$id = isset($_GET['id']) ? (int)$_GET['id'] : 0;
+
+if ($id <= 0) {
+    echo '<div class="container py-4"><div class="alert alert-danger">Brak identyfikatora rezerwacji.</div></div>';
+    return;
+}
+
+$pdo = db();
+$stmt = $pdo->prepare('SELECT * FROM reservations WHERE id = ?');
+$stmt->execute([$id]);
+$res = $stmt->fetch(PDO::FETCH_ASSOC);
+
+if (!$res) {
+    echo '<div class="container py-4"><div class="alert alert-warning">Nie znaleziono rezerwacji.</div></div>';
+    return;
+}
+
+$addons = [];
+$q = $pdo->prepare('SELECT * FROM reservation_addons WHERE reservation_id = ? ORDER BY id ASC');
+$q->execute([$id]);
+$addons = $q->fetchAll(PDO::FETCH_ASSOC) ?: [];
+
+$fmt = fn($n) => number_format((float)$n, 2, ',', ' ');
+?>
+
+<div class="container py-4">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h2>Rezerwacja #<?= (int)$res['id'] ?></h2>
+        <a href="<?= $BASE ?>/index.php" class="btn btn-outline-secondary">Powrót</a>
+    </div>
+
+    <div class="row g-4">
+        <div class="col-12 col-lg-7">
+            <div class="card p-3 mb-3">
+                <h5 class="mb-3">Szczegóły pojazdu</h5>
+                <ul class="list-unstyled mb-0">
+                    <li><strong>Nazwa:</strong> <?= htmlspecialchars((string)$res['product_name']) ?></li>
+                    <li><strong>SKU:</strong> <?= htmlspecialchars((string)$res['sku']) ?></li>
+                </ul>
+            </div>
+
+            <div class="card p-3 mb-3">
+                <h5 class="mb-3">Terminy i miejsca</h5>
+                <ul class="list-unstyled mb-0">
+                    <li><strong>Odbiór:</strong> <?= htmlspecialchars((string)$res['pickup_location']) ?>, <?= htmlspecialchars((string)$res['pickup_at']) ?></li>
+                    <li><strong>Zwrot:</strong> <?= htmlspecialchars((string)$res['dropoff_location']) ?>, <?= htmlspecialchars((string)$res['return_at']) ?></li>
+                    <li><strong>Liczba dni:</strong> <?= (int)$res['rental_days'] ?></li>
+                </ul>
+            </div>
+
+            <div class="card p-3 mb-3">
+                <h5 class="mb-3">Rozliczenie</h5>
+                <div class="table-responsive">
+                    <table class="table align-middle mb-0">
+                        <tbody>
+                            <tr>
+                                <td>Cena bazowa za dzień</td>
+                                <td class="text-end"><?= $fmt($res['price_per_day_base']) ?> PLN</td>
+                            </tr>
+                            <?php if ((int)$res['promo_applied'] === 1 && (float)$res['price_per_day_final'] < (float)$res['price_per_day_base']): ?>
+                                <tr>
+                                    <td>Cena promocyjna za dzień <?= $res['promo_label'] ? '(' . htmlspecialchars((string)$res['promo_label']) . ')' : '' ?></td>
+                                    <td class="text-end text-danger"><?= $fmt($res['price_per_day_final']) ?> PLN</td>
+                                </tr>
+                            <?php endif; ?>
+                            <tr>
+                                <td>Ilość dni</td>
+                                <td class="text-end"><?= (int)$res['rental_days'] ?></td>
+                            </tr>
+                            <?php if ($addons): ?>
+                                <tr>
+                                    <td colspan="2"><strong>Dodatkowe usługi</strong></td>
+                                </tr>
+                                <?php foreach ($addons as $a): ?>
+                                    <tr>
+                                        <td>
+                                            <?= htmlspecialchars((string)$a['name']) ?>
+                                            <span class="text-muted small">(<?= htmlspecialchars((string)$a['charge_type']) ?>)</span>
+                                            <?php if ((int)$a['quantity'] > 1): ?>
+                                                × <?= (int)$a['quantity'] ?>
+                                            <?php endif; ?>
+                                        </td>
+                                        <td class="text-end">
+                                            <?= $fmt($a['line_total']) ?> PLN
+                                        </td>
+                                    </tr>
+                                <?php endforeach; ?>
+                            <?php endif; ?>
+                        </tbody>
+                        <tfoot>
+                            <tr>
+                                <th>Suma</th>
+                                <th class="text-end"><?= $fmt($res['total_gross']) ?> PLN</th>
+                            </tr>
+                        </tfoot>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-12 col-lg-5">
+            <div class="card p-3 mb-3">
+                <h5 class="mb-3">Dane klienta</h5>
+                <ul class="list-unstyled mb-0">
+                    <li><strong>Imię i nazwisko:</strong> <?= htmlspecialchars((string)$res['customer_name']) ?></li>
+                    <li><strong>E-mail:</strong> <?= htmlspecialchars((string)$res['customer_email']) ?></li>
+                    <li><strong>Telefon:</strong> <?= htmlspecialchars((string)$res['customer_phone']) ?></li>
+                    <li><strong>Płatność:</strong> <?= htmlspecialchars((string)$res['payment_method']) ?></li>
+                    <li><strong>Status:</strong> <span class="badge bg-secondary"><?= htmlspecialchars((string)$res['status']) ?></span></li>
+                    <li><strong>Utworzono:</strong> <?= htmlspecialchars((string)$res['created_at']) ?></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>

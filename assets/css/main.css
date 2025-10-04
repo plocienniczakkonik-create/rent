@@ -782,23 +782,30 @@ html, body {
 
 .calendar-placeholder {
   display: flex;
-  align-items: stretch;
-  justify-content: stretch;
-  min-height: 540px;
+  align-items: center;
+  justify-content: center;
+  min-height: 320px;
   height: 100%;
-  width: 100%;
-  padding: 0;
-  background: #e9ecef;
-  border-radius: 2rem;
-  box-shadow: 0 4px 24px rgba(0,0,0,0.08);
+  padding: 1.5rem 0.5rem;
 }
-#flatpickr-calendar {
-  width: 100%;
-  height: 100%;
-  display: flex;
-  align-items: stretch;
-  justify-content: stretch;
+
+.calendar-placeholder .flatpickr-calendar {
+  width: 100% !important;
+  min-width: 320px;
+  max-width: 100%;
+  min-height: 320px;
+  border-radius: 1rem;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
+  border: none;
+  font-size: 1rem;
+  margin: 0 auto;
 }
+
+.calendar-day-price {
+  display: block;
+  font-size: 0.95rem;
+  color: #198754;
+  margin-top: 18px;
   font-weight: 700;
   background: #f8fafc;
   border-radius: 0.5rem;
@@ -831,6 +838,21 @@ html, body {
   font-weight: 700;
 }
 
+.product-details {
+  /* Cursor pointer for interactive fields to prevent text caret */
+}
+.product-details .form-select,
+.product-details input.search-date,
+.product-details .addon-input,
+.product-details .form-check-label {
+  cursor: pointer !important;
+}
+.product-details {
+  /* Reservation form min height to balance with calendar */
+}
+.product-details #product-reservation-form {
+  min-height: 500px;
+}
 .product-details.product-details-main {
   max-width: 1200px;
   margin: 0 auto;
@@ -964,17 +986,16 @@ html, body {
   font-weight: 500;
 }
 .product-details .calendar-placeholder {
-  min-height: 400px;
+  min-height: 180px;
   background: #e9ecef;
   border: 2px dashed #b0b6be;
   color: #6c757d;
-  border-radius: 1.5rem;
-  font-size: 1.18rem;
+  border-radius: 1rem;
+  font-size: 1.1rem;
   display: flex;
   align-items: center;
   justify-content: center;
   margin-top: 0 !important;
-  box-shadow: 0 4px 24px rgba(0,0,0,0.08);
 }
 .product-details h1 {
   font-size: 2.2rem;
@@ -989,7 +1010,7 @@ html, body {
   border: none;
   font-size: 1.08rem;
   color: #222;
-  min-height: 220px;
+  min-height: 150px;
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -1057,3 +1078,5 @@ html, body {
     height: 100%;
   }
 }
+
+/*# sourceMappingURL=main.css.map */

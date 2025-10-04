@@ -96,9 +96,10 @@ $faultBadge = [
                 <div class="card-body p-3">
                     <table class="table table-sm mb-0 vehicle-stats-table">
                         <style>
-                        .vehicle-stats-table th, .vehicle-stats-table td {
-                            padding: 0.75rem 1.25rem !important;
-                        }
+                            .vehicle-stats-table th,
+                            .vehicle-stats-table td {
+                                padding: 0.75rem 1.25rem !important;
+                            }
                         </style>
                         <tbody class="vehicle-stats-table">
                         <tbody>
@@ -257,7 +258,7 @@ $faultBadge = [
                                                     href="<?= $BASE ?>/index.php?page=vehicle-incident-form&id=<?= (int)$i['id'] ?>&vehicle_id=<?= (int)$veh['id'] ?>">
                                                     Edytuj
                                                 </a>
-                                                <form method="post" action="/rental/index.php?page=vehicle-incident-delete"
+                                                <form method="post" action="<?= $BASE ?>/index.php?page=vehicle-incident-delete"
                                                     class="d-inline" onsubmit="return confirm('Usunąć wpis kolizji?')">
                                                     <?php
                                                     if (session_status() !== PHP_SESSION_ACTIVE) {
@@ -318,7 +319,8 @@ $faultBadge = [
                                 </thead>
                                 <tbody>
                                     <?php
-                                    function order_status_badge($status) {
+                                    function order_status_badge($status)
+                                    {
                                         return match (strtolower($status)) {
                                             'paid' => 'bg-primary',
                                             'completed' => 'bg-success',
@@ -341,7 +343,7 @@ $faultBadge = [
                                                         href="<?= $BASE ?>/index.php?page=vehicle-order-form&id=<?= (int)$o['id'] ?>&vehicle_id=<?= (int)$veh['id'] ?>">
                                                         Edytuj
                                                     </a>
-                                                    <form method="post" action="/rental/index.php?page=vehicle-order-delete"
+                                                    <form method="post" action="<?= $BASE ?>/index.php?page=vehicle-order-delete"
                                                         class="d-inline" onsubmit="return confirm('Usunąć zamówienie?')">
                                                         <?php
                                                         if (session_status() !== PHP_SESSION_ACTIVE) {
@@ -427,12 +429,12 @@ $faultBadge = [
                         <input type="hidden" name="page" value="vehicle-detail">
                         <input type="hidden" name="id" value="<?= (int)$veh['id'] ?>">
                         <select name="period" class="form-select form-select-sm" onchange="this.form.submit()">
-                            <option value="all"<?= $period=='all'?' selected':'' ?>>Cały okres</option>
-                            <option value="today"<?= $period=='today'?' selected':'' ?>>Dzisiaj</option>
-                            <option value="7d"<?= $period=='7d'?' selected':'' ?>>Ostatnie 7 dni</option>
-                            <option value="30d"<?= $period=='30d'?' selected':'' ?>>Ostatnie 30 dni</option>
-                            <option value="month"<?= $period=='month'?' selected':'' ?>>Ostatni miesiąc</option>
-                            <option value="year"<?= $period=='year'?' selected':'' ?>>Bieżący rok</option>
+                            <option value="all" <?= $period == 'all' ? ' selected' : '' ?>>Cały okres</option>
+                            <option value="today" <?= $period == 'today' ? ' selected' : '' ?>>Dzisiaj</option>
+                            <option value="7d" <?= $period == '7d' ? ' selected' : '' ?>>Ostatnie 7 dni</option>
+                            <option value="30d" <?= $period == '30d' ? ' selected' : '' ?>>Ostatnie 30 dni</option>
+                            <option value="month" <?= $period == 'month' ? ' selected' : '' ?>>Ostatni miesiąc</option>
+                            <option value="year" <?= $period == 'year' ? ' selected' : '' ?>>Bieżący rok</option>
                         </select>
                     </form>
                 </div>

@@ -54,6 +54,18 @@
 // SCSS dla nowoczesnej karty produktu na stronie szczegółów pojazdu
 
 .product-details {
+  /* Cursor pointer for interactive fields to prevent text caret */
+  .form-select,
+  input.search-date,
+  .addon-input,
+  .form-check-label {
+    cursor: pointer !important;
+  }
+
+  /* Reservation form min height to balance with calendar */
+  #product-reservation-form {
+    min-height: 500px;
+  }
   &.product-details-main {
     max-width: 1200px;
     margin: 0 auto;
@@ -205,7 +217,7 @@
     border: none;
     font-size: 1.08rem;
     color: #222;
-    min-height: 220px;
+    min-height: 150px;
     display: flex;
     flex-direction: column;
     justify-content: center;

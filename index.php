@@ -42,6 +42,8 @@ $actionRoutes = [
     // >>> DODANE (zamówienia/wynajem)
     'vehicle-order-save'      => __DIR__ . '/pages/vehicle-order-save.php',
     'vehicle-order-delete'    => __DIR__ . '/pages/vehicle-order-delete.php',
+    // rezerwacje (status)
+    'reservation-status-save' => __DIR__ . '/pages/reservation-status-save.php',
 ];
 
 // 1) Biała lista akcji
@@ -75,6 +77,9 @@ $routes = [
     'vehicle-form'     => __DIR__ . '/pages/vehicle-form.php',
     'vehicle-detail'   => __DIR__ . '/pages/vehicle-detail.php',
     'reserve'          => __DIR__ . '/pages/reserve.php',
+    'checkout'         => __DIR__ . '/pages/checkout.php',
+    'checkout-confirm' => __DIR__ . '/pages/checkout-confirm.php',
+    'reservation-details' => __DIR__ . '/pages/reservation-details.php',
 
     // >>> DODANE (formularze serwisów i kolizji)
     'vehicle-service-form'   => __DIR__ . '/pages/vehicle-service-form.php',

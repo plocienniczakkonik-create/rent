@@ -33,3 +33,108 @@
   apply();
   window.addEventListener("scroll", apply, { passive: true });
 })();
+
+// FULLCALENDAR – inicjalizacja kalendarza w karcie produktu
+
+document.addEventListener("DOMContentLoaded", function () {
+  const calendarEl = document.getElementById("product-calendar");
+  console.log("Test FullCalendar: calendarEl", calendarEl);
+  console.log("Test FullCalendar: window.FullCalendar", window.FullCalendar);
+  if (calendarEl && window.FullCalendar && window.FullCalendar.Calendar) {
+    // Stan cen w aktualnym zakresie
+    let dailyPrices = {};
+
+    // Helper do klucza daty w formacie YYYY-MM-DD (lokalnie, bez UTC)
+    const dateKey = (d) => {
+      const y = d.getFullYear();
+      const m = String(d.getMonth() + 1).padStart(2, "0");
+      const day = String(d.getDate()).padStart(2, "0");
+      return `${y}-${m}-${day}`;
+    };
+
+    const calendar = new window.FullCalendar.Calendar(calendarEl, {
+      initialView: "dayGridMonth",
+      locale: "pl",
+      height: 350,
+      headerToolbar: {
+        left: "prev,next today",
+        center: "title",
+        right: "dayGridMonth",
+      },
+      events: [],
+      firstDay: 1,
+      buttonText: {
+        today: "Dzisiaj",
+        month: "Miesiąc",
+      },
+      datesSet: async function (info) {
+        await fetchPricesForRange(info.start, info.end);
+      },
+      dayCellDidMount: function (arg) {
+        const dStr = dateKey(arg.date);
+        const entry = dailyPrices[dStr];
+        // Usuń poprzednie wstawki, jeśli rerender
+        const existing = arg.el.querySelector(".fc-day-price");
+        if (existing) existing.remove();
+        if (entry && typeof entry.final === "number") {
+          const priceDiv = document.createElement("div");
+          priceDiv.className = "fc-day-price" + (entry.promo ? " promo" : "");
+          priceDiv.textContent = `${Math.round(entry.final)} PLN`;
+          const top = arg.el.querySelector(".fc-daygrid-day-top") || arg.el;
+          top.appendChild(priceDiv);
+        }
+      },
+    });
+
+    // Funkcja pobierająca ceny dla zadanego zakresu
+    async function fetchPricesForRange(startDate, endDate) {
+      try {
+        const params = new URLSearchParams();
+        const skuInput = document.querySelector('input[name="sku"]');
+        if (!skuInput || !skuInput.value) return;
+        params.set("sku", skuInput.value);
+        params.set("start", startDate.toISOString().slice(0, 10));
+        params.set("end", endDate.toISOString().slice(0, 10));
+        const pickLoc =
+          document.querySelector('select[name="pickup_location"]')?.value || "";
+        const dropLoc =
+          document.querySelector('select[name="dropoff_location"]')?.value ||
+          "";
+        if (pickLoc) params.set("pickup_location", pickLoc);
+        if (dropLoc) params.set("dropoff_location", dropLoc);
+
+        const res = await fetch(
+          "/rental/pages/api/product-daily-prices.php?" + params.toString(),
+          { cache: "no-store" }
+        );
+        if (!res.ok) throw new Error("HTTP " + res.status);
+        const data = await res.json();
+        dailyPrices = data.prices || {};
+      } catch (e) {
+        console.warn("Nie udało się pobrać cen dziennych", e);
+        dailyPrices = {};
+      } finally {
+        calendar.rerenderDates();
+      }
+    }
+
+    // Refetch po zmianie lokalizacji
+    const pickupSelect = document.querySelector(
+      'select[name="pickup_location"]'
+    );
+    const dropoffSelect = document.querySelector(
+      'select[name="dropoff_location"]'
+    );
+    const onLocationChange = async () => {
+      const view = calendar.view;
+      await fetchPricesForRange(view.activeStart, view.activeEnd);
+    };
+    if (pickupSelect) pickupSelect.addEventListener("change", onLocationChange);
+    if (dropoffSelect)
+      dropoffSelect.addEventListener("change", onLocationChange);
+    calendar.render();
+    console.log("FullCalendar został zainicjalizowany");
+  } else {
+    console.warn("FullCalendar nie jest dostępny lub brak calendarEl");
+  }
+});
