@@ -34,21 +34,72 @@ $badge = match ($veh['status']) {
     default       => 'bg-secondary'
 };
 
-/** SERWISY — ostatnie 5 wpisów */
-$q1 = $db->prepare("SELECT *
-                    FROM vehicle_services
-                    WHERE vehicle_id = ?
-                    ORDER BY service_date DESC, id DESC
-                    LIMIT 5");
+/** FUNKCJE SORTOWANIA */
+function sort_link_detail(string $section, string $key, string $label, int $vehicleId): string {
+    $currentSection = $_GET['section'] ?? '';
+    $currentSort = $_GET['sort'] ?? '';
+    $currentDir = strtolower($_GET['dir'] ?? 'desc');
+    
+    // Tylko sortuj jeśli jesteśmy w tej sekcji
+    $nextDir = ($currentSection === $section && $currentSort === $key && $currentDir === 'desc') ? 'asc' : 'desc';
+    $arrowUpActive = ($currentSection === $section && $currentSort === $key && $currentDir === 'asc');
+    $arrowDownActive = ($currentSection === $section && $currentSort === $key && $currentDir === 'desc');
+    
+    $BASE = defined('BASE_URL') ? rtrim(BASE_URL, '/') : '';
+    $qs = http_build_query([
+        'page' => 'vehicle-detail',
+        'id' => $vehicleId,
+        'section' => $section,
+        'sort' => $key,
+        'dir' => $nextDir,
+    ]);
+
+    return '<a class="th-sort-link" href="' . htmlspecialchars($BASE . '/index.php?' . $qs) . '">'
+        . '<span class="label">' . htmlspecialchars($label) . '</span>'
+        . '<span class="chevs"><span class="chev ' . ($arrowUpActive ? 'active' : '') . '">▲</span><span class="chev ' . ($arrowDownActive ? 'active' : '') . '">▼</span></span>'
+        . '</a>';
+}
+
+/** SORTOWANIE PARAMETRY */
+$section = $_GET['section'] ?? '';
+$sort = $_GET['sort'] ?? '';
+$dir = strtolower($_GET['dir'] ?? 'desc');
+$dir = in_array($dir, ['asc', 'desc'], true) ? $dir : 'desc';
+
+/** SERWISY z sortowaniem */
+$serviceOrder = '';
+if ($section === 'services') {
+    $serviceOrder = match ($sort) {
+        'date' => "ORDER BY service_date $dir, id $dir",
+        'mileage' => "ORDER BY odometer_km $dir, service_date DESC",
+        'cost' => "ORDER BY cost_total $dir, service_date DESC",
+        'workshop' => "ORDER BY workshop_name $dir, service_date DESC",
+        default => "ORDER BY service_date DESC, id DESC"
+    };
+} else {
+    $serviceOrder = "ORDER BY service_date DESC, id DESC";
+}
+
+$q1 = $db->prepare("SELECT * FROM vehicle_services WHERE vehicle_id = ? $serviceOrder LIMIT 20");
 $q1->execute([(int)$veh['id']]);
 $services = $q1->fetchAll(PDO::FETCH_ASSOC);
 
-/** KOLIZJE — ostatnie 5 wpisów */
-$q2 = $db->prepare("SELECT *
-                    FROM vehicle_incidents
-                    WHERE vehicle_id = ?
-                    ORDER BY incident_date DESC, id DESC
-                    LIMIT 5");
+/** KOLIZJE z sortowaniem */
+$incidentOrder = '';
+if ($section === 'incidents') {
+    $incidentOrder = match ($sort) {
+        'date' => "ORDER BY incident_date $dir, id $dir",
+        'location' => "ORDER BY location $dir, incident_date DESC",
+        'fault' => "ORDER BY fault $dir, incident_date DESC",
+        'cost' => "ORDER BY repair_cost $dir, incident_date DESC",
+        'driver' => "ORDER BY driver_name $dir, incident_date DESC",
+        default => "ORDER BY incident_date DESC, id DESC"
+    };
+} else {
+    $incidentOrder = "ORDER BY incident_date DESC, id DESC";
+}
+
+$q2 = $db->prepare("SELECT * FROM vehicle_incidents WHERE vehicle_id = ? $incidentOrder LIMIT 20");
 $q2->execute([(int)$veh['id']]);
 $incidents = $q2->fetchAll(PDO::FETCH_ASSOC);
 
@@ -168,11 +219,11 @@ $faultBadge = [
                             <table class="table mb-0 align-middle">
                                 <thead>
                                     <tr>
-                                        <th>Data</th>
-                                        <th>Przebieg</th>
+                                        <th><?= sort_link_detail('services', 'date', 'Data', (int)$veh['id']) ?></th>
+                                        <th><?= sort_link_detail('services', 'mileage', 'Przebieg', (int)$veh['id']) ?></th>
                                         <th>Co było zepsute</th>
-                                        <th>Kwota</th>
-                                        <th>Warsztat</th>
+                                        <th><?= sort_link_detail('services', 'cost', 'Kwota', (int)$veh['id']) ?></th>
+                                        <th><?= sort_link_detail('services', 'workshop', 'Warsztat', (int)$veh['id']) ?></th>
                                         <th class="text-end">Akcje</th>
                                     </tr>
                                 </thead>
@@ -230,11 +281,11 @@ $faultBadge = [
                             <table class="table mb-0 align-middle vehicle-section-table">
                                 <thead>
                                     <tr>
-                                        <th>Data</th>
-                                        <th>Kierowca</th>
+                                        <th><?= sort_link_detail('incidents', 'date', 'Data', (int)$veh['id']) ?></th>
+                                        <th><?= sort_link_detail('incidents', 'driver', 'Kierowca', (int)$veh['id']) ?></th>
                                         <th>Opis uszkodzeń</th>
-                                        <th>Wina</th>
-                                        <th>Koszt</th>
+                                        <th><?= sort_link_detail('incidents', 'fault', 'Wina', (int)$veh['id']) ?></th>
+                                        <th><?= sort_link_detail('incidents', 'cost', 'Koszt', (int)$veh['id']) ?></th>
                                         <th class="text-end">Akcje</th>
                                     </tr>
                                 </thead>
@@ -284,20 +335,32 @@ $faultBadge = [
 
             <!-- Zamówienia / Wynajem -->
             <?php
-            // Pobierz zamówienia dla pojazdu z tabeli orders
-            $q3 = $db->prepare("SELECT * FROM orders WHERE vehicle_id = ? ORDER BY placed_at DESC, id DESC");
+            // Zamówienia z sortowaniem
+            $orderOrder = '';
+            if ($section === 'orders') {
+                $orderOrder = match ($sort) {
+                    'number' => "ORDER BY number $dir, placed_at DESC",
+                    'status' => "ORDER BY status $dir, placed_at DESC",
+                    'net' => "ORDER BY total_net $dir, placed_at DESC",
+                    'vat' => "ORDER BY total_vat $dir, placed_at DESC",
+                    'gross' => "ORDER BY total_gross $dir, placed_at DESC",
+                    'currency' => "ORDER BY currency $dir, placed_at DESC",
+                    'date' => "ORDER BY placed_at $dir, id $dir",
+                    default => "ORDER BY placed_at DESC, id DESC"
+                };
+            } else {
+                $orderOrder = "ORDER BY placed_at DESC, id DESC";
+            }
+            
+            $q3 = $db->prepare("SELECT * FROM orders WHERE vehicle_id = ? $orderOrder LIMIT 20");
             $q3->execute([(int)$veh['id']]);
             $orders = $q3->fetchAll(PDO::FETCH_ASSOC);
             $orderCount = count($orders);
             $orderSum = array_sum(array_column($orders, 'total_gross'));
             ?>
             <div class="card mb-3">
-                <div class="card-header d-flex justify-content-between align-items-center">
+                <div class="card-header">
                     <span>Historia wynajmu</span>
-                    <a class="btn btn-sm btn-outline-primary"
-                        href="<?= $BASE ?>/index.php?page=vehicle-order-form&vehicle_id=<?= (int)$veh['id'] ?>">
-                        Dodaj zamówienie
-                    </a>
                 </div>
                 <div class="card-body p-0">
                     <?php if (!$orders): ?>
@@ -307,14 +370,13 @@ $faultBadge = [
                             <table class="table mb-0 align-middle vehicle-section-table">
                                 <thead>
                                     <tr>
-                                        <th>Numer</th>
-                                        <th>Status</th>
-                                        <th>Kwota netto</th>
-                                        <th>Kwota VAT</th>
-                                        <th>Kwota brutto</th>
-                                        <th>Waluta</th>
-                                        <th>Data złożenia</th>
-                                        <th class="text-end">Akcje</th>
+                                        <th><?= sort_link_detail('orders', 'number', 'Numer', (int)$veh['id']) ?></th>
+                                        <th><?= sort_link_detail('orders', 'status', 'Status', (int)$veh['id']) ?></th>
+                                        <th><?= sort_link_detail('orders', 'net', 'Kwota netto', (int)$veh['id']) ?></th>
+                                        <th><?= sort_link_detail('orders', 'vat', 'Kwota VAT', (int)$veh['id']) ?></th>
+                                        <th><?= sort_link_detail('orders', 'gross', 'Kwota brutto', (int)$veh['id']) ?></th>
+                                        <th><?= sort_link_detail('orders', 'currency', 'Waluta', (int)$veh['id']) ?></th>
+                                        <th><?= sort_link_detail('orders', 'date', 'Data złożenia', (int)$veh['id']) ?></th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -337,28 +399,6 @@ $faultBadge = [
                                             <td><?= number_format((float)$o['total_gross'], 2, ',', ' ') ?> <?= htmlspecialchars($o['currency']) ?></td>
                                             <td><?= htmlspecialchars($o['currency']) ?></td>
                                             <td><?= htmlspecialchars($o['placed_at']) ?></td>
-                                            <td class="text-end">
-                                                <div class="d-inline-flex gap-1">
-                                                    <a class="btn btn-sm btn-link"
-                                                        href="<?= $BASE ?>/index.php?page=vehicle-order-form&id=<?= (int)$o['id'] ?>&vehicle_id=<?= (int)$veh['id'] ?>">
-                                                        Edytuj
-                                                    </a>
-                                                    <form method="post" action="<?= $BASE ?>/index.php?page=vehicle-order-delete"
-                                                        class="d-inline" onsubmit="return confirm('Usunąć zamówienie?')">
-                                                        <?php
-                                                        if (session_status() !== PHP_SESSION_ACTIVE) {
-                                                            session_start();
-                                                        }
-                                                        $tok = $_SESSION['_token'] ?? bin2hex(random_bytes(32));
-                                                        $_SESSION['_token'] = $tok;
-                                                        echo '<input type="hidden" name="_token" value="' . htmlspecialchars($tok, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8') . '">';
-                                                        ?>
-                                                        <input type="hidden" name="id" value="<?= (int)$o['id'] ?>">
-                                                        <input type="hidden" name="vehicle_id" value="<?= (int)$veh['id'] ?>">
-                                                        <button class="btn btn-sm btn-outline-danger">Usuń</button>
-                                                    </form>
-                                                </div>
-                                            </td>
                                         </tr>
                                     <?php endforeach; ?>
                                 </tbody>
@@ -382,6 +422,10 @@ $faultBadge = [
                     <a class="btn btn-outline-warning"
                         href="<?= $BASE ?>/index.php?page=vehicle-incident-form&vehicle_id=<?= (int)$veh['id'] ?>">
                         Zgłoś kolizję
+                    </a>
+                    <a class="btn btn-outline-success"
+                        href="<?= $BASE ?>/index.php?page=vehicle-order-form&vehicle_id=<?= (int)$veh['id'] ?>">
+                        Dodaj zamówienie
                     </a>
                     <a class="btn btn-outline-secondary disabled" title="W kolejnej iteracji">Przypisz do rezerwacji</a>
                     <a class="btn btn-outline-success disabled" title="W kolejnej iteracji">Ustaw przypomnienia</a>

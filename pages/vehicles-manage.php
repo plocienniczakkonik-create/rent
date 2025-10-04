@@ -4,6 +4,7 @@ require_once dirname(__DIR__) . '/auth/auth.php';
 require_staff();
 
 require_once dirname(__DIR__) . '/includes/db.php';
+require_once dirname(__DIR__) . '/includes/_helpers.php';
 $db = db();
 
 $BASE = defined('BASE_URL') ? rtrim(BASE_URL, '/') : '';

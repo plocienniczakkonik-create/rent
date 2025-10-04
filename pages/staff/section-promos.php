@@ -144,10 +144,12 @@ $maps = [
                     <td><?= $minD ?></td>
                     <td><?= $period ?></td>
                     <td class="text-end">
-                        <a href="pages/promo-form.php?id=<?= $id ?>" class="btn btn-outline-primary btn-sm">Edytuj</a>
-                        <a href="pages/promo-delete.php?id=<?= $id ?>&_token=<?= htmlspecialchars(csrf_token(), ENT_QUOTES) ?>"
-                            class="btn btn-outline-danger btn-sm"
-                            onclick="return confirm('Usunąć promocję #<?= $id ?>?');">Usuń</a>
+                        <div class="d-flex gap-1 justify-content-end">
+                            <a href="pages/promo-form.php?id=<?= $id ?>" class="btn btn-outline-primary btn-sm">Edytuj</a>
+                            <a href="pages/promo-delete.php?id=<?= $id ?>&_token=<?= htmlspecialchars(csrf_token(), ENT_QUOTES) ?>"
+                                class="btn btn-outline-danger btn-sm"
+                                onclick="return confirm('Usunąć promocję #<?= $id ?>?');">Usuń</a>
+                        </div>
                     </td>
                 </tr>
         <?php endforeach;

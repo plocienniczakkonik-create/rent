@@ -3,6 +3,7 @@
 require_once dirname(__DIR__) . '/auth/auth.php';
 require_staff();
 require_once dirname(__DIR__) . '/includes/db.php';
+require_once dirname(__DIR__) . '/includes/_helpers.php';
 $db = db();
 
 $vehicle_id = isset($_GET['vehicle_id']) ? (int)$_GET['vehicle_id'] : 0;

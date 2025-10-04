@@ -5,8 +5,6 @@ require_once __DIR__ . '/../includes/_helpers.php';
 require_once __DIR__ . '/../auth/auth.php';
 require_staff();
 
-echo '<pre style="color:blue">DEBUG $_POST: ' . print_r($_POST, true) . '</pre>';
-
 /* --- Gdy POST jest pusty (np. zbyt duży upload) — pokaż czytelny błąd --- */
 if (empty($_POST) && !empty($_SERVER['CONTENT_LENGTH'])) {
     http_response_code(413);
@@ -15,8 +13,6 @@ if (empty($_POST) && !empty($_SERVER['CONTENT_LENGTH'])) {
 }
 
 /* --- CSRF --- */
-echo '<pre style="color:red">DEBUG: SESSION _token = ' . htmlspecialchars($_SESSION['_token'] ?? '') . "\n" .
-    'POST _token = ' . htmlspecialchars($_POST['_token'] ?? '') . "</pre>";
 csrf_verify();
 
 require_once __DIR__ . '/../includes/db.php';

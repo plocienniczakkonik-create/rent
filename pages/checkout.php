@@ -93,6 +93,37 @@ $fmt = function ($n) {
     <h2 class="mb-4">Podsumowanie rezerwacji</h2>
 
     <div class="row g-4">
+        <div class="col-12 col-lg-5">
+            <div class="card p-3 mb-3">
+                <h5 class="mb-3">Dane klienta</h5>
+                <div class="mb-2">
+                    <label class="form-label">Imię i nazwisko</label>
+                    <input type="text" class="form-control" name="customer_name" required form="checkout-form">
+                </div>
+                <div class="mb-2">
+                    <label class="form-label">E-mail</label>
+                    <input type="email" class="form-control" name="customer_email" required form="checkout-form">
+                </div>
+                <div class="mb-2">
+                    <label class="form-label">Telefon</label>
+                    <input type="tel" class="form-control" name="customer_phone" required form="checkout-form">
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Forma płatności</label>
+                    <select class="form-select" name="payment_method" required form="checkout-form">
+                        <option value="" disabled selected>Wybierz...</option>
+                        <option value="online">Płatność online</option>
+                        <option value="card_on_pickup">Karta przy odbiorze</option>
+                        <option value="cash_on_pickup">Gotówka przy odbiorze</option>
+                    </select>
+                </div>
+
+                <div class="alert alert-info">
+                    Finalizacja rezerwacji nastąpi w kolejnym kroku. Tu możesz jeszcze wrócić i zmienić dane przed potwierdzeniem.
+                </div>
+            </div>
+        </div>
+
         <div class="col-12 col-lg-7">
             <div class="card p-3 mb-3">
                 <h5 class="mb-3">Szczegóły</h5>
@@ -144,6 +175,21 @@ $fmt = function ($n) {
                                         </td>
                                     </tr>
                                 <?php endforeach; ?>
+                                <tr class="border-top">
+                                    <td colspan="2" class="pt-3"></td>
+                                </tr>
+                            <?php endif; ?>
+                            <tr>
+                                <td><strong>Łącznie za wynajem</strong></td>
+                                <td class="text-end">
+                                    <strong><?= $fmt($perDayFinal) ?> × <?= (int)$days ?> = <?= $fmt($perDayFinal * $days) ?> PLN</strong>
+                                </td>
+                            </tr>
+                            <?php if ($addonRows): ?>
+                                <tr>
+                                    <td><strong>Suma dodatkowych usług</strong></td>
+                                    <td class="text-end"><strong><?= $fmt($addonsTotal) ?> PLN</strong></td>
+                                </tr>
                             <?php endif; ?>
                         </tbody>
                         <tfoot>
@@ -154,13 +200,8 @@ $fmt = function ($n) {
                         </tfoot>
                     </table>
                 </div>
-            </div>
-        </div>
-
-        <div class="col-12 col-lg-5">
-            <div class="card p-3 mb-3">
-                <h5 class="mb-3">Dane klienta</h5>
-                <form method="post" action="<?= $BASE ?>/index.php?page=checkout-confirm">
+                
+                <form id="checkout-form" method="post" action="<?= $BASE ?>/index.php?page=checkout-confirm" class="mt-3">
                     <?php if (function_exists('csrf_field')) csrf_field(); ?>
                     <input type="hidden" name="sku" value="<?= htmlspecialchars($product['sku']) ?>">
                     <input type="hidden" name="pickup_at" value="<?= htmlspecialchars($pickupAt) ?>">
@@ -170,33 +211,7 @@ $fmt = function ($n) {
                     <?php foreach ($selectedExtras as $ex): ?>
                         <input type="hidden" name="extra[]" value="<?= htmlspecialchars($ex) ?>">
                     <?php endforeach; ?>
-
-                    <div class="mb-2">
-                        <label class="form-label">Imię i nazwisko</label>
-                        <input type="text" class="form-control" name="customer_name" required>
-                    </div>
-                    <div class="mb-2">
-                        <label class="form-label">E-mail</label>
-                        <input type="email" class="form-control" name="customer_email" required>
-                    </div>
-                    <div class="mb-2">
-                        <label class="form-label">Telefon</label>
-                        <input type="tel" class="form-control" name="customer_phone" required>
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label">Forma płatności</label>
-                        <select class="form-select" name="payment_method" required>
-                            <option value="" disabled selected>Wybierz...</option>
-                            <option value="online">Płatność online</option>
-                            <option value="card_on_pickup">Karta przy odbiorze</option>
-                            <option value="cash_on_pickup">Gotówka przy odbiorze</option>
-                        </select>
-                    </div>
-
-                    <div class="alert alert-info">
-                        Finalizacja rezerwacji nastąpi w kolejnym kroku. Tu możesz jeszcze wrócić i zmienić dane przed potwierdzeniem.
-                    </div>
-
+                    
                     <button type="submit" class="btn btn-success w-100">Przejdź do potwierdzenia</button>
                 </form>
             </div>

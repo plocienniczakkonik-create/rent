@@ -3,6 +3,7 @@
 require_once dirname(__DIR__) . '/auth/auth.php';
 $staff = require_staff();
 require_once dirname(__DIR__) . '/includes/db.php';
+require_once dirname(__DIR__) . '/includes/_helpers.php';
 
 csrf_verify();
 

@@ -6,6 +6,7 @@ $staff = require_staff();
 require_once dirname(__DIR__) . '/partials/head.php';
 require_once dirname(__DIR__) . '/partials/header.php';
 require_once dirname(__DIR__) . '/includes/db.php';
+require_once dirname(__DIR__) . '/includes/_helpers.php';
 
 $BASE = defined('BASE_URL') ? rtrim(BASE_URL, '/') : '';
 $id = isset($_GET['id']) ? (int)$_GET['id'] : 0;

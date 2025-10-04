@@ -25,6 +25,9 @@ $q = $pdo->prepare('SELECT * FROM reservation_addons WHERE reservation_id = ? OR
 $q->execute([$id]);
 $addons = $q->fetchAll(PDO::FETCH_ASSOC) ?: [];
 
+// Oblicz sumę dodatków
+$addonsTotal = array_sum(array_column($addons, 'line_total'));
+
 $fmt = fn($n) => number_format((float)$n, 2, ',', ' ');
 ?>
 
@@ -90,6 +93,21 @@ $fmt = fn($n) => number_format((float)$n, 2, ',', ' ');
                                         </td>
                                     </tr>
                                 <?php endforeach; ?>
+                                <tr class="border-top">
+                                    <td colspan="2" class="pt-3"></td>
+                                </tr>
+                            <?php endif; ?>
+                            <tr>
+                                <td><strong>Łącznie za wynajem</strong></td>
+                                <td class="text-end">
+                                    <strong><?= $fmt($res['price_per_day_final']) ?> × <?= (int)$res['rental_days'] ?> = <?= $fmt($res['price_per_day_final'] * $res['rental_days']) ?> PLN</strong>
+                                </td>
+                            </tr>
+                            <?php if ($addons): ?>
+                                <tr>
+                                    <td><strong>Suma dodatkowych usług</strong></td>
+                                    <td class="text-end"><strong><?= $fmt($addonsTotal) ?> PLN</strong></td>
+                                </tr>
                             <?php endif; ?>
                         </tbody>
                         <tfoot>

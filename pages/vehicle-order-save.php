@@ -1,6 +1,7 @@
 <?php
 // /pages/vehicle-order-save.php
 require_once dirname(__DIR__) . '/auth/auth.php';
+require_once dirname(__DIR__) . '/includes/_helpers.php';
 require_staff();
 csrf_verify();
 require_once dirname(__DIR__) . '/includes/db.php';

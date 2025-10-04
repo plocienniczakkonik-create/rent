@@ -1,6 +1,7 @@
 <?php
 // /pages/vehicle-incident-save.php
 require_once __DIR__ . '/../auth/auth.php';
+require_once __DIR__ . '/../includes/_helpers.php';
 require_staff();
 
 /* --- Gdy POST jest pusty (np. zbyt duży upload) — pokaż czytelny błąd --- */
@@ -11,8 +12,6 @@ if (empty($_POST) && !empty($_SERVER['CONTENT_LENGTH'])) {
 }
 
 /* --- CSRF --- */
-echo '<pre style="color:red">DEBUG: SESSION _token = ' . htmlspecialchars($_SESSION['_token'] ?? '') . "\n" .
-    'POST _token = ' . htmlspecialchars($_POST['_token'] ?? '') . "</pre>";
 csrf_verify();
 
 require_once __DIR__ . '/../includes/db.php';

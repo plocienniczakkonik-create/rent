@@ -4,6 +4,7 @@ require_once __DIR__ . '/../auth/auth.php';
 $staff = require_staff();
 
 require_once __DIR__ . '/../includes/db.php';
+require_once __DIR__ . '/../includes/_helpers.php';
 $db = db();
 
 $vehicle_id = (int)($_GET['vehicle_id'] ?? $_POST['vehicle_id'] ?? 0);
@@ -40,14 +41,7 @@ require_once __DIR__ . '/../partials/header.php';
 <div class="container py-4" style="max-width: 900px;">
     <h3 class="mb-4"><?= $id ? 'Edytuj kolizję / szkodę' : 'Zgłoś kolizję / szkodę' ?></h3>
     <form method="post" action="<?= BASE_URL ?>/index.php?page=vehicle-incident-save" enctype="multipart/form-data" class="vstack gap-3">
-        <?php
-        if (session_status() !== PHP_SESSION_ACTIVE) {
-            session_start();
-        }
-        $tok = $_SESSION['_token'] ?? bin2hex(random_bytes(32));
-        $_SESSION['_token'] = $tok;
-        echo '<input type="hidden" name="_token" value="' . htmlspecialchars($tok, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8') . '">';
-        ?>
+        <?= csrf_field() ?>
         <input type="hidden" name="id" value="<?= (int)$id ?>">
         <input type="hidden" name="vehicle_id" value="<?= (int)$vehicle_id ?>">
 
