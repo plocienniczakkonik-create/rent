@@ -51,7 +51,7 @@ $navPosClass = $overlay
             </span>
           </li>
           <li class="nav-item">
-            <a class="nav-link" href="<?= BASE_URL ?>/index.php?page=<?= $role === 'staff' ? 'dashboard-staff' : 'dashboard-client' ?>">Panel</a>
+            <a class="nav-link" href="<?= BASE_URL ?>/index.php?page=<?= in_array($role, ['staff', 'admin']) ? 'dashboard-staff' : 'dashboard-client' ?>">Panel</a>
           </li>
           <li class="nav-item ms-2">
             <a class="btn btn-sm btn-outline-dark rounded-pill" href="<?= BASE_URL ?>/auth/logout.php">Wyloguj</a>

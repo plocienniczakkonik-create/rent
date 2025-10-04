@@ -63,21 +63,21 @@ function is_logged_in(): bool
     return (bool) current_user();
 }
 
-/** Czy user ma rolę 'staff' */
+/** Czy user ma rolę 'staff' lub 'admin' */
 function is_staff(): bool
 {
     $u = current_user();
-    return $u && ($u['role'] ?? 'client') === 'staff';
+    return $u && in_array($u['role'] ?? 'client', ['staff', 'admin']);
 }
 
 /**
- * Wymaga roli 'staff' (najpierw wymaga zalogowania).
+ * Wymaga roli 'staff' lub 'admin' (najpierw wymaga zalogowania).
  * Jeśli nie ma uprawnień — przenosi do panelu klienta.
  */
 function require_staff(): array
 {
     $u = require_auth(); // już pilnuje zalogowania
-    if (($u['role'] ?? 'client') !== 'staff') {
+    if (!in_array($u['role'] ?? 'client', ['staff', 'admin'])) {
         header('Location: ' . base_url() . '/index.php?page=dashboard-client&err=forbidden');
         exit;
     }

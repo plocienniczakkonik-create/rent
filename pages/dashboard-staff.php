@@ -135,9 +135,9 @@ $reports = [
     'top_product'   => 'Toyota Corolla',
 ];
 ?>
-<main class="container-xl staff-main"
+<main class="container-fluid staff-main"
     style="padding-top: 72px;">
-    <div class="w-100" style="max-width: 1200px; margin: 0 auto;">
+    <div class="w-100" style="margin: 0 auto; padding: 0 60px;">
         <div class="row g-3">
             <div class="col-12">
                 <div class="d-flex align-items-center justify-content-between flex-wrap gap-2">
@@ -246,5 +246,20 @@ $reports = [
         }, 100);
     });
 </script>
+
+<style>
+/* Responsive padding dla głównego panelu */
+@media (max-width: 768px) {
+    .staff-main > div {
+        padding: 0 20px !important;
+    }
+}
+
+@media (max-width: 576px) {
+    .staff-main > div {
+        padding: 0 15px !important;
+    }
+}
+</style>
 
 <?php require_once dirname(__DIR__) . '/partials/footer.php'; ?>

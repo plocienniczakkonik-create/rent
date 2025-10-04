@@ -43,7 +43,8 @@ if ($redirect !== '') {
 
 // akceptujemy tylko ścieżki typu "index.php?..." — inaczej domyślnie kierujemy wg roli
 if ($redirect === '' || !preg_match('#^index\.php(\?.*)?$#i', $redirect)) {
-    $redirect = 'index.php?page=' . (($row['role'] ?? 'client') === 'staff' ? 'dashboard-staff' : 'dashboard-client');
+    $userRole = $row['role'] ?? 'client';
+    $redirect = 'index.php?page=' . (in_array($userRole, ['staff', 'admin']) ? 'dashboard-staff' : 'dashboard-client');
 }
 
 header('Location: ' . $to($redirect));
