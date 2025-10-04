@@ -2,6 +2,7 @@
 // /pages/staff/settings/shop-general.php
 
 $db = db();
+i18n::init();
 
 // Pobierz ustawienia sklepu
 $shop_settings = [];
@@ -38,6 +39,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['save_shop_settings'])
             'default_currency' => $_POST['default_currency'] ?? 'PLN',
             'timezone' => $_POST['timezone'] ?? 'Europe/Warsaw',
             'default_language' => $_POST['default_language'] ?? 'pl',
+            'admin_language' => $_POST['admin_language'] ?? 'pl',
             'date_format' => $_POST['date_format'] ?? 'd.m.Y',
             'time_format' => $_POST['time_format'] ?? 'H:i',
             
@@ -86,7 +88,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['save_shop_settings'])
         }
         
         $db->commit();
-        $success_message = "Ustawienia sklepu zostały zapisane!";
+        $success_message = __('shop_settings_saved', 'admin', 'Ustawienia sklepu zostały zapisane!');
         
         // Odśwież ustawienia
         $shop_settings = [];
@@ -97,7 +99,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['save_shop_settings'])
         
     } catch (PDOException $e) {
         $db->rollback();
-        $error_message = "Błąd podczas zapisywania: " . $e->getMessage();
+        $error_message = __('saving_error', 'admin', 'Błąd podczas zapisywania') . ": " . $e->getMessage();
     }
 }
 
@@ -107,6 +109,7 @@ $defaults = [
     'default_currency' => 'PLN',
     'timezone' => 'Europe/Warsaw',
     'default_language' => 'pl',
+    'admin_language' => 'pl',
     'date_format' => 'd.m.Y',
     'time_format' => 'H:i',
     'default_tax_rate' => '23',
@@ -165,16 +168,16 @@ $languages = [
 
 <div class="d-flex justify-content-between align-items-center mb-3">
     <div>
-        <h5 class="mb-1">Ustawienia sklepu</h5>
-        <p class="text-muted mb-0">Konfiguracja biznesowa i regionalna</p>
+        <h5 class="mb-1"><?= __('shop_general_settings', 'admin', 'Ustawienia sklepu') ?></h5>
+        <p class="text-muted mb-0"><?= __('shop_configuration', 'admin', 'Konfiguracja biznesowa i regionalna') ?></p>
     </div>
     <button class="btn btn-outline-secondary btn-sm" onclick="location.reload()">
-        <i class="bi bi-arrow-clockwise"></i> Odśwież
+        <i class="bi bi-arrow-clockwise"></i> <?= __('refresh', 'admin', 'Odśwież') ?>
     </button>
 </div>
 
 <?php if (isset($success_message)): ?>
-    <div class="alert alert-success">
+    <div class="alert alert-success alert-dismissible auto-fade" id="successAlert">
         <i class="bi bi-check-circle"></i>
         <?= $success_message ?>
     </div>
@@ -193,47 +196,47 @@ $languages = [
         <div class="col-12">
             <div class="card">
                 <div class="card-header">
-                    <h6 class="mb-0"><i class="bi bi-building"></i> Informacje o firmie</h6>
+                    <h6 class="mb-0"><i class="bi bi-building"></i> <?= __('business_information', 'admin', 'Informacje o firmie') ?></h6>
                 </div>
                 <div class="card-body">
                     <div class="row g-3">
                         <div class="col-md-6">
-                            <label class="form-label">Nazwa firmy</label>
+                            <label class="form-label"><?= __('company_name', 'admin', 'Nazwa firmy') ?></label>
                             <input type="text" name="company_name" class="form-control" 
                                    value="<?= htmlspecialchars($shop_settings['company_name'] ?? '') ?>">
                         </div>
                         <div class="col-md-6">
-                            <label class="form-label">Email firmy</label>
+                            <label class="form-label"><?= __('company_email', 'admin', 'Email firmy') ?></label>
                             <input type="email" name="company_email" class="form-control" 
                                    value="<?= htmlspecialchars($shop_settings['company_email'] ?? '') ?>">
                         </div>
                         <div class="col-md-6">
-                            <label class="form-label">Telefon</label>
+                            <label class="form-label"><?= __('company_phone', 'admin', 'Telefon') ?></label>
                             <input type="text" name="company_phone" class="form-control" 
                                    value="<?= htmlspecialchars($shop_settings['company_phone'] ?? '') ?>">
                         </div>
                         <div class="col-md-6">
-                            <label class="form-label">Strona internetowa</label>
+                            <label class="form-label"><?= __('company_website', 'admin', 'Strona internetowa') ?></label>
                             <input type="url" name="company_website" class="form-control" 
                                    value="<?= htmlspecialchars($shop_settings['company_website'] ?? '') ?>">
                         </div>
                         <div class="col-md-12">
-                            <label class="form-label">Adres</label>
+                            <label class="form-label"><?= __('company_address', 'admin', 'Adres') ?></label>
                             <input type="text" name="company_address" class="form-control" 
                                    value="<?= htmlspecialchars($shop_settings['company_address'] ?? '') ?>">
                         </div>
                         <div class="col-md-4">
-                            <label class="form-label">Miasto</label>
+                            <label class="form-label"><?= __('company_city', 'admin', 'Miasto') ?></label>
                             <input type="text" name="company_city" class="form-control" 
                                    value="<?= htmlspecialchars($shop_settings['company_city'] ?? '') ?>">
                         </div>
                         <div class="col-md-4">
-                            <label class="form-label">Kod pocztowy</label>
+                            <label class="form-label"><?= __('company_postal_code', 'admin', 'Kod pocztowy') ?></label>
                             <input type="text" name="company_postal_code" class="form-control" 
                                    value="<?= htmlspecialchars($shop_settings['company_postal_code'] ?? '') ?>">
                         </div>
                         <div class="col-md-4">
-                            <label class="form-label">Kraj</label>
+                            <label class="form-label"><?= __('company_country', 'admin', 'Kraj') ?></label>
                             <select name="company_country" class="form-select">
                                 <?php foreach ($countries as $country): ?>
                                     <option value="<?= $country ?>" 
@@ -244,12 +247,12 @@ $languages = [
                             </select>
                         </div>
                         <div class="col-md-6">
-                            <label class="form-label">NIP</label>
+                            <label class="form-label"><?= __('company_nip', 'admin', 'NIP') ?></label>
                             <input type="text" name="company_nip" class="form-control" 
                                    value="<?= htmlspecialchars($shop_settings['company_nip'] ?? '') ?>">
                         </div>
                         <div class="col-md-6">
-                            <label class="form-label">REGON</label>
+                            <label class="form-label"><?= __('company_regon', 'admin', 'REGON') ?></label>
                             <input type="text" name="company_regon" class="form-control" 
                                    value="<?= htmlspecialchars($shop_settings['company_regon'] ?? '') ?>">
                         </div>
@@ -262,11 +265,11 @@ $languages = [
         <div class="col-lg-6">
             <div class="card">
                 <div class="card-header">
-                    <h6 class="mb-0"><i class="bi bi-globe"></i> Ustawienia regionalne</h6>
+                    <h6 class="mb-0"><i class="bi bi-globe"></i> <?= __('regional_settings', 'admin', 'Ustawienia regionalne') ?></h6>
                 </div>
                 <div class="card-body">
                     <div class="mb-3">
-                        <label class="form-label">Główna waluta</label>
+                        <label class="form-label"><?= __('default_currency', 'admin', 'Główna waluta') ?></label>
                         <select name="default_currency" class="form-select">
                             <?php foreach ($currencies as $code => $name): ?>
                                 <option value="<?= $code ?>" 
@@ -278,7 +281,7 @@ $languages = [
                     </div>
                     
                     <div class="mb-3">
-                        <label class="form-label">Strefa czasowa</label>
+                        <label class="form-label"><?= __('timezone', 'admin', 'Strefa czasowa') ?></label>
                         <select name="timezone" class="form-select">
                             <?php foreach ($timezones as $tz => $name): ?>
                                 <option value="<?= $tz ?>" 
@@ -290,7 +293,7 @@ $languages = [
                     </div>
                     
                     <div class="mb-3">
-                        <label class="form-label">Język domyślny</label>
+                        <label class="form-label"><?= __('default_language', 'admin', 'Język domyślny sklepu') ?></label>
                         <select name="default_language" class="form-select">
                             <?php foreach ($languages as $code => $name): ?>
                                 <option value="<?= $code ?>" 
@@ -299,11 +302,25 @@ $languages = [
                                 </option>
                             <?php endforeach; ?>
                         </select>
+                        <div class="form-text"><?= __('default_language_help', 'admin', 'Domyślny język dla klientów i strony głównej') ?></div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label class="form-label"><?= __('admin_language', 'admin', 'Język panelu administracyjnego') ?></label>
+                        <select name="admin_language" class="form-select">
+                            <?php foreach ($languages as $code => $name): ?>
+                                <option value="<?= $code ?>" 
+                                        <?= ($shop_settings['admin_language'] ?? '') === $code ? 'selected' : '' ?>>
+                                    <?= $name ?>
+                                </option>
+                            <?php endforeach; ?>
+                        </select>
+                        <div class="form-text"><?= __('admin_language_help', 'admin', 'Domyślny język dla panelu pracowników/administratorów') ?></div>
                     </div>
                     
                     <div class="row g-2">
                         <div class="col-6">
-                            <label class="form-label">Format daty</label>
+                            <label class="form-label"><?= __('date_format', 'admin', 'Format daty') ?></label>
                             <select name="date_format" class="form-select">
                                 <option value="d.m.Y" <?= ($shop_settings['date_format'] ?? '') === 'd.m.Y' ? 'selected' : '' ?>>dd.mm.yyyy</option>
                                 <option value="Y-m-d" <?= ($shop_settings['date_format'] ?? '') === 'Y-m-d' ? 'selected' : '' ?>>yyyy-mm-dd</option>
@@ -311,7 +328,7 @@ $languages = [
                             </select>
                         </div>
                         <div class="col-6">
-                            <label class="form-label">Format czasu</label>
+                            <label class="form-label"><?= __('time_format', 'admin', 'Format czasu') ?></label>
                             <select name="time_format" class="form-select">
                                 <option value="H:i" <?= ($shop_settings['time_format'] ?? '') === 'H:i' ? 'selected' : '' ?>>24h</option>
                                 <option value="g:i A" <?= ($shop_settings['time_format'] ?? '') === 'g:i A' ? 'selected' : '' ?>>12h AM/PM</option>
@@ -326,11 +343,11 @@ $languages = [
         <div class="col-lg-6">
             <div class="card">
                 <div class="card-header">
-                    <h6 class="mb-0"><i class="bi bi-calculator"></i> Podatki i ceny</h6>
+                    <h6 class="mb-0"><i class="bi bi-calculator"></i> <?= __('taxes_and_prices', 'admin', 'Podatki i ceny') ?></h6>
                 </div>
                 <div class="card-body">
                     <div class="mb-3">
-                        <label class="form-label">Domyślna stawka VAT (%)</label>
+                        <label class="form-label"><?= __('default_tax_rate', 'admin', 'Domyślna stawka VAT (%)') ?></label>
                         <input type="number" name="default_tax_rate" class="form-control" 
                                value="<?= htmlspecialchars($shop_settings['default_tax_rate'] ?? '') ?>"
                                min="0" max="100" step="0.01">
@@ -340,7 +357,7 @@ $languages = [
                         <input type="checkbox" name="tax_included_in_prices" class="form-check-input" 
                                id="tax_included" <?= ($shop_settings['tax_included_in_prices'] ?? '') === '1' ? 'checked' : '' ?>>
                         <label class="form-check-label" for="tax_included">
-                            Ceny zawierają VAT
+                            <?= __('tax_included_in_prices', 'admin', 'Ceny zawierają VAT') ?>
                         </label>
                     </div>
                     
@@ -348,39 +365,39 @@ $languages = [
                         <input type="checkbox" name="show_prices_with_tax" class="form-check-input" 
                                id="show_with_tax" <?= ($shop_settings['show_prices_with_tax'] ?? '') === '1' ? 'checked' : '' ?>>
                         <label class="form-check-label" for="show_with_tax">
-                            Wyświetlaj ceny z VAT
+                            <?= __('show_prices_with_vat', 'admin', 'Wyświetlaj ceny z VAT') ?>
                         </label>
                     </div>
                     
                     <div class="mb-3">
-                        <label class="form-label">Pozycja symbolu waluty</label>
+                        <label class="form-label"><?= __('currency_position', 'admin', 'Pozycja symbolu waluty') ?></label>
                         <select name="currency_symbol_position" class="form-select">
-                            <option value="before" <?= ($shop_settings['currency_symbol_position'] ?? '') === 'before' ? 'selected' : '' ?>>Przed ceną (€100)</option>
-                            <option value="after" <?= ($shop_settings['currency_symbol_position'] ?? '') === 'after' ? 'selected' : '' ?>>Po cenie (100 zł)</option>
+                            <option value="before" <?= ($shop_settings['currency_symbol_position'] ?? '') === 'before' ? 'selected' : '' ?>><?= __('currency_before_price', 'admin', 'Przed ceną (€100)') ?></option>
+                            <option value="after" <?= ($shop_settings['currency_symbol_position'] ?? '') === 'after' ? 'selected' : '' ?>><?= __('currency_after_price', 'admin', 'Po cenie (100 zł)') ?></option>
                         </select>
                     </div>
                     
                     <div class="row g-2">
                         <div class="col-4">
-                            <label class="form-label">Miejsca dziesiętne</label>
+                            <label class="form-label"><?= __('decimal_places', 'admin', 'Miejsca dziesiętne') ?></label>
                             <select name="decimal_places" class="form-select">
                                 <option value="0" <?= ($shop_settings['decimal_places'] ?? '') === '0' ? 'selected' : '' ?>>0</option>
                                 <option value="2" <?= ($shop_settings['decimal_places'] ?? '') === '2' ? 'selected' : '' ?>>2</option>
                             </select>
                         </div>
                         <div class="col-4">
-                            <label class="form-label">Sep. tysięcy</label>
+                            <label class="form-label"><?= __('thousands_separator', 'admin', 'Sep. tysięcy') ?></label>
                             <select name="thousand_separator" class="form-select">
-                                <option value=" " <?= ($shop_settings['thousand_separator'] ?? '') === ' ' ? 'selected' : '' ?>>Spacja</option>
-                                <option value="," <?= ($shop_settings['thousand_separator'] ?? '') === ',' ? 'selected' : '' ?>>Przecinek</option>
-                                <option value="." <?= ($shop_settings['thousand_separator'] ?? '') === '.' ? 'selected' : '' ?>>Kropka</option>
+                                <option value=" " <?= ($shop_settings['thousand_separator'] ?? '') === ' ' ? 'selected' : '' ?>><?= __('space', 'admin', 'Spacja') ?></option>
+                                <option value="," <?= ($shop_settings['thousand_separator'] ?? '') === ',' ? 'selected' : '' ?>><?= __('comma', 'admin', 'Przecinek') ?></option>
+                                <option value="." <?= ($shop_settings['thousand_separator'] ?? '') === '.' ? 'selected' : '' ?>><?= __('dot', 'admin', 'Kropka') ?></option>
                             </select>
                         </div>
                         <div class="col-4">
-                            <label class="form-label">Sep. dziesiętny</label>
+                            <label class="form-label"><?= __('decimal_separator', 'admin', 'Sep. dziesiętny') ?></label>
                             <select name="decimal_separator" class="form-select">
-                                <option value="," <?= ($shop_settings['decimal_separator'] ?? '') === ',' ? 'selected' : '' ?>>Przecinek</option>
-                                <option value="." <?= ($shop_settings['decimal_separator'] ?? '') === '.' ? 'selected' : '' ?>>Kropka</option>
+                                <option value="," <?= ($shop_settings['decimal_separator'] ?? '') === ',' ? 'selected' : '' ?>><?= __('comma', 'admin', 'Przecinek') ?></option>
+                                <option value="." <?= ($shop_settings['decimal_separator'] ?? '') === '.' ? 'selected' : '' ?>><?= __('dot', 'admin', 'Kropka') ?></option>
                             </select>
                         </div>
                     </div>
@@ -392,32 +409,32 @@ $languages = [
         <div class="col-lg-6">
             <div class="card">
                 <div class="card-header">
-                    <h6 class="mb-0"><i class="bi bi-calendar-check"></i> Zasady rezerwacji</h6>
+                    <h6 class="mb-0"><i class="bi bi-calendar-check"></i> <?= __('booking_rules', 'admin', 'Zasady rezerwacji') ?></h6>
                 </div>
                 <div class="card-body">
                     <div class="mb-3">
-                        <label class="form-label">Min. czas wynajmu (godziny)</label>
+                        <label class="form-label"><?= __('min_rental_hours', 'admin', 'Min. czas wynajmu (godziny)') ?></label>
                         <input type="number" name="min_rental_hours" class="form-control" 
                                value="<?= htmlspecialchars($shop_settings['min_rental_hours'] ?? '') ?>"
                                min="1" max="168">
                     </div>
                     
                     <div class="mb-3">
-                        <label class="form-label">Max. czas wynajmu (dni)</label>
+                        <label class="form-label"><?= __('max_rental_days', 'admin', 'Max. czas wynajmu (dni)') ?></label>
                         <input type="number" name="max_rental_days" class="form-control" 
                                value="<?= htmlspecialchars($shop_settings['max_rental_days'] ?? '') ?>"
                                min="1" max="365">
                     </div>
                     
                     <div class="mb-3">
-                        <label class="form-label">Wyprzedzenie rezerwacji (dni)</label>
+                        <label class="form-label"><?= __('advance_booking_days', 'admin', 'Wyprzedzenie rezerwacji (dni)') ?></label>
                         <input type="number" name="advance_booking_days" class="form-control" 
                                value="<?= htmlspecialchars($shop_settings['advance_booking_days'] ?? '') ?>"
                                min="1" max="730">
                     </div>
                     
                     <div class="mb-3">
-                        <label class="form-label">Anulowanie przed (godziny)</label>
+                        <label class="form-label"><?= __('cancellation_hours', 'admin', 'Anulowanie przed (godziny)') ?></label>
                         <input type="number" name="cancellation_hours" class="form-control" 
                                value="<?= htmlspecialchars($shop_settings['cancellation_hours'] ?? '') ?>"
                                min="1" max="168">
@@ -427,7 +444,7 @@ $languages = [
                         <input type="checkbox" name="auto_confirmation" class="form-check-input" 
                                id="auto_confirmation" <?= ($shop_settings['auto_confirmation'] ?? '') === '1' ? 'checked' : '' ?>>
                         <label class="form-check-label" for="auto_confirmation">
-                            Automatyczne potwierdzanie
+                            <?= __('auto_confirmation', 'admin', 'Automatyczne potwierdzanie') ?>
                         </label>
                     </div>
                 </div>
@@ -438,11 +455,11 @@ $languages = [
         <div class="col-lg-6">
             <div class="card">
                 <div class="card-header">
-                    <h6 class="mb-0"><i class="bi bi-bell"></i> Powiadomienia</h6>
+                    <h6 class="mb-0"><i class="bi bi-bell"></i> <?= __('notifications', 'admin', 'Powiadomienia') ?></h6>
                 </div>
                 <div class="card-body">
                     <div class="mb-3">
-                        <label class="form-label">Email dla powiadomień</label>
+                        <label class="form-label"><?= __('notification_email', 'admin', 'Email dla powiadomień') ?></label>
                         <input type="email" name="notification_email" class="form-control" 
                                value="<?= htmlspecialchars($shop_settings['notification_email'] ?? '') ?>">
                     </div>
@@ -451,7 +468,7 @@ $languages = [
                         <input type="checkbox" name="notification_new_booking" class="form-check-input" 
                                id="notif_booking" <?= ($shop_settings['notification_new_booking'] ?? '') === '1' ? 'checked' : '' ?>>
                         <label class="form-check-label" for="notif_booking">
-                            Nowe rezerwacje
+                            <?= __('new_bookings', 'admin', 'Nowe rezerwacje') ?>
                         </label>
                     </div>
                     
@@ -459,7 +476,7 @@ $languages = [
                         <input type="checkbox" name="notification_cancellation" class="form-check-input" 
                                id="notif_cancel" <?= ($shop_settings['notification_cancellation'] ?? '') === '1' ? 'checked' : '' ?>>
                         <label class="form-check-label" for="notif_cancel">
-                            Anulowania
+                            <?= __('cancellations', 'admin', 'Anulowania') ?>
                         </label>
                     </div>
                     
@@ -467,7 +484,7 @@ $languages = [
                         <input type="checkbox" name="notification_payment" class="form-check-input" 
                                id="notif_payment" <?= ($shop_settings['notification_payment'] ?? '') === '1' ? 'checked' : '' ?>>
                         <label class="form-check-label" for="notif_payment">
-                            Płatności
+                            <?= __('payments', 'admin', 'Płatności') ?>
                         </label>
                     </div>
                 </div>
@@ -478,13 +495,13 @@ $languages = [
     <!-- Przyciski akcji -->
     <div class="mt-4 d-flex gap-2">
         <button type="submit" name="save_shop_settings" class="btn btn-primary">
-            <i class="bi bi-check-lg"></i> Zapisz wszystkie ustawienia
+            <i class="bi bi-check-lg"></i> <?= __('save_all_settings', 'admin', 'Zapisz wszystkie ustawienia') ?>
         </button>
         <button type="button" class="btn btn-outline-secondary" onclick="location.reload()">
-            <i class="bi bi-arrow-clockwise"></i> Anuluj zmiany
+            <i class="bi bi-arrow-clockwise"></i> <?= __('cancel_changes', 'admin', 'Anuluj zmiany') ?>
         </button>
         <button type="button" class="btn btn-outline-info" data-bs-toggle="modal" data-bs-target="#previewModal">
-            <i class="bi bi-eye"></i> Podgląd ustawień
+            <i class="bi bi-eye"></i> <?= __('preview_settings', 'admin', 'Podgląd ustawień') ?>
         </button>
     </div>
 </form>
@@ -494,7 +511,7 @@ $languages = [
     <div class="modal-dialog modal-lg">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title">Podgląd ustawień sklepu</h5>
+                <h5 class="modal-title"><?= __('shop_settings_preview', 'admin', 'Podgląd ustawień sklepu') ?></h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
             <div class="modal-body">
@@ -509,7 +526,10 @@ $languages = [
                         <strong>Strefa czasowa:</strong> <?= htmlspecialchars($shop_settings['timezone'] ?? 'Europe/Warsaw') ?>
                     </div>
                     <div class="col-md-6">
-                        <strong>Język:</strong> <?= htmlspecialchars($languages[$shop_settings['default_language'] ?? 'pl'] ?? 'Polski') ?>
+                        <strong><?= __('shop_language', 'admin', 'Język sklepu') ?>:</strong> <?= htmlspecialchars($languages[$shop_settings['default_language'] ?? 'pl'] ?? 'Polski') ?>
+                    </div>
+                    <div class="col-md-6">
+                        <strong><?= __('panel_language', 'admin', 'Język panelu') ?>:</strong> <?= htmlspecialchars($languages[$shop_settings['admin_language'] ?? 'pl'] ?? 'Polski') ?>
                     </div>
                     <div class="col-md-6">
                         <strong>VAT:</strong> <?= htmlspecialchars($shop_settings['default_tax_rate'] ?? '23') ?>%
@@ -522,3 +542,24 @@ $languages = [
         </div>
     </div>
 </div>
+
+<style>
+.auto-fade {
+    transition: opacity 0.5s ease-out;
+}
+</style>
+
+<script>
+// Auto-fade success alerts
+document.addEventListener('DOMContentLoaded', function() {
+    const successAlert = document.getElementById('successAlert');
+    if (successAlert) {
+        setTimeout(function() {
+            successAlert.style.opacity = '0';
+            setTimeout(function() {
+                successAlert.style.display = 'none';
+            }, 500);
+        }, 3000);
+    }
+});
+</script>

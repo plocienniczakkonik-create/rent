@@ -12,41 +12,42 @@ $settings_subsection = $_GET['settings_subsection'] ?? 'list';
 // Definicja dostępnych sekcji
 $sections = [
     'users' => [
-        'title' => 'Użytkownicy',
+        'title' => __('users', 'admin', 'Użytkownicy'),
         'icon' => 'bi-people',
         'subsections' => [
-            'list' => 'Wszyscy użytkownicy',
-            'add' => 'Dodaj użytkownika'
+            'list' => __('all_users', 'admin', 'Wszyscy użytkownicy'),
+            'add' => __('add_user', 'admin', 'Dodaj użytkownika'),
+            'edit' => __('edit_user', 'admin', 'Edytuj użytkownika')
         ]
     ],
     'account' => [
-        'title' => 'Konto',
+        'title' => __('account', 'admin', 'Konto'),
         'icon' => 'bi-person-circle',
         'subsections' => [
-            'profile' => 'Ustawienia konta'
+            'profile' => __('account_settings', 'admin', 'Ustawienia konta')
         ]
     ],
     'payments' => [
-        'title' => 'Płatności',
+        'title' => __('payments', 'admin', 'Płatności'),
         'icon' => 'bi-credit-card',
         'subsections' => [
-            'general' => 'Ustawienia ogólne',
-            'gateways' => 'Bramki płatności'
+            'general' => __('general_settings', 'admin', 'Ustawienia ogólne'),
+            'gateways' => __('payment_gateways', 'admin', 'Bramki płatności')
         ]
     ],
     'shop' => [
-        'title' => 'Sklep',
+        'title' => __('shop', 'admin', 'Sklep'),
         'icon' => 'bi-shop',
         'subsections' => [
-            'general' => 'Ustawienia ogólne'
+            'general' => __('general_settings', 'admin', 'Ustawienia ogólne')
         ]
     ],
     'email' => [
-        'title' => 'Email',
+        'title' => __('email', 'admin', 'Email'),
         'icon' => 'bi-envelope',
         'subsections' => [
-            'templates' => 'Szablony emaili',
-            'smtp' => 'Konfiguracja SMTP'
+            'templates' => __('email_templates', 'admin', 'Szablony emaili'),
+            'smtp' => __('smtp_configuration', 'admin', 'Konfiguracja SMTP')
         ]
     ]
 ];
@@ -139,7 +140,7 @@ function settings_link(string $section, string $subsection, string $label, strin
 
 <div class="card section-settings">
     <div class="card-header">
-        <h2 class="h6 mb-0">Ustawienia systemu</h2>
+        <h2 class="h6 mb-0"><?= __('system_settings', 'admin', 'Ustawienia systemu') ?></h2>
     </div>
     <div class="card-body">
         <div class="settings-container">
@@ -174,9 +175,9 @@ function settings_link(string $section, string $subsection, string $label, strin
                             include $subsection_file;
                         } else {
                             echo '<div class="alert alert-info">';
-                            echo '<h5>W trakcie budowy</h5>';
-                            echo '<p>Sekcja <strong>' . htmlspecialchars($sections[$settings_section]['subsections'][$settings_subsection]) . '</strong> jest obecnie w trakcie implementacji.</p>';
-                            echo '<p class="mb-0">Planowane funkcje:</p>';
+                            echo '<h5>' . __('under_construction', 'admin', 'W trakcie budowy') . '</h5>';
+                            echo '<p>' . __('section', 'admin', 'Sekcja') . ' <strong>' . htmlspecialchars($sections[$settings_section]['subsections'][$settings_subsection]) . '</strong> ' . __('section_under_implementation', 'admin', 'jest obecnie w trakcie implementacji.') . '</p>';
+                            echo '<p class="mb-0">' . __('planned_features', 'admin', 'Planowane funkcje') . ':</p>';
                             echo '<ul class="mb-0">';
                             
                             // Opis funkcji dla każdej sekcji

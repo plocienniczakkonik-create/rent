@@ -7,7 +7,11 @@ require_once dirname(__DIR__) . '/partials/head.php';
 require_once dirname(__DIR__) . '/partials/header.php';
 require_once dirname(__DIR__) . '/includes/db.php';
 require_once dirname(__DIR__) . '/includes/_helpers.php';
+require_once dirname(__DIR__) . '/includes/i18n.php';
 require_once __DIR__ . '/staff/_helpers.php';
+
+// Initialize i18n system
+i18n::init();
 
 $BASE = defined('BASE_URL') ? rtrim(BASE_URL, '/') : '';
 
@@ -142,15 +146,16 @@ $reports = [
             <div class="col-12">
                 <div class="d-flex align-items-center justify-content-between flex-wrap gap-2">
                     <div>
-                        <h1 class="h4 mb-0">Panel pracownika</h1>
+                        <h1 class="h4 mb-0"><?= __('dashboard', 'admin', 'Panel pracownika') ?></h1>
                         <div class="text-muted small">
                             <?= htmlspecialchars($staff['first_name'] ?? '') . ' ' . htmlspecialchars($staff['last_name'] ?? '') ?>
                             <?= !empty($staff['job_title']) ? ' • ' . htmlspecialchars($staff['job_title']) : '' ?>
                         </div>
                     </div>
                     <div class="d-flex gap-2">
-                        <a class="btn btn-outline-secondary btn-sm" href="<?= $BASE ?>/index.php">Podgląd strony</a>
-                        <a class="btn btn-primary btn-sm" href="pages/product-form.php" id="product-new">+ Dodaj produkt</a>
+                        <?= i18n::renderLanguageSwitcher('admin', $_SERVER['REQUEST_URI']) ?>
+                        <a class="btn btn-outline-secondary btn-sm" href="<?= $BASE ?>/index.php"><?= __('view_site', 'admin', 'Podgląd strony') ?></a>
+                        <a class="btn btn-primary btn-sm" href="pages/product-form.php" id="product-new">+ <?= __('add_product', 'admin', 'Dodaj produkt') ?></a>
                     </div>
                 </div>
             </div>
@@ -158,33 +163,32 @@ $reports = [
             <div class="col-12">
                 <ul class="nav nav-pills gap-2" id="staffTabs" role="tablist">
                     <li class="nav-item" role="presentation">
-                        <button class="nav-link active" id="tab-products" data-bs-toggle="pill" data-bs-target="#pane-products" type="button" role="tab">Produkty</button>
+                        <button class="nav-link active" id="tab-products" data-bs-toggle="pill" data-bs-target="#pane-products" type="button" role="tab"><?= __('products', 'admin', 'Produkty') ?></button>
                     </li>
                     <li class="nav-item" role="presentation">
                         <button class="nav-link" id="tab-vehicles" data-bs-toggle="pill" data-bs-target="#pane-vehicles" type="button" role="tab">
-                            Pojazdy
+                            <?= __('vehicles', 'admin', 'Pojazdy') ?>
                         </button>
                     </li>
                     <li class="nav-item" role="presentation">
-                        <button class="nav-link" id="tab-orders" data-bs-toggle="pill" data-bs-target="#pane-orders" type="button" role="tab">Zamówienia</button>
+                        <button class="nav-link" id="tab-orders" data-bs-toggle="pill" data-bs-target="#pane-orders" type="button" role="tab"><?= __('orders', 'admin', 'Zamówienia') ?></button>
                     </li>
                     <li class="nav-item" role="presentation">
-                        <button class="nav-link" id="tab-promos" data-bs-toggle="pill" data-bs-target="#pane-promos" type="button" role="tab">Promocje</button>
+                        <button class="nav-link" id="tab-promos" data-bs-toggle="pill" data-bs-target="#pane-promos" type="button" role="tab"><?= __('promotions', 'admin', 'Promocje') ?></button>
                     </li>
                     <li class="nav-item" role="presentation">
-                        <button class="nav-link" id="tab-upcoming" data-bs-toggle="pill" data-bs-target="#pane-upcoming" type="button" role="tab">Najbliższe terminy</button>
+                        <button class="nav-link" id="tab-upcoming" data-bs-toggle="pill" data-bs-target="#pane-upcoming" type="button" role="tab"><?= __('upcoming_dates', 'admin', 'Najbliższe terminy') ?></button>
                     </li>
                     <li class="nav-item" role="presentation">
-                        <button class="nav-link" id="tab-reports" data-bs-toggle="pill" data-bs-target="#pane-reports" type="button" role="tab">Raporty</button>
+                        <button class="nav-link" id="tab-reports" data-bs-toggle="pill" data-bs-target="#pane-reports" type="button" role="tab"><?= __('reports', 'admin', 'Raporty') ?></button>
+                    </li>
+
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="tab-dicts" data-bs-toggle="pill" data-bs-target="#pane-dicts" type="button" role="tab"><?= __('dictionaries', 'admin', 'Słowniki') ?></button>
                     </li>
 
                     <li class="nav-item" role="presentation">
-                        <button class="nav-link" id="tab-dicts" data-bs-toggle="pill" data-bs-target="#pane-dicts" type="button" role="tab">Słowniki</button>
-                    </li>
-
-
-                    <li class="nav-item" role="presentation">
-                        <button class="nav-link" id="tab-settings" data-bs-toggle="pill" data-bs-target="#pane-settings" type="button" role="tab">Ustawienia</button>
+                        <button class="nav-link" id="tab-settings" data-bs-toggle="pill" data-bs-target="#pane-settings" type="button" role="tab"><?= __('settings', 'admin', 'Ustawienia') ?></button>
                     </li>
                 </ul>
             </div>

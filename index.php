@@ -1,6 +1,12 @@
 <?php
-// /index.php
+// /index.ph// 4) Dalej standardowe include'y
+require_once __DIR__ . '/auth/auth.php';
+require_once __DIR__ . '/includes/i18n.php';
 
+// Initialize i18n system AFTER auth is loaded
+i18n::init();
+
+// CSRF helper tylko z auth.php
 // 1) Najpierw config (żeby mieć BASE_URL)
 require_once __DIR__ . '/includes/config.php';
 

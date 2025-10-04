@@ -44,21 +44,35 @@ $navPosClass = $overlay
 
       <!-- PRAWA STRONA -->
       <ul class="navbar-nav ms-auto align-items-center">
+        <!-- Language Switcher - ukryj w panelu staff/admin -->
+        <?php if (!in_array(($_GET['page'] ?? ''), ['dashboard-staff', 'dashboard-client']) && !strpos($_SERVER['REQUEST_URI'], '/pages/staff/')): ?>
+        <li class="nav-item me-3">
+          <?php
+          // Include i18n if not already included
+          if (!class_exists('i18n')) {
+              require_once __DIR__ . '/../includes/i18n.php';
+              i18n::init();
+          }
+          echo i18n::renderLanguageSwitcher('frontend', $_SERVER['REQUEST_URI']);
+          ?>
+        </li>
+        <?php endif; ?>
+        
         <?php if ($u): ?>
           <li class="nav-item me-2 d-none d-lg-block">
             <span class="nav-link text-dark small opacity-75">
-              Witaj, <?= htmlspecialchars($u['first_name'] ?? $u['email'] ?? 'Użytkowniku') ?>
+              <?= __('welcome', 'frontend', 'Witaj') ?>, <?= htmlspecialchars($u['first_name'] ?? $u['email'] ?? __('user', 'frontend', 'Użytkowniku')) ?>
             </span>
           </li>
           <li class="nav-item">
-            <a class="nav-link" href="<?= BASE_URL ?>/index.php?page=<?= in_array($role, ['staff', 'admin']) ? 'dashboard-staff' : 'dashboard-client' ?>">Panel</a>
+            <a class="nav-link" href="<?= BASE_URL ?>/index.php?page=<?= in_array($role, ['staff', 'admin']) ? 'dashboard-staff' : 'dashboard-client' ?>"><?= __('dashboard', 'frontend', 'Panel') ?></a>
           </li>
           <li class="nav-item ms-2">
-            <a class="btn btn-sm btn-outline-dark rounded-pill" href="<?= BASE_URL ?>/auth/logout.php">Wyloguj</a>
+            <a class="btn btn-sm btn-outline-dark rounded-pill" href="<?= BASE_URL ?>/auth/logout.php"><?= __('logout', 'frontend', 'Wyloguj') ?></a>
           </li>
         <?php else: ?>
           <li class="nav-item ms-2">
-            <a class="btn btn-md btn-dark rounded-pill" href="<?= BASE_URL ?>/index.php?page=login">Zaloguj</a>
+            <a class="btn btn-md btn-dark rounded-pill" href="<?= BASE_URL ?>/index.php?page=login"><?= __('login', 'frontend', 'Zaloguj') ?></a>
           </li>
         <?php endif; ?>
       </ul>

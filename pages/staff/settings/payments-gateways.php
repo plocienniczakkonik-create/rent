@@ -6,38 +6,38 @@ $db = db();
 // Struktura dla różnych bramek płatności
 $payment_gateways = [
     'stripe' => [
-        'name' => 'Stripe',
-        'description' => 'Globalna platforma płatności online obsługująca karty, BLIK, PayU',
+        'name' => __('stripe_name', 'admin', 'Stripe'),
+        'description' => __('stripe_description', 'admin', 'Globalna platforma płatności online obsługująca karty, BLIK, PayU'),
         'icon' => 'bi-stripe',
         'color' => 'primary',
         'fields' => [
-            'stripe_public_key' => ['label' => 'Klucz publiczny', 'type' => 'text', 'placeholder' => 'pk_live_...'],
-            'stripe_secret_key' => ['label' => 'Klucz prywatny', 'type' => 'password', 'placeholder' => 'sk_live_...'],
-            'stripe_webhook_secret' => ['label' => 'Webhook Secret', 'type' => 'password', 'placeholder' => 'whsec_...'],
-            'stripe_currency' => ['label' => 'Waluta', 'type' => 'select', 'options' => ['PLN' => 'PLN', 'EUR' => 'EUR', 'USD' => 'USD']]
+            'stripe_public_key' => ['label' => __('stripe_public_key', 'admin', 'Klucz publiczny'), 'type' => 'text', 'placeholder' => 'pk_live_...'],
+            'stripe_secret_key' => ['label' => __('stripe_secret_key', 'admin', 'Klucz prywatny'), 'type' => 'password', 'placeholder' => 'sk_live_...'],
+            'stripe_webhook_secret' => ['label' => __('stripe_webhook_secret', 'admin', 'Webhook Secret'), 'type' => 'password', 'placeholder' => 'whsec_...'],
+            'stripe_currency' => ['label' => __('stripe_currency', 'admin', 'Waluta'), 'type' => 'select', 'options' => ['PLN' => 'PLN', 'EUR' => 'EUR', 'USD' => 'USD']]
         ]
     ],
     'paypal' => [
-        'name' => 'PayPal',
-        'description' => 'Międzynarodowy system płatności online PayPal',
+        'name' => __('paypal_name', 'admin', 'PayPal'),
+        'description' => __('paypal_description', 'admin', 'Międzynarodowy system płatności online PayPal'),
         'icon' => 'bi-paypal',
         'color' => 'warning',
         'fields' => [
-            'paypal_client_id' => ['label' => 'Client ID', 'type' => 'text', 'placeholder' => 'AXxxx...'],
-            'paypal_client_secret' => ['label' => 'Client Secret', 'type' => 'password', 'placeholder' => 'EXxxx...'],
-            'paypal_mode' => ['label' => 'Tryb', 'type' => 'select', 'options' => ['sandbox' => 'Sandbox (test)', 'live' => 'Live (produkcja)']]
+            'paypal_client_id' => ['label' => __('paypal_client_id', 'admin', 'Client ID'), 'type' => 'text', 'placeholder' => 'AXxxx...'],
+            'paypal_client_secret' => ['label' => __('paypal_client_secret', 'admin', 'Client Secret'), 'type' => 'password', 'placeholder' => 'EXxxx...'],
+            'paypal_mode' => ['label' => __('paypal_mode', 'admin', 'Tryb'), 'type' => 'select', 'options' => ['sandbox' => __('sandbox_test', 'admin', 'Sandbox (test)'), 'live' => __('live_production', 'admin', 'Live (produkcja)')]]
         ]
     ],
     'przelewy24' => [
-        'name' => 'Przelewy24',
-        'description' => 'Polski system płatności online z szerokim wsparciem banków',
+        'name' => __('przelewy24_name', 'admin', 'Przelewy24'),
+        'description' => __('przelewy24_description', 'admin', 'Polski system płatności online z szerokim wsparciem banków'),
         'icon' => 'bi-bank',
         'color' => 'success',
         'fields' => [
-            'p24_merchant_id' => ['label' => 'Merchant ID', 'type' => 'text', 'placeholder' => '12345'],
-            'p24_pos_id' => ['label' => 'POS ID', 'type' => 'text', 'placeholder' => '12345'],
-            'p24_crc_key' => ['label' => 'CRC Key', 'type' => 'password', 'placeholder' => 'xxx...'],
-            'p24_mode' => ['label' => 'Tryb', 'type' => 'select', 'options' => ['sandbox' => 'Sandbox (test)', 'live' => 'Live (produkcja)']]
+            'p24_merchant_id' => ['label' => __('p24_merchant_id', 'admin', 'Merchant ID'), 'type' => 'text', 'placeholder' => '12345'],
+            'p24_pos_id' => ['label' => __('p24_pos_id', 'admin', 'POS ID'), 'type' => 'text', 'placeholder' => '12345'],
+            'p24_crc_key' => ['label' => __('p24_crc_key', 'admin', 'CRC Key'), 'type' => 'password', 'placeholder' => 'xxx...'],
+            'p24_mode' => ['label' => __('p24_mode', 'admin', 'Tryb'), 'type' => 'select', 'options' => ['sandbox' => __('sandbox_test', 'admin', 'Sandbox (test)'), 'live' => __('live_production', 'admin', 'Live (produkcja)')]]
         ]
     ]
 ];
@@ -75,7 +75,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['save_gateway'])) {
             }
             
             $db->commit();
-            $success_message = "Ustawienia bramki {$payment_gateways[$gateway]['name']} zostały zapisane!";
+            $success_message = __('gateway_saved_success', 'admin', 'Ustawienia bramki zostały zapisane!');
             
             // Odśwież ustawienia
             $current_settings = [];
@@ -86,7 +86,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['save_gateway'])) {
             
         } catch (PDOException $e) {
             $db->rollback();
-            $error_message = "Błąd podczas zapisywania: " . $e->getMessage();
+            $error_message = __('saving_error', 'admin', 'Błąd podczas zapisywania') . ": " . $e->getMessage();
         }
     }
 }
@@ -117,32 +117,32 @@ function test_payment_gateway($gateway, $settings) {
     
     foreach ($required_fields as $field) {
         if (empty($settings[$field])) {
-            return ['status' => 'error', 'message' => 'Brak wymaganych danych konfiguracyjnych'];
+            return ['status' => 'error', 'message' => __('missing_required_config', 'admin', 'Brak wymaganych danych konfiguracyjnych')];
         }
     }
     
     // Symulacja testu
-    return ['status' => 'success', 'message' => 'Połączenie z bramką działa poprawnie'];
+    return ['status' => 'success', 'message' => __('connection_successful', 'admin', 'Połączenie z bramką działa poprawnie')];
 }
 ?>
 
 <div class="d-flex justify-content-between align-items-center mb-3">
     <div>
-        <h5 class="mb-1">Bramki płatności</h5>
-        <p class="text-muted mb-0">Konfiguracja systemów płatności online</p>
+        <h5 class="mb-1"><?= __('payment_gateways', 'admin', 'Bramki płatności') ?></h5>
+        <p class="text-muted mb-0"><?= __('gateway_configuration', 'admin', 'Konfiguracja systemów płatności online') ?></p>
     </div>
     <div class="d-flex gap-2">
         <button class="btn btn-outline-info btn-sm" data-bs-toggle="modal" data-bs-target="#webhookModal">
             <i class="bi bi-link-45deg"></i> Webhook URLs
         </button>
         <button class="btn btn-outline-secondary btn-sm" onclick="location.reload()">
-            <i class="bi bi-arrow-clockwise"></i> Odśwież
+            <i class="bi bi-arrow-clockwise"></i> <?= __('refresh', 'admin', 'Odśwież') ?>
         </button>
     </div>
 </div>
 
 <?php if (isset($success_message)): ?>
-    <div class="alert alert-success">
+    <div class="alert alert-success alert-dismissible auto-fade" id="successAlert">
         <i class="bi bi-check-circle"></i>
         <?= $success_message ?>
     </div>
@@ -184,7 +184,7 @@ function test_payment_gateway($gateway, $settings) {
                                <?= $is_enabled ? 'checked' : '' ?>
                                onchange="toggleGateway('<?= $gateway_key ?>', this.checked)">
                         <label class="form-check-label" for="<?= $gateway_key ?>_enabled">
-                            <?= $is_enabled ? 'Aktywna' : 'Nieaktywna' ?>
+                            <?= $is_enabled ? __('gateway_enabled', 'admin', 'Aktywna') : __('gateway_disabled', 'admin', 'Nieaktywna') ?>
                         </label>
                     </div>
                 </div>
@@ -222,12 +222,12 @@ function test_payment_gateway($gateway, $settings) {
                             <button type="submit" name="save_gateway" 
                                     class="btn btn-<?= $gateway['color'] ?> btn-sm"
                                     <?= !$is_enabled ? 'disabled' : '' ?>>
-                                <i class="bi bi-check-lg"></i> Zapisz
+                                <i class="bi bi-check-lg"></i> <?= __('save', 'admin', 'Zapisz') ?>
                             </button>
                             <button type="submit" name="test_gateway" 
                                     class="btn btn-outline-secondary btn-sm"
                                     <?= !$is_enabled || !$has_config ? 'disabled' : '' ?>>
-                                <i class="bi bi-check-circle"></i> Testuj
+                                <i class="bi bi-check-circle"></i> <?= __('test_connection', 'admin', 'Testuj') ?>
                             </button>
                         </div>
                         
@@ -255,7 +255,7 @@ function test_payment_gateway($gateway, $settings) {
                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
             <div class="modal-body">
-                <p>Skonfiguruj poniższe URL-e webhook w panelach bramek płatności:</p>
+                <p><?= __('configure_webhook_urls', 'admin', 'Skonfiguruj poniższe URL-e webhook w panelach bramek płatności:') ?></p>
                 <?php foreach ($payment_gateways as $gateway_key => $gateway): ?>
                     <div class="mb-3">
                         <label class="form-label fw-semibold"><?= $gateway['name'] ?></label>
@@ -317,4 +317,23 @@ function toggleGateway(gateway, enabled) {
 .card.border-success {
     border-width: 2px;
 }
+
+.auto-fade {
+    transition: opacity 0.5s ease-out;
+}
 </style>
+
+<script>
+// Auto-fade success alerts
+document.addEventListener('DOMContentLoaded', function() {
+    const successAlert = document.getElementById('successAlert');
+    if (successAlert) {
+        setTimeout(function() {
+            successAlert.style.opacity = '0';
+            setTimeout(function() {
+                successAlert.style.display = 'none';
+            }, 500);
+        }, 3000);
+    }
+});
+</script>

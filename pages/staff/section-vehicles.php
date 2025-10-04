@@ -278,30 +278,30 @@ function v_sort_link(string $key, string $label): string
 
 <div class="card section-vehicles">
     <div class="card-header d-flex align-items-center justify-content-between">
-        <h2 class="h6 mb-0">Zarządzaj flotą</h2>
+        <h2 class="h6 mb-0"><?= __('fleet_management', 'admin', 'Zarządzaj flotą') ?></h2>
     </div>
     <div class="card-body p-0">
         <div class="table-responsive">
             <table class="table table-hover align-middle mb-0 table-vehicles">
                 <thead>
                     <tr>
-                        <th class="th-id th-narrow"><?= v_sort_link('id', 'ID') ?></th>
-                        <th class="th-name"><?= v_sort_link('name', 'Nazwa') ?></th>
-                        <th class="th-sku th-narrow d-none d-xl-table-cell"><?= v_sort_link('sku', 'SKU') ?></th>
-                        <th class="th-total th-narrow text-end"><?= v_sort_link('total', 'Egz.') ?></th>
+                        <th class="th-id th-narrow"><?= v_sort_link('id', __('id', 'admin', 'ID')) ?></th>
+                        <th class="th-name"><?= v_sort_link('name', __('name', 'admin', 'Nazwa')) ?></th>
+                        <th class="th-sku th-narrow d-none d-xl-table-cell"><?= v_sort_link('sku', __('sku', 'admin', 'SKU')) ?></th>
+                        <th class="th-total th-narrow text-end"><?= v_sort_link('total', __('copies', 'admin', 'Egz.')) ?></th>
 
-                        <th class="th-narrow text-center" title="Dostępne"><?= v_sort_link('available', 'Dost.') ?></th>
-                        <th class="th-narrow text-center d-none d-lg-table-cell" title="Serwis"><?= v_sort_link('maintenance', 'Serw.') ?></th>
-                        <th class="th-narrow text-center d-none d-lg-table-cell" title="Rezerwacje"><?= v_sort_link('booked', 'Rez.') ?></th>
-                        <th class="th-narrow text-center d-none d-md-table-cell" title="Niedostępne"><?= v_sort_link('unavailable', 'Niedost.') ?></th>
+                        <th class="th-narrow text-center" title="<?= __('available', 'admin', 'Dostępne') ?>"><?= v_sort_link('available', __('available_short', 'admin', 'Dost.')) ?></th>
+                        <th class="th-narrow text-center d-none d-lg-table-cell" title="<?= __('service', 'admin', 'Serwis') ?>"><?= v_sort_link('maintenance', __('service_short', 'admin', 'Serw.')) ?></th>
+                        <th class="th-narrow text-center d-none d-lg-table-cell" title="<?= __('reservations', 'admin', 'Rezerwacje') ?>"><?= v_sort_link('booked', __('reservations_short', 'admin', 'Rez.')) ?></th>
+                        <th class="th-narrow text-center d-none d-md-table-cell" title="<?= __('unavailable', 'admin', 'Niedostępne') ?>"><?= v_sort_link('unavailable', __('unavailable_short', 'admin', 'Niedost.')) ?></th>
 
-                        <th class="th-actions th-narrow text-end">Akcje</th>
+                        <th class="th-actions th-narrow text-end"><?= __('actions', 'admin', 'Akcje') ?></th>
                     </tr>
                 </thead>
                 <tbody>
                     <?php if (!$rows): ?>
                         <tr>
-                            <td colspan="9" class="text-center py-5 text-muted">Brak modeli. Dodaj pierwszy w „Dodaj model”.</td>
+                            <td colspan="9" class="text-center py-5 text-muted"><?= __('no_models_add_first', 'admin', 'Brak modeli. Dodaj pierwszy w Dodaj model.') ?></td>
                         </tr>
                         <?php else: foreach ($rows as $r): ?>
                             <tr>
@@ -334,9 +334,9 @@ function v_sort_link(string $key, string $label): string
                                 </td>
 
                                 <td class="text-end">
-                                    <a class="btn btn-sm btn-primary" title="Zarządzaj flotą"
+                                    <a class="btn btn-sm btn-primary" title="<?= __('fleet_management', 'admin', 'Zarządzaj flotą') ?>"
                                         href="<?= $BASE ?>/index.php?page=vehicles-manage&product=<?= (int)$r['id'] ?>">
-                                        <i class="bi bi-gear"></i> Zarządzaj
+                                        <i class="bi bi-gear"></i> <?= __('manage', 'admin', 'Zarządzaj') ?>
                                     </a>
                                 </td>
                             </tr>

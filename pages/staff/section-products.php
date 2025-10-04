@@ -2,7 +2,7 @@
 ?>
 <div class="card section-products">
     <div class="card-header d-flex align-items-center justify-content-between">
-        <h2 class="h6 mb-0">Produkty</h2>
+        <h2 class="h6 mb-0"><?= __('products', 'admin', 'Produkty') ?></h2>
         <!-- usunięto lokalny przycisk "Dodaj produkt" -->
     </div>
     <div class="card-body p-0">
@@ -12,19 +12,19 @@
             <table class="table table-sm align-middle mb-0">
                 <thead class="small text-muted">
                     <tr>
-                        <th><?= sort_link_dashboard('products', 'id', 'ID') ?></th>
-                        <th><?= sort_link_dashboard('products', 'name', 'Nazwa') ?></th>
-                        <th><?= sort_link_dashboard('products', 'sku', 'SKU') ?></th>
-                        <th><?= sort_link_dashboard('products', 'price', 'Cena') ?></th>
-                        <th><?= sort_link_dashboard('products', 'stock', 'Stan') ?></th>
-                        <th><?= sort_link_dashboard('products', 'status', 'Status') ?></th>
-                        <th class="text-end">Akcje</th>
+                        <th><?= sort_link_dashboard('products', 'id', __('id', 'admin', 'ID')) ?></th>
+                        <th><?= sort_link_dashboard('products', 'name', __('name', 'admin', 'Nazwa')) ?></th>
+                        <th><?= sort_link_dashboard('products', 'sku', __('sku', 'admin', 'SKU')) ?></th>
+                        <th><?= sort_link_dashboard('products', 'price', __('price', 'admin', 'Cena')) ?></th>
+                        <th><?= sort_link_dashboard('products', 'stock', __('stock', 'admin', 'Stan')) ?></th>
+                        <th><?= sort_link_dashboard('products', 'status', __('status', 'admin', 'Status')) ?></th>
+                        <th class="text-end"><?= __('actions', 'admin', 'Akcje') ?></th>
                     </tr>
                 </thead>
                 <tbody>
                     <?php if (!$products): ?>
                         <tr>
-                            <td colspan="7" class="text-center text-muted py-4">Brak produktów.</td>
+                            <td colspan="7" class="text-center text-muted py-4"><?= __('no_products', 'admin', 'Brak produktów.') ?></td>
                         </tr>
                         <?php else: foreach ($products as $p): ?>
                             <tr>
@@ -37,14 +37,14 @@
                                 <td class="text-end">
                                     <!-- NOWE: Flota (egzemplarze tego modelu) -->
                                     <a href="<?= $BASE ?>/index.php?page=vehicles-manage&product=<?= (int)$p['id'] ?>"
-                                        class="btn btn-outline-info btn-sm">Flota</a>
+                                        class="btn btn-outline-info btn-sm"><?= __('fleet', 'admin', 'Flota') ?></a>
 
                                     <!-- Istniejące akcje -->
                                     <a href="<?= $BASE ?>/index.php?page=product-form&id=<?= (int)$p['id'] ?>"
-                                        class="btn btn-outline-primary btn-sm">Edytuj</a>
+                                        class="btn btn-outline-primary btn-sm"><?= __('edit', 'admin', 'Edytuj') ?></a>
                                     <a href="<?= $BASE ?>/pages/product-delete.php?id=<?= (int)$p['id'] ?>&_token=<?= htmlspecialchars(csrf_token()) ?>"
                                         class="btn btn-outline-danger btn-sm"
-                                        onclick="return confirm('Usunąć produkt #<?= (int)$p['id'] ?>?');">Usuń</a>
+                                        onclick="return confirm('<?= __('confirm_delete_product', 'admin', 'Usunąć produkt') ?> #<?= (int)$p['id'] ?>?');"><?= __('delete', 'admin', 'Usuń') ?></a>
                                 </td>
                             </tr>
                     <?php endforeach;

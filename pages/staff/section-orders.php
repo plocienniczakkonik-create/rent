@@ -4,6 +4,7 @@
 // require_once dirname(__DIR__, 2) . '/includes/_helpers.php'; // REMOVED - causing conflicts
 require_once dirname(__DIR__, 2) . '/includes/db.php';
 $db = db();
+i18n::init();
 
 $status = $_GET['status'] ?? '';
 $q = trim((string)($_GET['q'] ?? ''));
@@ -70,38 +71,38 @@ $pages = max(1, (int)ceil($total / $perPage));
 ?>
 <div class="card section-orders">
     <div class="card-header">
-        <h2 class="h6 mb-0">Zamówienia</h2>
+        <h2 class="h6 mb-0"><?= __('orders', 'admin', 'Zamówienia') ?></h2>
     </div>
     <div class="card-body">
         <form method="get" class="d-flex gap-2 align-items-center mb-3">
-            <input type="text" class="form-control form-control-sm" name="q" placeholder="Szukaj (nazwa/sku/email)" value="<?= e($q) ?>">
+            <input type="text" class="form-control form-control-sm" name="q" placeholder="<?= __('search_placeholder', 'admin', 'Szukaj (nazwa/sku/email)') ?>" value="<?= e($q) ?>">
             <select name="status" class="form-select form-select-sm">
-                <option value="">Wszystkie statusy</option>
+                <option value=""><?= __('all_statuses', 'admin', 'Wszystkie statusy') ?></option>
                 <?php foreach (["pending", "confirmed", "cancelled"] as $s): ?>
-                    <option value="<?= e($s) ?>" <?= $status === $s ? 'selected' : '' ?>><?= e($s) ?></option>
+                    <option value="<?= e($s) ?>" <?= $status === $s ? 'selected' : '' ?>><?= __($s, 'admin', $s) ?></option>
                 <?php endforeach; ?>
             </select>
-            <button class="btn btn-sm btn-outline-primary" type="submit">Filtruj</button>
+            <button class="btn btn-sm btn-outline-primary" type="submit"><?= __('filter', 'admin', 'Filtruj') ?></button>
         </form>
         
         <div class="table-responsive">
             <table class="table table-sm align-middle mb-0">
                 <thead class="small text-muted">
                     <tr>
-                        <th><?= sort_link_dashboard('orders', 'id', 'ID') ?></th>
-                        <th><?= sort_link_dashboard('orders', 'created', 'Dodano') ?></th>
-                        <th><?= sort_link_dashboard('orders', 'product', 'Produkt') ?></th>
-                        <th>Terminy</th>
-                        <th><?= sort_link_dashboard('orders', 'days', 'Dni') ?></th>
-                        <th class="text-end"><?= sort_link_dashboard('orders', 'total', 'Suma') ?></th>
-                        <th><?= sort_link_dashboard('orders', 'status', 'Status') ?></th>
-                        <th class="text-end">Akcje</th>
+                        <th><?= sort_link_dashboard('orders', 'id', __('id', 'admin', 'ID')) ?></th>
+                        <th><?= sort_link_dashboard('orders', 'created', __('added', 'admin', 'Dodano')) ?></th>
+                        <th><?= sort_link_dashboard('orders', 'product', __('product', 'admin', 'Produkt')) ?></th>
+                        <th><?= __('dates', 'admin', 'Terminy') ?></th>
+                        <th><?= sort_link_dashboard('orders', 'days', __('days', 'admin', 'Dni')) ?></th>
+                        <th class="text-end"><?= sort_link_dashboard('orders', 'total', __('total', 'admin', 'Suma')) ?></th>
+                        <th><?= sort_link_dashboard('orders', 'status', __('status', 'admin', 'Status')) ?></th>
+                        <th class="text-end"><?= __('actions', 'admin', 'Akcje') ?></th>
                     </tr>
                 </thead>
                 <tbody>
                     <?php if (!$rows): ?>
                         <tr>
-                            <td colspan="8" class="text-center text-muted py-4">Brak rezerwacji.</td>
+                            <td colspan="8" class="text-center text-muted py-4"><?= __('no_reservations', 'admin', 'Brak rezerwacji.') ?></td>
                         </tr>
                         <?php else: foreach ($rows as $r): ?>
                             <tr>
@@ -112,8 +113,8 @@ $pages = max(1, (int)ceil($total / $perPage));
                                     <div class="text-muted small">SKU: <?= e((string)$r['sku']) ?></div>
                                 </td>
                                 <td>
-                                    <div><span class="text-muted small">Odbiór:</span> <?= e((string)$r['pickup_location']) ?>, <?= e((string)$r['pickup_at']) ?></div>
-                                    <div><span class="text-muted small">Zwrot:</span> <?= e((string)$r['dropoff_location']) ?>, <?= e((string)$r['return_at']) ?></div>
+                                    <div><span class="text-muted small"><?= __('pickup', 'admin', 'Odbiór') ?>:</span> <?= e((string)$r['pickup_location']) ?>, <?= e((string)$r['pickup_at']) ?></div>
+                                    <div><span class="text-muted small"><?= __('return', 'admin', 'Zwrot') ?>:</span> <?= e((string)$r['dropoff_location']) ?>, <?= e((string)$r['return_at']) ?></div>
                                 </td>
                                 <td><?= (int)$r['rental_days'] ?></td>
                                 <td class="text-end"><?= number_format((float)$r['total_gross'], 2, ',', ' ') ?> PLN</td>
@@ -126,14 +127,14 @@ $pages = max(1, (int)ceil($total / $perPage));
                                         <input type="hidden" name="p" value="<?= (int)$p ?>">
                                         <select name="status" class="form-select form-select-sm" style="width:auto">
                                             <?php foreach (["pending", "confirmed", "cancelled"] as $s): ?>
-                                                <option value="<?= e($s) ?>" <?= ((string)$r['status'] === $s) ? 'selected' : '' ?>><?= e($s) ?></option>
+                                                <option value="<?= e($s) ?>" <?= ((string)$r['status'] === $s) ? 'selected' : '' ?>><?= __($s, 'admin', $s) ?></option>
                                             <?php endforeach; ?>
                                         </select>
-                                        <button class="btn btn-sm btn-outline-success" type="submit">Zmień</button>
+                                        <button class="btn btn-sm btn-outline-success" type="submit"><?= __('change', 'admin', 'Zmień') ?></button>
                                     </form>
                                 </td>
                                 <td class="text-end">
-                                    <a href="index.php?page=reservation-details&id=<?= (int)$r['id'] ?>" class="btn btn-outline-primary btn-sm">Szczegóły</a>
+                                    <a href="index.php?page=reservation-details&id=<?= (int)$r['id'] ?>" class="btn btn-outline-primary btn-sm"><?= __('details', 'admin', 'Szczegóły') ?></a>
                                 </td>
                             </tr>
                     <?php endforeach;
@@ -143,7 +144,7 @@ $pages = max(1, (int)ceil($total / $perPage));
         </div>
         <div class="d-flex justify-content-between align-items-center p-2 border-top small text-muted">
             <div>
-                Razem: <?= (int)$total ?> • Strona <?= (int)$p ?> / <?= (int)$pages ?>
+                <?= __('total_count', 'admin', 'Razem') ?>: <?= (int)$total ?> • <?= __('page_info', 'admin', 'Strona') ?> <?= (int)$p ?> / <?= (int)$pages ?>
             </div>
             <div class="d-flex gap-2">
                 <?php
@@ -152,8 +153,8 @@ $pages = max(1, (int)ceil($total / $perPage));
                     return http_build_query(['page' => 'dashboard-staff', 'status' => $status, 'q' => $q, 'p' => $pageNum]);
                 };
                 ?>
-                <a class="btn btn-sm btn-outline-secondary <?= $p <= 1 ? 'disabled' : '' ?>" href="<?= $baseUrl ?>?<?= htmlspecialchars($qs(max(1, $p - 1))) ?>">« Poprzednia</a>
-                <a class="btn btn-sm btn-outline-secondary <?= $p >= $pages ? 'disabled' : '' ?>" href="<?= $baseUrl ?>?<?= htmlspecialchars($qs(min($pages, $p + 1))) ?>">Następna »</a>
+                <a class="btn btn-sm btn-outline-secondary <?= $p <= 1 ? 'disabled' : '' ?>" href="<?= $baseUrl ?>?<?= htmlspecialchars($qs(max(1, $p - 1))) ?>">« <?= __('previous', 'admin', 'Poprzednia') ?></a>
+                <a class="btn btn-sm btn-outline-secondary <?= $p >= $pages ? 'disabled' : '' ?>" href="<?= $baseUrl ?>?<?= htmlspecialchars($qs(min($pages, $p + 1))) ?>"><?= __('next', 'admin', 'Następna') ?> »</a>
             </div>
         </div>
     </div>

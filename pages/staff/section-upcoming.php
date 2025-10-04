@@ -60,7 +60,7 @@ $insurances = $db->query("SELECT v.id, v.registration_number, v.product_id, v.in
 ?>
 <div class="card section-upcoming">
     <div class="card-header">
-        <h2 class="h6 mb-0">Najbliższe terminy</h2>
+        <h2 class="h6 mb-0"><?= __('upcoming_dates', 'admin', 'Najbliższe terminy') ?></h2>
     </div>
     <div class="card-body">
         <div class="row g-4">
@@ -68,17 +68,17 @@ $insurances = $db->query("SELECT v.id, v.registration_number, v.product_id, v.in
                 <div class="card h-100 shadow-sm">
                     <div class="card-header d-flex align-items-center gap-2">
                         <i class="bi bi-calendar-check text-primary fs-5"></i>
-                        <span class="fw-semibold">10 najbliższych przeglądów technicznych</span>
+                        <span class="fw-semibold">10 <?= __('nearest_inspections', 'admin', 'najbliższych przeglądów technicznych') ?></span>
                     </div>
                     <div class="card-body p-0">
                         <table class="table mb-0 align-middle">
                             <thead>
                                 <tr>
                                     <th><?= sort_link_dashboard('upcoming', 'insp_id', 'ID') ?></th>
-                                    <th><?= sort_link_dashboard('upcoming', 'insp_vehicle', 'Pojazd') ?></th>
-                                    <th><?= sort_link_dashboard('upcoming', 'insp_registration', 'Nr rej.') ?></th>
-                                    <th><?= sort_link_dashboard('upcoming', 'insp_date', 'Data przeglądu') ?></th>
-                                    <th>Dni</th>
+                                    <th><?= sort_link_dashboard('upcoming', 'insp_vehicle', __('vehicle', 'admin', 'Pojazd')) ?></th>
+                                    <th><?= sort_link_dashboard('upcoming', 'insp_registration', __('registration_number', 'admin', 'Nr rej.')) ?></th>
+                                    <th><?= sort_link_dashboard('upcoming', 'insp_date', __('inspection_date', 'admin', 'Data przeglądu')) ?></th>
+                                    <th><?= __('days', 'admin', 'Dni') ?></th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -93,7 +93,7 @@ $insurances = $db->query("SELECT v.id, v.registration_number, v.product_id, v.in
                                 <?php endforeach; ?>
                                 <?php if (!$inspections): ?>
                                     <tr>
-                                        <td colspan="5" class="text-muted text-center">Brak nadchodzących przeglądów.</td>
+                                        <td colspan="5" class="text-muted text-center"><?= __('no_upcoming_inspections', 'admin', 'Brak nadchodzących przeglądów.') ?></td>
                                     </tr>
                                 <?php endif; ?>
                             </tbody>
@@ -105,17 +105,17 @@ $insurances = $db->query("SELECT v.id, v.registration_number, v.product_id, v.in
                 <div class="card h-100 shadow-sm">
                     <div class="card-header d-flex align-items-center gap-2">
                         <i class="bi bi-shield-check text-success fs-5"></i>
-                        <span class="fw-semibold">10 najbliższych ubezpieczeń</span>
+                        <span class="fw-semibold">10 <?= __('nearest_insurances', 'admin', 'najbliższych ubezpieczeń') ?></span>
                     </div>
                     <div class="card-body p-0">
                         <table class="table mb-0 align-middle">
                             <thead>
                                 <tr>
                                     <th><?= sort_link_dashboard('upcoming', 'ins_id', 'ID') ?></th>
-                                    <th><?= sort_link_dashboard('upcoming', 'ins_vehicle', 'Pojazd') ?></th>
-                                    <th><?= sort_link_dashboard('upcoming', 'ins_registration', 'Nr rej.') ?></th>
-                                    <th><?= sort_link_dashboard('upcoming', 'ins_date', 'Data ubezpieczenia') ?></th>
-                                    <th>Dni</th>
+                                    <th><?= sort_link_dashboard('upcoming', 'ins_vehicle', __('vehicle', 'admin', 'Pojazd')) ?></th>
+                                    <th><?= sort_link_dashboard('upcoming', 'ins_registration', __('registration_number', 'admin', 'Nr rej.')) ?></th>
+                                    <th><?= sort_link_dashboard('upcoming', 'ins_date', __('insurance_date', 'admin', 'Data ubezpieczenia')) ?></th>
+                                    <th><?= __('days', 'admin', 'Dni') ?></th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -130,7 +130,7 @@ $insurances = $db->query("SELECT v.id, v.registration_number, v.product_id, v.in
                                 <?php endforeach; ?>
                                 <?php if (!$insurances): ?>
                                     <tr>
-                                        <td colspan="5" class="text-muted text-center">Brak nadchodzących ubezpieczeń.</td>
+                                        <td colspan="5" class="text-muted text-center"><?= __('no_upcoming_insurances', 'admin', 'Brak nadchodzących ubezpieczeń.') ?></td>
                                     </tr>
                                 <?php endif; ?>
                             </tbody>

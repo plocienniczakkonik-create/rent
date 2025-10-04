@@ -15,10 +15,10 @@ function panel_url(array $params = []): string
 }
 
 $validKinds = [
-    'location'  => 'Lokalizacje',
-    'car_class' => 'Klasa samochodu',
-    'car_type'  => 'Typ samochodu',     // ⬅️ NOWE
-    'addon'     => 'Dodatki',           // ⬅️ NOWE
+    'location'  => __('locations', 'admin', 'Lokalizacje'),
+    'car_class' => __('car_class', 'admin', 'Klasa samochodu'),
+    'car_type'  => __('car_type', 'admin', 'Typ samochodu'),
+    'addon'     => __('addons', 'admin', 'Dodatki'),
 ];
 
 $kind = $_GET['kind'] ?? 'location';
@@ -89,14 +89,14 @@ function isActiveRow(array $row): bool
 <div class="card section-dicts">
     <div class="card-header d-flex justify-content-between align-items-center">
         <div>
-            <strong>Słowniki</strong>
+            <strong><?= __('dictionaries', 'admin', 'Słowniki') ?></strong>
             <span class="text-muted">/ <?= htmlspecialchars($validKinds[$kind]) ?></span>
         </div>
         <div class="d-flex gap-2">
-            <a class="btn btn-outline-secondary btn-sm" href="<?= panel_url(['kind' => 'location']) ?>">Lokalizacje</a>
-            <a class="btn btn-outline-secondary btn-sm" href="<?= panel_url(['kind' => 'car_class']) ?>">Klasa samochodu</a>
-            <a class="btn btn-outline-secondary btn-sm" href="<?= panel_url(['kind' => 'car_type']) ?>">Typ samochodu</a> <!-- ⬅️ NOWE -->
-            <a class="btn btn-outline-secondary btn-sm" href="<?= panel_url(['kind' => 'addon']) ?>">Dodatki</a> <!-- ⬅️ NOWE -->
+            <a class="btn btn-outline-secondary btn-sm" href="<?= panel_url(['kind' => 'location']) ?>"><?= __('locations', 'admin', 'Lokalizacje') ?></a>
+            <a class="btn btn-outline-secondary btn-sm" href="<?= panel_url(['kind' => 'car_class']) ?>"><?= __('car_class', 'admin', 'Klasa samochodu') ?></a>
+            <a class="btn btn-outline-secondary btn-sm" href="<?= panel_url(['kind' => 'car_type']) ?>"><?= __('car_type', 'admin', 'Typ samochodu') ?></a>
+            <a class="btn btn-outline-secondary btn-sm" href="<?= panel_url(['kind' => 'addon']) ?>"><?= __('addons', 'admin', 'Dodatki') ?></a>
         </div>
     </div>
 
@@ -142,9 +142,9 @@ function isActiveRow(array $row): bool
         </script>
 
         <div class="d-flex justify-content-between align-items-center mb-3">
-            <h6 class="mb-0">Pozycje</h6>
+            <h6 class="mb-0"><?= __('positions', 'admin', 'Pozycje') ?></h6>
             <button class="btn btn-primary btn-sm" type="button" data-bs-toggle="collapse" data-bs-target="#dictAddForm">
-                + Dodaj pozycję
+                + <?= __('add_position', 'admin', 'Dodaj pozycję') ?>
             </button>
         </div>
 
@@ -156,18 +156,18 @@ function isActiveRow(array $row): bool
                 <input type="hidden" name="kind" value="<?= htmlspecialchars($kind) ?>">
                 <div class="row g-2">
                     <div class="col-md-4">
-                        <label class="form-label">Nazwa *</label>
+                        <label class="form-label"><?= __('name', 'admin', 'Nazwa') ?> *</label>
                         <input type="text" name="name" class="form-control" required maxlength="128">
                     </div>
                     <div class="col-md-3">
-                        <label class="form-label">Slug (opcjonalnie)</label>
-                        <input type="text" name="slug" class="form-control" maxlength="128" placeholder="auto-z-nazwy">
+                        <label class="form-label"><?= __('slug', 'admin', 'Slug') ?> (<?= __('optional', 'admin', 'opcjonalnie') ?>)</label>
+                        <input type="text" name="slug" class="form-control" maxlength="128" placeholder="<?= __('auto_from_name', 'admin', 'auto-z-nazwy') ?>">
                     </div>
                     <?php if ($isHier): ?>
                         <div class="col-md-3">
-                            <label class="form-label">Nadrzędny (opcjonalnie)</label>
+                            <label class="form-label"><?= __('parent', 'admin', 'Nadrzędny') ?> (<?= __('optional', 'admin', 'opcjonalnie') ?>)</label>
                             <select name="parent_id" class="form-select">
-                                <option value="">— brak —</option>
+                                <option value=""><?= __('none', 'admin', '— brak —') ?></option>
                                 <?php foreach ($terms as $p): ?>
                                     <option value="<?= (int)$p['id'] ?>"><?= htmlspecialchars($p['name']) ?></option>
                                 <?php endforeach; ?>
@@ -176,32 +176,32 @@ function isActiveRow(array $row): bool
                     <?php endif; ?>
                     <?php if ($kind === 'addon'): ?>
                         <div class="col-md-2">
-                            <label class="form-label">Kwota (w zł)</label>
+                            <label class="form-label"><?= __('amount_pln', 'admin', 'Kwota (w zł)') ?></label>
                             <input type="number" name="price" class="form-control" step="0.01" min="0" value="0">
                         </div>
                         <div class="col-md-2">
-                            <label class="form-label">Sposób naliczania</label>
+                            <label class="form-label"><?= __('billing_method', 'admin', 'Sposób naliczania') ?></label>
                             <select name="charge_type" class="form-select">
-                                <option value="per_day">Za każdy dzień</option>
-                                <option value="once">Jednorazowo</option>
+                                <option value="per_day"><?= __('per_day', 'admin', 'Za każdy dzień') ?></option>
+                                <option value="once"><?= __('once', 'admin', 'Jednorazowo') ?></option>
                             </select>
                         </div>
                     <?php else: ?>
                         <div class="col-md-2">
-                            <label class="form-label">Sort</label>
+                            <label class="form-label"><?= __('sort', 'admin', 'Sort') ?></label>
                             <input type="number" name="sort_order" class="form-control" value="0" step="1">
                         </div>
                     <?php endif; ?>
                     <div class="col-md-2">
-                        <label class="form-label">Status</label>
+                        <label class="form-label"><?= __('status', 'admin', 'Status') ?></label>
                         <select name="status" class="form-select">
                             <option value="active">active</option>
                             <option value="archived">archived</option>
                         </select>
                     </div>
                     <div class="col-12 d-flex gap-2">
-                        <button type="submit" class="btn btn-primary btn-sm">Zapisz</button>
-                        <button type="button" class="btn btn-outline-secondary btn-sm" data-bs-toggle="collapse" data-bs-target="#dictAddForm">Anuluj</button>
+                        <button type="submit" class="btn btn-primary btn-sm"><?= __('save', 'admin', 'Zapisz') ?></button>
+                        <button type="button" class="btn btn-outline-secondary btn-sm" data-bs-toggle="collapse" data-bs-target="#dictAddForm"><?= __('cancel', 'admin', 'Anuluj') ?></button>
                     </div>
                 </div>
             </form>
@@ -209,23 +209,23 @@ function isActiveRow(array $row): bool
 
         <!-- LISTA -->
         <?php if (!$terms): ?>
-            <p class="text-muted mb-0">Brak pozycji.</p>
+            <p class="text-muted mb-0"><?= __('no_positions', 'admin', 'Brak pozycji.') ?></p>
         <?php else: ?>
             <div class="table-responsive">
                 <table class="table align-middle table-sm">
                     <thead>
                         <tr>
                             <th style="width:42px;"><?= sort_link_dashboard('dicts', 'id', 'ID') ?></th>
-                            <?php if ($isHier): ?><th style="width:180px;">Nadrzędny</th><?php endif; ?>
-                            <th><?= sort_link_dashboard('dicts', 'name', 'Nazwa') ?></th>
-                            <th style="width:200px;"><?= sort_link_dashboard('dicts', 'slug', 'Slug') ?></th>
+                            <?php if ($isHier): ?><th style="width:180px;"><?= __('parent', 'admin', 'Nadrzędny') ?></th><?php endif; ?>
+                            <th><?= sort_link_dashboard('dicts', 'name', __('name', 'admin', 'Nazwa')) ?></th>
+                            <th style="width:200px;"><?= sort_link_dashboard('dicts', 'slug', __('slug', 'admin', 'Slug')) ?></th>
                             <?php if ($kind === 'addon'): ?>
-                                <th style="width:100px;"><?= sort_link_dashboard('dicts', 'price', 'Cena') ?></th>
-                                <th style="width:120px;"><?= sort_link_dashboard('dicts', 'charge_type', 'Sposób naliczania') ?></th>
+                                <th style="width:100px;"><?= sort_link_dashboard('dicts', 'price', __('price', 'admin', 'Cena')) ?></th>
+                                <th style="width:120px;"><?= sort_link_dashboard('dicts', 'charge_type', __('billing_method', 'admin', 'Sposób naliczania')) ?></th>
                             <?php endif; ?>
-                            <th style="width:90px;"><?= sort_link_dashboard('dicts', 'sort', 'Sort') ?></th>
-                            <th style="width:140px;"><?= sort_link_dashboard('dicts', 'status', 'Status') ?></th>
-                            <th style="width:210px;" class="text-end">Akcje</th>
+                            <th style="width:90px;"><?= sort_link_dashboard('dicts', 'sort', __('sort', 'admin', 'Sort')) ?></th>
+                            <th style="width:140px;"><?= sort_link_dashboard('dicts', 'status', __('status', 'admin', 'Status')) ?></th>
+                            <th style="width:210px;" class="text-end"><?= __('actions', 'admin', 'Akcje') ?></th>
                         </tr>
                     </thead>
                     <tbody>
@@ -244,8 +244,8 @@ function isActiveRow(array $row): bool
                                     <td><?= isset($row['price']) ? number_format($row['price'], 2) : '' ?></td>
                                     <td><?php
                                         if (isset($row['charge_type'])) {
-                                            if ($row['charge_type'] === 'per_day') echo 'Za każdy dzień';
-                                            elseif ($row['charge_type'] === 'once') echo 'Jednorazowo';
+                                            if ($row['charge_type'] === 'per_day') echo __('per_day', 'admin', 'Za każdy dzień');
+                                            elseif ($row['charge_type'] === 'once') echo __('once', 'admin', 'Jednorazowo');
                                             else echo '';
                                         } else {
                                             echo '';
@@ -262,12 +262,12 @@ function isActiveRow(array $row): bool
                                 </td>
                                 <td class="text-end">
                                     <div class="d-inline-flex gap-2">
-                                        <button class="btn btn-outline-primary btn-sm" type="button" data-bs-toggle="collapse" data-bs-target="#editRow<?= (int)$row['id'] ?>">Edytuj</button>
-                                        <form method="post" action="<?= $BASE ?>/pages/staff/dicts-delete.php" onsubmit="return confirm('Usunąć pozycję?');" class="d-inline">
+                                        <button class="btn btn-outline-primary btn-sm" type="button" data-bs-toggle="collapse" data-bs-target="#editRow<?= (int)$row['id'] ?>"><?= __('edit', 'admin', 'Edytuj') ?></button>
+                                        <form method="post" action="<?= $BASE ?>/pages/staff/dicts-delete.php" onsubmit="return confirm('<?= __('confirm_delete_position', 'admin', 'Usunąć pozycję?') ?>');" class="d-inline">
                                             <?= csrf_field(); ?>
                                             <input type="hidden" name="id" value="<?= (int)$row['id'] ?>">
                                             <input type="hidden" name="kind" value="<?= htmlspecialchars($kind) ?>">
-                                            <button type="submit" class="btn btn-outline-danger btn-sm">Usuń</button>
+                                            <button type="submit" class="btn btn-outline-danger btn-sm"><?= __('delete', 'admin', 'Usuń') ?></button>
                                         </form>
                                     </div>
                                 </td>
@@ -282,18 +282,18 @@ function isActiveRow(array $row): bool
                                         <input type="hidden" name="id" value="<?= (int)$row['id'] ?>">
 
                                         <div class="col-md-4">
-                                            <label class="form-label">Nazwa *</label>
+                                            <label class="form-label"><?= __('name', 'admin', 'Nazwa') ?> *</label>
                                             <input type="text" name="name" value="<?= htmlspecialchars($row['name']) ?>" class="form-control form-control-sm" required maxlength="128">
                                         </div>
                                         <div class="col-md-3">
-                                            <label class="form-label">Slug</label>
+                                            <label class="form-label"><?= __('slug', 'admin', 'Slug') ?></label>
                                             <input type="text" name="slug" value="<?= htmlspecialchars($row['slug']) ?>" class="form-control form-control-sm" maxlength="128">
                                         </div>
                                         <?php if ($isHier): ?>
                                             <div class="col-md-3">
-                                                <label class="form-label">Nadrzędny</label>
+                                                <label class="form-label"><?= __('parent', 'admin', 'Nadrzędny') ?></label>
                                                 <select name="parent_id" class="form-select form-select-sm">
-                                                    <option value="">— brak —</option>
+                                                    <option value=""><?= __('none', 'admin', '— brak —') ?></option>
                                                     <?php foreach ($terms as $p): ?>
                                                         <option value="<?= (int)$p['id'] ?>" <?= ((string)$p['id'] === (string)$row['parent_id']) ? 'selected' : '' ?>><?= htmlspecialchars($p['name']) ?></option>
                                                     <?php endforeach; ?>
@@ -302,32 +302,32 @@ function isActiveRow(array $row): bool
                                         <?php endif; ?>
                                         <?php if ($kind === 'addon'): ?>
                                             <div class="col-md-2">
-                                                <label class="form-label">Kwota (w zł)</label>
+                                                <label class="form-label"><?= __('amount_pln', 'admin', 'Kwota (w zł)') ?></label>
                                                 <input type="number" name="price" value="<?= htmlspecialchars($row['price'] ?? '') ?>" class="form-control form-control-sm" step="0.01" min="0">
                                             </div>
                                             <div class="col-md-2">
-                                                <label class="form-label">Sposób naliczania</label>
+                                                <label class="form-label"><?= __('billing_method', 'admin', 'Sposób naliczania') ?></label>
                                                 <select name="charge_type" class="form-select form-select-sm">
-                                                    <option value="per_day" <?= ($row['charge_type'] ?? '') === 'per_day' ? 'selected' : '' ?>>Za każdy dzień</option>
-                                                    <option value="once" <?= ($row['charge_type'] ?? '') === 'once' ? 'selected' : '' ?>>Jednorazowo</option>
+                                                    <option value="per_day" <?= ($row['charge_type'] ?? '') === 'per_day' ? 'selected' : '' ?>><?= __('per_day', 'admin', 'Za każdy dzień') ?></option>
+                                                    <option value="once" <?= ($row['charge_type'] ?? '') === 'once' ? 'selected' : '' ?>><?= __('once', 'admin', 'Jednorazowo') ?></option>
                                                 </select>
                                             </div>
                                         <?php else: ?>
                                             <div class="col-md-2">
-                                                <label class="form-label">Sort</label>
+                                                <label class="form-label"><?= __('sort', 'admin', 'Sort') ?></label>
                                                 <input type="number" name="sort_order" value="<?= (int)$row['sort_order'] ?>" class="form-control form-control-sm" step="1">
                                             </div>
                                         <?php endif; ?>
                                         <div class="col-md-2">
-                                            <label class="form-label">Status</label>
+                                            <label class="form-label"><?= __('status', 'admin', 'Status') ?></label>
                                             <select name="status" class="form-select form-select-sm">
                                                 <option value="active" <?= $row['status'] === 'active'   ? 'selected' : '' ?>>active</option>
                                                 <option value="archived" <?= $row['status'] === 'archived' ? 'selected' : '' ?>>archived</option>
                                             </select>
                                         </div>
                                         <div class="col-12 d-flex gap-2">
-                                            <button type="submit" class="btn btn-primary btn-sm">Zapisz zmiany</button>
-                                            <button type="button" class="btn btn-outline-secondary btn-sm" data-bs-toggle="collapse" data-bs-target="#editRow<?= (int)$row['id'] ?>">Zamknij edycję</button>
+                                            <button type="submit" class="btn btn-primary btn-sm"><?= __('save_changes', 'admin', 'Zapisz zmiany') ?></button>
+                                            <button type="button" class="btn btn-outline-secondary btn-sm" data-bs-toggle="collapse" data-bs-target="#editRow<?= (int)$row['id'] ?>"><?= __('close_edit', 'admin', 'Zamknij edycję') ?></button>
                                         </div>
                                     </form>
                                 </td>
@@ -340,10 +340,10 @@ function isActiveRow(array $row): bool
 
         <hr>
         <p class="small text-muted mb-0">
-            Podsekcje:
-            <a href="<?= panel_url(['kind' => 'location']) ?>">Lokalizacje</a> •
-            <a href="<?= panel_url(['kind' => 'car_class']) ?>">Klasa samochodu</a> •
-            <a href="<?= panel_url(['kind' => 'car_type']) ?>">Typ samochodu</a>
+            <?= __('subsections', 'admin', 'Podsekcje') ?>:
+            <a href="<?= panel_url(['kind' => 'location']) ?>"><?= __('locations', 'admin', 'Lokalizacje') ?></a> •
+            <a href="<?= panel_url(['kind' => 'car_class']) ?>"><?= __('car_class', 'admin', 'Klasa samochodu') ?></a> •
+            <a href="<?= panel_url(['kind' => 'car_type']) ?>"><?= __('car_type', 'admin', 'Typ samochodu') ?></a>
         </p>
     </div>
 </div>

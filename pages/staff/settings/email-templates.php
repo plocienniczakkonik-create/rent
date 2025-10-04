@@ -2,10 +2,18 @@
 // /pages/staff/settings/email-templates.php
 
 $db = db();
+i18n::init();
 
-// Pobierz szablony email
+// Pobierz aktualny język lub ustaw domyślny
+$current_language = $_GET['lang'] ?? 'pl';
+if (!in_array($current_language, ['pl', 'en'])) {
+    $current_language = 'pl';
+}
+
+// Pobierz szablony email dla wybranego języka
 $templates = [];
-$stmt = $db->query("SELECT * FROM email_templates ORDER BY template_key");
+$stmt = $db->prepare("SELECT * FROM email_templates WHERE language = ? ORDER BY template_key");
+$stmt->execute([$current_language]);
 while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
     $templates[$row['template_key']] = $row;
 }
@@ -13,6 +21,7 @@ while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
 // Obsługa zapisywania szablonu
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['save_template'])) {
     $template_key = $_POST['template_key'] ?? '';
+    $language = $_POST['language'] ?? $current_language;
     $template_name = $_POST['template_name'] ?? '';
     $subject = $_POST['subject'] ?? '';
     $content = $_POST['content'] ?? '';
@@ -22,8 +31,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['save_template'])) {
     if (!empty($template_key) && !empty($template_name)) {
         try {
             $stmt = $db->prepare("
-                INSERT INTO email_templates (template_key, template_name, subject, content, variables, enabled) 
-                VALUES (?, ?, ?, ?, ?, ?) 
+                INSERT INTO email_templates (template_key, language, template_name, subject, content, variables, enabled) 
+                VALUES (?, ?, ?, ?, ?, ?, ?) 
                 ON DUPLICATE KEY UPDATE 
                 template_name = VALUES(template_name),
                 subject = VALUES(subject),
@@ -32,21 +41,22 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['save_template'])) {
                 enabled = VALUES(enabled)
             ");
             
-            $stmt->execute([$template_key, $template_name, $subject, $content, $variables, $enabled]);
-            $success_message = "Szablon '{$template_name}' został zapisany!";
+            $stmt->execute([$template_key, $language, $template_name, $subject, $content, $variables, $enabled]);
+            $success_message = __('template_saved_success', 'admin', "Szablon został zapisany!");
             
             // Odśwież templates
             $templates = [];
-            $stmt = $db->query("SELECT * FROM email_templates ORDER BY template_key");
+            $stmt = $db->prepare("SELECT * FROM email_templates WHERE language = ? ORDER BY template_key");
+            $stmt->execute([$current_language]);
             while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
                 $templates[$row['template_key']] = $row;
             }
             
         } catch (PDOException $e) {
-            $error_message = "Błąd podczas zapisywania: " . $e->getMessage();
+            $error_message = __('saving_error', 'admin', 'Błąd podczas zapisywania') . ": " . $e->getMessage();
         }
     } else {
-        $error_message = "Klucz szablonu i nazwa są wymagane!";
+        $error_message = __('template_key_name_required', 'admin', 'Klucz szablonu i nazwa są wymagane!');
     }
 }
 
@@ -58,7 +68,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['delete_template'])) {
         try {
             $stmt = $db->prepare("DELETE FROM email_templates WHERE template_key = ?");
             $stmt->execute([$template_key]);
-            $success_message = "Szablon został usunięty!";
+            $success_message = __('template_deleted_success', 'admin', 'Szablon został usunięty!');
             
             // Odśwież templates
             $templates = [];
@@ -82,10 +92,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['delete_template'])) {
             }
             
         } catch (PDOException $e) {
-            $error_message = "Błąd podczas usuwania: " . $e->getMessage();
+            $error_message = __('delete_error_prefix', 'admin', 'Błąd podczas usuwania') . ": " . $e->getMessage();
         }
     } else {
-        $error_message = "Nie można usunąć szablonu - brak klucza!";
+        $error_message = __('cannot_delete_template', 'admin', 'Nie można usunąć szablonu - brak klucza!');
     }
 }
 
@@ -97,7 +107,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['add_new_template'])) 
     if (!empty($new_template_key) && !empty($new_template_name)) {
         // Sprawdź czy klucz już istnieje
         if (isset($templates[$new_template_key])) {
-            $error_message = "Szablon o takim kluczu już istnieje!";
+            $error_message = __('template_exists_error', 'admin', 'Szablon o takim kluczu już istnieje!');
         } else {
             try {
                 $stmt = $db->prepare("
@@ -106,11 +116,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['add_new_template'])) 
                 ");
                 
                 $default_subject = "Nowy szablon - {$new_template_name}";
-                $default_content = "<h2>Nowy szablon email</h2>\n<p>Szanowny/a {customer_name},</p>\n<p>Treść do uzupełnienia...</p>\n<p>Pozdrawiamy,<br>{company_name}</p>";
+                $default_content = "<h2>" . __('new_email_template', 'admin', 'Nowy szablon email') . "</h2>\n<p>" . __('dear_customer', 'admin', 'Szanowny/a {customer_name},') . "</p>\n<p>" . __('content_to_fill', 'admin', 'Treść do uzupełnienia...') . "</p>\n<p>" . __('best_regards', 'admin', 'Pozdrawiamy,<br>{company_name}') . "</p>";
                 $default_variables = "{customer_name}, {company_name}";
                 
                 $stmt->execute([$new_template_key, $new_template_name, $default_subject, $default_content, $default_variables]);
-                $success_message = "Nowy szablon '{$new_template_name}' został utworzony!";
+                $success_message = str_replace('{name}', $new_template_name, __('new_template_created', 'admin', 'Nowy szablon \'{name}\' został utworzony!'));
                 
                 // Odśwież templates
                 $templates = [];
@@ -131,11 +141,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['add_new_template'])) 
                 </script>";
                 
             } catch (PDOException $e) {
-                $error_message = "Błąd podczas tworzenia szablonu: " . $e->getMessage();
+                $error_message = __('template_creation_error', 'admin', 'Błąd podczas tworzenia szablonu') . ": " . $e->getMessage();
             }
         }
     } else {
-        $error_message = "Klucz i nazwa nowego szablonu są wymagane!";
+        $error_message = __('new_template_key_required', 'admin', 'Klucz i nazwa nowego szablonu są wymagane!');
     }
 }
 
@@ -146,7 +156,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['test_template'])) {
     
     if (!empty($template_key) && !empty($test_email) && isset($templates[$template_key])) {
         // Mock test - w rzeczywistości wysłałby email
-        $test_message = "Test email dla szablonu '{$templates[$template_key]['template_name']}' został wysłany na {$test_email}";
+        $test_message = str_replace(['{name}', '{email}'], [$templates[$template_key]['template_name'], $test_email], __('test_email_sent', 'admin', 'Test email dla szablonu \'{name}\' został wysłany na {email}'));
     }
 }
 
@@ -305,26 +315,40 @@ if (!isset($templates[$current_template]) && count($templates) > 0) {
 
 <div class="d-flex justify-content-between align-items-center mb-3">
     <div>
-        <h5 class="mb-1">Szablony emaili</h5>
-        <p class="text-muted mb-0">Zarządzanie szablonami wiadomości automatycznych</p>
+        <h5 class="mb-1"><?= __('email_templates', 'admin', 'Szablony emaili') ?></h5>
+        <p class="text-muted mb-0"><?= __('manage_email_templates', 'admin', 'Zarządzanie szablonami wiadomości automatycznych') ?></p>
     </div>
-    <div class="d-flex gap-2">
+    <div class="d-flex gap-2 align-items-center">
+        <!-- Language Selector -->
+        <div class="btn-group" role="group">
+            <input type="radio" class="btn-check" name="template_language" id="lang_pl" value="pl" <?= $current_language === 'pl' ? 'checked' : '' ?> onchange="switchLanguage('pl')">
+            <label class="btn btn-outline-primary btn-sm" for="lang_pl">
+                <i class="bi bi-flag"></i> <?= __('polish_template', 'admin', 'PL') ?>
+            </label>
+            
+            <input type="radio" class="btn-check" name="template_language" id="lang_en" value="en" <?= $current_language === 'en' ? 'checked' : '' ?> onchange="switchLanguage('en')">
+            <label class="btn btn-outline-primary btn-sm" for="lang_en">
+                <i class="bi bi-flag"></i> <?= __('english_template', 'admin', 'EN') ?>
+            </label>
+        </div>
+        
         <button class="btn btn-success btn-sm" data-bs-toggle="modal" data-bs-target="#addTemplateModal">
-            <i class="bi bi-plus-circle"></i> Dodaj szablon
+            <i class="bi bi-plus-circle"></i> <?= __('add_new_template', 'admin', 'Dodaj szablon') ?>
         </button>
         <button class="btn btn-outline-info btn-sm" data-bs-toggle="modal" data-bs-target="#variablesModal">
-            <i class="bi bi-info-circle"></i> Zmienne
+            <i class="bi bi-info-circle"></i> <?= __('template_variables', 'admin', 'Zmienne') ?>
         </button>
         <button class="btn btn-outline-secondary btn-sm" onclick="location.reload()">
-            <i class="bi bi-arrow-clockwise"></i> Odśwież
+            <i class="bi bi-arrow-clockwise"></i> <?= __('refresh', 'admin', 'Odśwież') ?>
         </button>
     </div>
 </div>
 
 <?php if (isset($success_message)): ?>
-    <div class="alert alert-success">
+    <div class="alert alert-success alert-dismissible auto-fade" id="successAlert">
         <i class="bi bi-check-circle"></i>
         <?= $success_message ?>
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
     </div>
 <?php endif; ?>
 
@@ -347,7 +371,7 @@ if (!isset($templates[$current_template]) && count($templates) > 0) {
     <div class="col-lg-4">
         <div class="card">
             <div class="card-header">
-                <h6 class="mb-0">Dostępne szablony</h6>
+                <h6 class="mb-0"><?= __('available_templates', 'admin', 'Dostępne szablony') ?></h6>
             </div>
             <div class="list-group list-group-flush">
                 <?php foreach ($templates as $key => $template): ?>
@@ -359,9 +383,9 @@ if (!isset($templates[$current_template]) && count($templates) > 0) {
                         </div>
                         <div>
                             <?php if ($template['enabled']): ?>
-                                <span class="badge bg-success">Aktywny</span>
+                                <span class="badge bg-success"><?= __('active', 'admin', 'Aktywny') ?></span>
                             <?php else: ?>
-                                <span class="badge bg-secondary">Nieaktywny</span>
+                                <span class="badge bg-secondary"><?= __('inactive', 'admin', 'Nieaktywny') ?></span>
                             <?php endif; ?>
                         </div>
                     </a>
@@ -376,17 +400,17 @@ if (!isset($templates[$current_template]) && count($templates) > 0) {
             <?php $template = $templates[$current_template]; ?>
             <div class="card">
                 <div class="card-header d-flex justify-content-between align-items-center">
-                    <h6 class="mb-0">Edytuj szablon: <?= htmlspecialchars($template['template_name']) ?></h6>
+                    <h6 class="mb-0"><?= __('edit_template', 'admin', 'Edytuj szablon') ?>: <?= htmlspecialchars($template['template_name']) ?></h6>
                     <div class="d-flex align-items-center gap-3">
                         <button class="btn btn-outline-danger btn-sm" data-bs-toggle="modal" data-bs-target="#deleteTemplateModal" 
                                 onclick="setDeleteTemplate('<?= $current_template ?>', '<?= htmlspecialchars($template['template_name']) ?>')">
-                            <i class="bi bi-trash"></i> Usuń
+                            <i class="bi bi-trash"></i> <?= __('delete', 'admin', 'Usuń') ?>
                         </button>
                         <div class="form-check form-switch mb-0">
                             <input type="checkbox" class="form-check-input" id="template-enabled" 
                                    <?= $template['enabled'] ? 'checked' : '' ?>
                                    onchange="toggleTemplate('<?= $current_template ?>', this.checked)">
-                            <label class="form-check-label" for="template-enabled">Aktywny</label>
+                            <label class="form-check-label" for="template-enabled"><?= __('active', 'admin', 'Aktywny') ?></label>
                         </div>
                     </div>
                 </div>
@@ -395,47 +419,47 @@ if (!isset($templates[$current_template]) && count($templates) > 0) {
                         <input type="hidden" name="template_key" value="<?= $current_template ?>">
                         
                         <div class="mb-3">
-                            <label class="form-label">Nazwa szablonu</label>
+                            <label class="form-label"><?= __('template_name', 'admin', 'Nazwa szablonu') ?></label>
                             <input type="text" name="template_name" class="form-control" 
                                    value="<?= htmlspecialchars($template['template_name']) ?>" required>
                         </div>
                         
                         <div class="mb-3">
-                            <label class="form-label">Temat wiadomości</label>
+                            <label class="form-label"><?= __('template_subject', 'admin', 'Temat wiadomości') ?></label>
                             <input type="text" name="subject" class="form-control" 
                                    value="<?= htmlspecialchars($template['subject']) ?>" required>
                         </div>
                         
                         <div class="mb-3">
-                            <label class="form-label">Treść wiadomości</label>
+                            <label class="form-label"><?= __('template_content', 'admin', 'Treść wiadomości') ?></label>
                             <textarea name="content" class="form-control" rows="12" required><?= htmlspecialchars($template['content']) ?></textarea>
-                            <div class="form-text">Użyj HTML dla formatowania. Dostępne zmienne: <?= htmlspecialchars($template['variables']) ?></div>
+                            <div class="form-text"><?= __('html_formatting_help', 'admin', 'Użyj HTML dla formatowania. Dostępne zmienne') ?>: <?= htmlspecialchars($template['variables']) ?></div>
                         </div>
                         
                         <div class="mb-3">
-                            <label class="form-label">Dostępne zmienne</label>
+                            <label class="form-label"><?= __('template_variables', 'admin', 'Dostępne zmienne') ?></label>
                             <input type="text" name="variables" class="form-control" 
                                    value="<?= htmlspecialchars($template['variables']) ?>">
-                            <div class="form-text">Lista zmiennych oddzielonych przecinkami</div>
+                            <div class="form-text"><?= __('variables_help', 'admin', 'Lista zmiennych oddzielonych przecinkami') ?></div>
                         </div>
                         
                         <div class="form-check mb-3">
                             <input type="checkbox" name="enabled" class="form-check-input" 
                                    id="enabled" <?= $template['enabled'] ? 'checked' : '' ?>>
                             <label class="form-check-label" for="enabled">
-                                Szablon aktywny
+                                <?= __('template_enabled', 'admin', 'Szablon aktywny') ?>
                             </label>
                         </div>
                         
                         <div class="d-flex gap-2">
                             <button type="submit" name="save_template" class="btn btn-primary">
-                                <i class="bi bi-check-lg"></i> Zapisz szablon
+                                <i class="bi bi-check-lg"></i> <?= __('save_template', 'admin', 'Zapisz szablon') ?>
                             </button>
                             <button type="button" class="btn btn-outline-info" data-bs-toggle="modal" data-bs-target="#testModal">
-                                <i class="bi bi-envelope"></i> Test wysyłki
+                                <i class="bi bi-envelope"></i> <?= __('test_sending', 'admin', 'Test wysyłki') ?>
                             </button>
                             <button type="button" class="btn btn-outline-secondary" onclick="previewTemplate()">
-                                <i class="bi bi-eye"></i> Podgląd
+                                <i class="bi bi-eye"></i> <?= __('preview', 'admin', 'Podgląd') ?>
                             </button>
                         </div>
                     </form>
@@ -450,25 +474,25 @@ if (!isset($templates[$current_template]) && count($templates) > 0) {
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title">Test wysyłki szablonu</h5>
+                <h5 class="modal-title"><?= __('test_template_send', 'admin') ?></h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
             <form method="POST">
                 <div class="modal-body">
                     <input type="hidden" name="template_key" value="<?= $current_template ?>">
                     <div class="mb-3">
-                        <label class="form-label">Email testowy</label>
+                        <label class="form-label"><?= __('test_email_label', 'admin') ?></label>
                         <input type="email" name="test_email" class="form-control" 
-                               placeholder="test@example.com" required>
+                               placeholder="<?= __('test_email_placeholder', 'admin') ?>" required>
                     </div>
                     <div class="alert alert-info">
-                        <small>Email testowy zostanie wysłany z przykładowymi danymi.</small>
+                        <small><?= __('test_email_notice', 'admin') ?></small>
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Anuluj</button>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal"><?= __('cancel', 'admin') ?></button>
                     <button type="submit" name="test_template" class="btn btn-primary">
-                        <i class="bi bi-send"></i> Wyślij test
+                        <i class="bi bi-send"></i> <?= __('send_test', 'admin') ?>
                     </button>
                 </div>
             </form>
@@ -481,42 +505,42 @@ if (!isset($templates[$current_template]) && count($templates) > 0) {
     <div class="modal-dialog modal-lg">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title">Dostępne zmienne</h5>
+                <h5 class="modal-title"><?= __('available_variables', 'admin', 'Dostępne zmienne') ?></h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
             <div class="modal-body">
                 <div class="row g-3">
                     <div class="col-md-6">
-                        <h6>Klient:</h6>
+                        <h6><?= __('customer_section', 'admin', 'Klient') ?>:</h6>
                         <ul class="list-unstyled">
-                            <li><code>{customer_name}</code> - Imię i nazwisko</li>
-                            <li><code>{customer_email}</code> - Email klienta</li>
-                            <li><code>{customer_phone}</code> - Telefon</li>
+                            <li><code>{customer_name}</code> - <?= __('customer_name_var', 'admin', 'Imię i nazwisko') ?></li>
+                            <li><code>{customer_email}</code> - <?= __('customer_email_var', 'admin', 'Email klienta') ?></li>
+                            <li><code>{customer_phone}</code> - <?= __('customer_phone_var', 'admin', 'Telefon') ?></li>
                         </ul>
                     </div>
                     <div class="col-md-6">
-                        <h6>Rezerwacja:</h6>
+                        <h6><?= __('booking_section', 'admin', 'Rezerwacja') ?>:</h6>
                         <ul class="list-unstyled">
-                            <li><code>{booking_id}</code> - Numer rezerwacji</li>
-                            <li><code>{date_from}</code> - Data rozpoczęcia</li>
-                            <li><code>{date_to}</code> - Data zakończenia</li>
-                            <li><code>{total_price}</code> - Całkowita cena</li>
+                            <li><code>{booking_id}</code> - <?= __('booking_id_var', 'admin', 'Numer rezerwacji') ?></li>
+                            <li><code>{date_from}</code> - <?= __('date_from_var', 'admin', 'Data rozpoczęcia') ?></li>
+                            <li><code>{date_to}</code> - <?= __('date_to_var', 'admin', 'Data zakończenia') ?></li>
+                            <li><code>{total_price}</code> - <?= __('total_price_var', 'admin', 'Całkowita cena') ?></li>
                         </ul>
                     </div>
                     <div class="col-md-6">
-                        <h6>Pojazd:</h6>
+                        <h6><?= __('vehicle_section', 'admin', 'Pojazd') ?>:</h6>
                         <ul class="list-unstyled">
-                            <li><code>{vehicle_name}</code> - Nazwa pojazdu</li>
-                            <li><code>{vehicle_brand}</code> - Marka</li>
-                            <li><code>{vehicle_model}</code> - Model</li>
+                            <li><code>{vehicle_name}</code> - <?= __('vehicle_name_var', 'admin', 'Nazwa pojazdu') ?></li>
+                            <li><code>{vehicle_brand}</code> - <?= __('vehicle_brand_var', 'admin', 'Marka') ?></li>
+                            <li><code>{vehicle_model}</code> - <?= __('vehicle_model_var', 'admin', 'Model') ?></li>
                         </ul>
                     </div>
                     <div class="col-md-6">
-                        <h6>Firma:</h6>
+                        <h6><?= __('company_section', 'admin', 'Firma') ?>:</h6>
                         <ul class="list-unstyled">
-                            <li><code>{company_name}</code> - Nazwa firmy</li>
-                            <li><code>{company_email}</code> - Email firmy</li>
-                            <li><code>{company_phone}</code> - Telefon firmy</li>
+                            <li><code>{company_name}</code> - <?= __('company_name_var', 'admin', 'Nazwa firmy') ?></li>
+                            <li><code>{company_email}</code> - <?= __('company_email_var', 'admin', 'Email firmy') ?></li>
+                            <li><code>{company_phone}</code> - <?= __('company_phone_var', 'admin', 'Telefon firmy') ?></li>
                         </ul>
                     </div>
                 </div>
@@ -530,29 +554,29 @@ if (!isset($templates[$current_template]) && count($templates) > 0) {
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title">Dodaj nowy szablon</h5>
+                <h5 class="modal-title"><?= __('add_new_template', 'admin', 'Dodaj nowy szablon') ?></h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
             <form method="POST">
                 <div class="modal-body">
                     <div class="mb-3">
-                        <label class="form-label">Klucz szablonu <span class="text-danger">*</span></label>
+                        <label class="form-label"><?= __('template_key_label', 'admin', 'Klucz szablonu') ?> <span class="text-danger">*</span></label>
                         <input type="text" name="new_template_key" class="form-control" required
-                               placeholder="np. welcome_email" pattern="[a-z0-9_]+" 
-                               title="Tylko małe litery, cyfry i podkreślenia">
-                        <div class="form-text">Używaj tylko małych liter, cyfr i podkreśleń (np. welcome_email)</div>
+                               placeholder="<?= __('template_key_placeholder', 'admin', 'np. welcome_email') ?>" pattern="[a-z0-9_]+" 
+                               title="<?= __('only_lowercase_numbers', 'admin', 'Tylko małe litery, cyfry i podkreślenia') ?>">
+                        <div class="form-text"><?= __('lowercase_only_help', 'admin', 'Używaj tylko małych liter, cyfr i podkreśleń (np. welcome_email)') ?></div>
                     </div>
                     <div class="mb-3">
-                        <label class="form-label">Nazwa szablonu <span class="text-danger">*</span></label>
+                        <label class="form-label"><?= __('template_name_label', 'admin', 'Nazwa szablonu') ?> <span class="text-danger">*</span></label>
                         <input type="text" name="new_template_name" class="form-control" required
-                               placeholder="np. Email powitalny">
-                        <div class="form-text">Przyjazna nazwa wyświetlana w interfejsie</div>
+                               placeholder="<?= __('template_name_placeholder', 'admin', 'np. Email powitalny') ?>">
+                        <div class="form-text"><?= __('friendly_name_help', 'admin', 'Przyjazna nazwa wyświetlana w interfejsie') ?></div>
                     </div>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Anuluj</button>
                     <button type="submit" name="add_new_template" class="btn btn-success">
-                        <i class="bi bi-plus-circle"></i> Utwórz szablon
+                        <i class="bi bi-plus-circle"></i> <?= __('create_template', 'admin', 'Utwórz szablon') ?>
                     </button>
                 </div>
             </form>
@@ -565,23 +589,23 @@ if (!isset($templates[$current_template]) && count($templates) > 0) {
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title">Usuń szablon</h5>
+                <h5 class="modal-title"><?= __('delete_template', 'admin') ?></h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
             <div class="modal-body">
                 <div class="alert alert-warning">
                     <i class="bi bi-exclamation-triangle"></i>
-                    <strong>Uwaga!</strong> Ta operacja jest nieodwracalna.
+                    <strong><?= __('warning', 'admin') ?></strong> <?= __('operation_irreversible', 'admin') ?>
                 </div>
-                <p>Czy na pewno chcesz usunąć szablon <strong id="deleteTemplateName"></strong>?</p>
-                <p class="text-muted small">Wszystkie dane szablonu zostaną permanentnie usunięte z bazy danych.</p>
+                <p><?= __('confirm_delete_template_msg', 'admin') ?> <strong id="deleteTemplateName"></strong>?</p>
+                <p class="text-muted small"><?= __('template_data_deleted', 'admin') ?></p>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Anuluj</button>
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal"><?= __('cancel', 'admin') ?></button>
                 <form method="POST" style="display: inline;">
                     <input type="hidden" name="template_key" id="deleteTemplateKey">
                     <button type="submit" name="delete_template" class="btn btn-danger">
-                        <i class="bi bi-trash"></i> Usuń szablon
+                        <i class="bi bi-trash"></i> <?= __('delete_template', 'admin') ?>
                     </button>
                 </form>
             </div>
@@ -590,6 +614,19 @@ if (!isset($templates[$current_template]) && count($templates) > 0) {
 </div>
 
 <script>
+// Auto-hide success alerts after 3 seconds with fade effect
+document.addEventListener('DOMContentLoaded', function() {
+    const successAlert = document.getElementById('successAlert');
+    if (successAlert) {
+        setTimeout(function() {
+            successAlert.style.opacity = '0';
+            setTimeout(function() {
+                successAlert.style.display = 'none';
+            }, 500); // Wait for fade transition to complete
+        }, 3000); // Start fade after 3 seconds
+    }
+});
+
 function toggleTemplate(templateKey, enabled) {
     const formData = new FormData();
     formData.append('template_key', templateKey);
@@ -637,18 +674,26 @@ function previewTemplate() {
     previewWindow.document.write(`
         <html>
         <head>
-            <title>Podgląd: ${subject}</title>
+            <title><?= __('preview_subject', 'admin') ?> ${subject}</title>
             <style>
                 body { font-family: Arial, sans-serif; margin: 20px; }
                 .subject { background: #f8f9fa; padding: 10px; border-left: 4px solid #007bff; margin-bottom: 20px; }
             </style>
         </head>
         <body>
-            <div class="subject"><strong>Temat:</strong> ${subject}</div>
+            <div class="subject"><strong><?= __('subject_label', 'admin') ?></strong> ${subject}</div>
             <div class="content">${content}</div>
         </body>
         </html>
     `);
+}
+
+// Language switching function
+function switchLanguage(lang) {
+    const currentUrl = new URL(window.location);
+    currentUrl.searchParams.set('lang', lang);
+    currentUrl.searchParams.delete('edit'); // Reset template selection when switching language
+    window.location.href = currentUrl.toString();
 }
 </script>
 
@@ -667,5 +712,9 @@ code {
     padding: 2px 4px;
     border-radius: 3px;
     font-size: 0.875em;
+}
+
+.auto-fade {
+    transition: opacity 0.5s ease-out;
 }
 </style>

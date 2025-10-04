@@ -20,12 +20,12 @@ if (!function_exists('promo_discount')) {
 if (!function_exists('promo_period')) {
     function promo_period(?string $from, ?string $to): string
     {
-        if (!$from && !$to) return '(bez ograniczeń)';
+        if (!$from && !$to) return '(' . __('no_restrictions', 'admin', 'bez ograniczeń') . ')';
         $f = $from ? date('Y-m-d', strtotime($from)) : '';
         $t = $to   ? date('Y-m-d', strtotime($to))   : '';
         if ($f && $t) return "$f → $t";
-        if ($f) return "od $f";
-        if ($t) return "do $t";
+        if ($f) return __('from', 'admin', 'od') . " $f";
+        if ($t) return __('to', 'admin', 'do') . " $t";
         return '';
     }
 }
@@ -34,10 +34,10 @@ if (!function_exists('promo_scope_label')) {
     function promo_scope_label(string $type): string
     {
         return match ($type) {
-            'all'        => 'Wszystkie produkty',
-            'category'   => 'Kategoria',
-            'product_id' => 'Konkretny produkt',
-            'product_sku' => 'Produkt (SKU)',
+            'all'        => __('all_products', 'admin', 'Wszystkie produkty'),
+            'category'   => __('category', 'admin', 'Kategoria'),
+            'product_id' => __('specific_product', 'admin', 'Konkretny produkt'),
+            'product_sku' => __('product_sku', 'admin', 'Produkt (SKU)'),
             default      => ucfirst($type),
         };
     }
@@ -46,11 +46,11 @@ if (!function_exists('promo_scope_label')) {
 if (!function_exists('promo_values_for_scope')) {
     function promo_values_for_scope(string $type, ?string $vals, array $maps, int $limit = 5): string
     {
-        if ($type === 'all') return 'Wszystkie';
-        if (!$vals) return '(brak)';
+        if ($type === 'all') return __('all_products', 'admin', 'Wszystkie');
+        if (!$vals) return '(' . __('no_restrictions', 'admin', 'brak') . ')';
 
         $items = array_filter(array_map('trim', explode(',', $vals)));
-        if (empty($items)) return '(brak)';
+        if (empty($items)) return '(' . __('no_restrictions', 'admin', 'brak') . ')';
 
         $labels = [];
         foreach ($items as $item) {
@@ -82,8 +82,8 @@ $maps = [
 ?>
 <div class="card section-promos">
     <div class="card-header d-flex align-items-center justify-content-between">
-        <h2 class="h6 mb-0">Promocje</h2>
-        <a class="btn btn-sm btn-primary" href="pages/promo-form.php">Dodaj promocję</a>
+        <h2 class="h6 mb-0"><?= __('promotions', 'admin', 'Promocje') ?></h2>
+        <a class="btn btn-sm btn-primary" href="pages/promo-form.php"><?= __('add_promotion', 'admin', 'Dodaj promocję') ?></a>
     </div>
     <div class="card-body p-0">
         <div class="table-responsive">
@@ -91,15 +91,15 @@ $maps = [
                 <thead class="small text-muted">
                     <tr>
                         <th><?= sort_link_dashboard('promos', 'id', 'ID') ?></th>
-                        <th><?= sort_link_dashboard('promos', 'name', 'Nazwa') ?></th>
-                        <th><?= sort_link_dashboard('promos', 'code', 'Kod') ?></th>
-                        <th><?= sort_link_dashboard('promos', 'active', 'Aktywna') ?></th>
-                        <th><?= sort_link_dashboard('promos', 'scope', 'Zasięg') ?></th>
-                        <th>Dotyczy</th>
-                        <th><?= sort_link_dashboard('promos', 'discount', 'Zniżka') ?></th>
-                        <th>Min. dni</th>
-                        <th>Okres</th>
-                        <th class="text-end">Akcje</th>
+                        <th><?= sort_link_dashboard('promos', 'name', __('name', 'admin', 'Nazwa')) ?></th>
+                        <th><?= sort_link_dashboard('promos', 'code', __('code', 'admin', 'Kod')) ?></th>
+                        <th><?= sort_link_dashboard('promos', 'active', __('active', 'admin', 'Aktywna')) ?></th>
+                        <th><?= sort_link_dashboard('promos', 'scope', __('scope', 'admin', 'Zasięg')) ?></th>
+                        <th><?= __('applies_to', 'admin', 'Dotyczy') ?></th>
+                        <th><?= sort_link_dashboard('promos', 'discount', __('discount', 'admin', 'Zniżka')) ?></th>
+                        <th><?= __('min_days', 'admin', 'Min. dni') ?></th>
+                        <th><?= __('period', 'admin', 'Okres') ?></th>
+                        <th class="text-end"><?= __('actions', 'admin', 'Akcje') ?></th>
                     </tr>
                 </thead>
                 <tbody>
@@ -113,7 +113,7 @@ $maps = [
         
         if (empty($promos)): ?>
             <tr>
-                <td colspan="10" class="text-center text-muted py-4">Brak promocji.</td>
+                <td colspan="10" class="text-center text-muted py-4"><?= __('no_promotions', 'admin', 'Brak promocji.') ?></td>
             </tr>
             <?php else: foreach ($promos as $pr): ?>
                 <?php
@@ -137,7 +137,7 @@ $maps = [
                     <td><?= $id ?></td>
                     <td><?= htmlspecialchars($name) ?></td>
                     <td class="font-monospace"><?= $code ? htmlspecialchars($code) : '—' ?></td>
-                    <td><?= $isA ? 'Tak' : 'Nie' ?></td>
+                    <td><?= $isA ? __('yes', 'admin', 'Tak') : __('no', 'admin', 'Nie') ?></td>
                     <td><?= promo_scope_label($typ) ?></td>
                     <td><?= $dotyczy ?></td>
                     <td><?= $disc ?></td>
@@ -145,10 +145,10 @@ $maps = [
                     <td><?= $period ?></td>
                     <td class="text-end">
                         <div class="d-flex gap-1 justify-content-end">
-                            <a href="pages/promo-form.php?id=<?= $id ?>" class="btn btn-outline-primary btn-sm">Edytuj</a>
+                            <a href="pages/promo-form.php?id=<?= $id ?>" class="btn btn-outline-primary btn-sm"><?= __('edit', 'admin', 'Edytuj') ?></a>
                             <a href="pages/promo-delete.php?id=<?= $id ?>&_token=<?= htmlspecialchars(csrf_token(), ENT_QUOTES) ?>"
                                 class="btn btn-outline-danger btn-sm"
-                                onclick="return confirm('Usunąć promocję #<?= $id ?>?');">Usuń</a>
+                                onclick="return confirm('<?= __('confirm_delete_promotion', 'admin', 'Usunąć promocję') ?> #<?= $id ?>?');"><?= __('delete', 'admin', 'Usuń') ?></a>
                         </div>
                     </td>
                 </tr>

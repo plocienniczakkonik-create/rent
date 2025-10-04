@@ -1,6 +1,54 @@
 <?php
 // /pages/staff/settings/users-list.php
+require_once dirname(dirname(dirname(__DIR__))) . '/includes/i18n.php';
+
+// Initialize i18n if not already done
+if (!class_exists('i18n') || !method_exists('i18n', 'getAdminLanguage')) {
+    i18n::init();
+}
+
 $db = db();
+
+// Obsługa akcji POST
+$success_message = '';
+$error_message = '';
+
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    $action = $_POST['action'] ?? '';
+    $user_id = (int)($_POST['user_id'] ?? 0);
+    
+    if ($user_id > 0) {
+        try {
+            switch ($action) {
+                case 'toggle_status':
+                    $stmt = $db->prepare("UPDATE users SET is_active = NOT is_active WHERE id = ?");
+                    $stmt->execute([$user_id]);
+                    $success_message = __('user_status_changed', 'admin', 'Status użytkownika został zmieniony!');
+                    break;
+                    
+                case 'delete_user':
+                    // Sprawdź czy to nie aktualny użytkownik
+                    $current_user_id = $_SESSION['user_id'] ?? 0;
+                    if ($user_id == $current_user_id) {
+                        $error_message = __('cannot_delete_own_account', 'admin', 'Nie możesz usunąć swojego własnego konta!');
+                        break;
+                    }
+                    
+                    $stmt = $db->prepare("DELETE FROM users WHERE id = ?");
+                    $stmt->execute([$user_id]);
+                    $success_message = __('user_deleted_successfully', 'admin', 'Użytkownik został usunięty!');
+                    break;
+                    
+                default:
+                    $error_message = __('unknown_action', 'admin', 'Nieznana akcja!');
+            }
+        } catch (PDOException $e) {
+            $error_message = __('error', 'admin', 'Błąd') . ': ' . $e->getMessage();
+        }
+    } else {
+        $error_message = __('invalid_user_id', 'admin', 'Nieprawidłowy ID użytkownika!');
+    }
+}
 
 // Sortowanie użytkowników
 $allowed_sorts = ['id', 'first_name', 'last_name', 'email', 'role', 'is_active'];
@@ -46,14 +94,29 @@ function user_role_badge(string $role): string {
 }
 ?>
 
+<?php if ($success_message): ?>
+    <div class="alert alert-success alert-dismissible auto-fade" id="successAlert">
+        <i class="bi bi-check-circle"></i>
+        <?= htmlspecialchars($success_message) ?>
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+<?php endif; ?>
+
+<?php if ($error_message): ?>
+    <div class="alert alert-danger">
+        <i class="bi bi-exclamation-triangle"></i>
+        <?= htmlspecialchars($error_message) ?>
+    </div>
+<?php endif; ?>
+
 <div class="d-flex justify-content-between align-items-center mb-3">
     <div>
-        <h5 class="mb-1">Zarządzanie użytkownikami</h5>
-        <p class="text-muted mb-0">Lista wszystkich użytkowników w systemie</p>
+        <h5 class="mb-1"><?= __('user_management', 'admin', 'Zarządzanie użytkownikami') ?></h5>
+        <p class="text-muted mb-0"><?= __('all_users_list', 'admin', 'Lista wszystkich użytkowników w systemie') ?></p>
     </div>
     <a href="<?= $BASE ?>/index.php?page=dashboard-staff&section=settings&settings_section=users&settings_subsection=add#pane-settings" 
        class="btn btn-primary">
-        <i class="bi bi-person-plus"></i> Dodaj użytkownika
+        <i class="bi bi-person-plus"></i> <?= __('add_user', 'admin', 'Dodaj użytkownika') ?>
     </a>
 </div>
 
@@ -62,12 +125,12 @@ function user_role_badge(string $role): string {
         <thead>
             <tr>
                 <th><?= user_sort_link('id', 'ID') ?></th>
-                <th><?= user_sort_link('first_name', 'Użytkownik') ?></th>
+                <th><?= user_sort_link('first_name', __('user', 'admin', 'Użytkownik')) ?></th>
                 <th><?= user_sort_link('email', 'Email') ?></th>
-                <th><?= user_sort_link('role', 'Rola') ?></th>
-                <th><?= user_sort_link('is_active', 'Status') ?></th>
-                <th>Ostatnie logowanie</th>
-                <th class="text-end">Akcje</th>
+                <th><?= user_sort_link('role', __('role', 'admin', 'Rola')) ?></th>
+                <th><?= user_sort_link('is_active', __('status', 'admin', 'Status')) ?></th>
+                <th><?= __('last_login', 'admin', 'Ostatnie logowanie') ?></th>
+                <th class="text-end"><?= __('actions', 'admin', 'Akcje') ?></th>
             </tr>
         </thead>
         <tbody>
@@ -75,7 +138,7 @@ function user_role_badge(string $role): string {
                 <tr>
                     <td colspan="7" class="text-center py-4 text-muted">
                         <i class="bi bi-people fs-1 d-block mb-2"></i>
-                        Brak użytkowników w systemie
+                        <?= __('no_users_in_system', 'admin', 'Brak użytkowników w systemie') ?>
                     </td>
                 </tr>
             <?php else: foreach ($users as $user): ?>
@@ -109,33 +172,43 @@ function user_role_badge(string $role): string {
                     </td>
                     <td>
                         <span class="badge <?= $user['is_active'] ? 'bg-success' : 'bg-danger' ?>">
-                            <?= $user['is_active'] ? 'Aktywny' : 'Nieaktywny' ?>
+                            <?= $user['is_active'] ? __('active', 'admin', 'Aktywny') : __('inactive', 'admin', 'Nieaktywny') ?>
                         </span>
                     </td>
                     <td>
-                        <small class="text-muted">Brak danych</small>
+                        <small class="text-muted"><?= __('no_data', 'admin', 'Brak danych') ?></small>
                     </td>
                     <td class="text-end">
                         <div class="btn-group btn-group-sm">
-                            <button class="btn btn-outline-primary" title="Edytuj użytkownika">
+                            <a href="<?= $BASE ?>/index.php?page=dashboard-staff&section=settings&settings_section=users&settings_subsection=edit&user_id=<?= $user['id'] ?>#pane-settings" 
+                               class="btn btn-outline-primary" title="<?= __('edit_user', 'admin', 'Edytuj użytkownika') ?>">
                                 <i class="bi bi-pencil"></i>
-                            </button>
-                            <button class="btn btn-outline-secondary" title="Historia aktywności">
+                            </a>
+                            <button class="btn btn-outline-secondary" title="<?= __('activity_history', 'admin', 'Historia aktywności (wkrótce)') ?>" disabled>
                                 <i class="bi bi-clock-history"></i>
                             </button>
-                            <?php if ($user['is_active']): ?>
-                                <button class="btn btn-outline-warning" title="Zablokuj użytkownika">
-                                    <i class="bi bi-lock"></i>
+                        </div>
+                        <div class="btn-group btn-group-sm ms-1">
+                            <form method="POST" style="display: inline;" onsubmit="return confirm('<?= __('confirm_change_status', 'admin', 'Czy na pewno chcesz zmienić status tego użytkownika?') ?>')">
+                                <input type="hidden" name="action" value="toggle_status">
+                                <input type="hidden" name="user_id" value="<?= $user['id'] ?>">
+                                <?php if ($user['is_active']): ?>
+                                    <button type="submit" class="btn btn-outline-warning" title="<?= __('block_user', 'admin', 'Zablokuj użytkownika') ?>">
+                                        <i class="bi bi-lock"></i>
+                                    </button>
+                                <?php else: ?>
+                                    <button type="submit" class="btn btn-outline-success" title="<?= __('unblock_user', 'admin', 'Odblokuj użytkownika') ?>">
+                                        <i class="bi bi-unlock"></i>
+                                    </button>
+                                <?php endif; ?>
+                            </form>
+                            <form method="POST" style="display: inline;" onsubmit="return confirm('<?= __('confirm_delete_user', 'admin', 'Czy na pewno chcesz usunąć tego użytkownika? Ta operacja jest nieodwracalna!') ?>')">
+                                <input type="hidden" name="action" value="delete_user">
+                                <input type="hidden" name="user_id" value="<?= $user['id'] ?>">
+                                <button type="submit" class="btn btn-outline-danger" title="<?= __('delete_user', 'admin', 'Usuń użytkownika') ?>">
+                                    <i class="bi bi-trash"></i>
                                 </button>
-                            <?php else: ?>
-                                <button class="btn btn-outline-success" title="Odblokuj użytkownika">
-                                    <i class="bi bi-unlock"></i>
-                                </button>
-                            <?php endif; ?>
-                            <button class="btn btn-outline-danger" title="Usuń użytkownika" 
-                                    onclick="return confirm('Czy na pewno chcesz usunąć tego użytkownika?')">
-                                <i class="bi bi-trash"></i>
-                            </button>
+                            </form>
                         </div>
                     </td>
                 </tr>
@@ -216,4 +289,23 @@ function user_role_badge(string $role): string {
     padding: 0.25rem 0.375rem;
     font-size: 0.875rem;
 }
+
+.auto-fade {
+    transition: opacity 0.5s ease-out;
+}
 </style>
+
+<script>
+// Auto-hide success alerts after 3 seconds with fade effect
+document.addEventListener('DOMContentLoaded', function() {
+    const successAlert = document.getElementById('successAlert');
+    if (successAlert) {
+        setTimeout(function() {
+            successAlert.style.opacity = '0';
+            setTimeout(function() {
+                successAlert.style.display = 'none';
+            }, 500); // Wait for fade transition to complete
+        }, 3000); // Start fade after 3 seconds
+    }
+});
+</script>
