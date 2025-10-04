@@ -90,13 +90,13 @@ $maps = [
             <table class="table table-sm align-middle mb-0">
                 <thead class="small text-muted">
                     <tr>
-                        <th>ID</th>
-                        <th>Nazwa</th>
-                        <th>Kod</th>
-                        <th>Aktywna</th>
-                        <th>Zasięg</th>
+                        <th><?= sort_link_dashboard('promos', 'id', 'ID') ?></th>
+                        <th><?= sort_link_dashboard('promos', 'name', 'Nazwa') ?></th>
+                        <th><?= sort_link_dashboard('promos', 'code', 'Kod') ?></th>
+                        <th><?= sort_link_dashboard('promos', 'active', 'Aktywna') ?></th>
+                        <th><?= sort_link_dashboard('promos', 'scope', 'Zasięg') ?></th>
                         <th>Dotyczy</th>
-                        <th>Zniżka</th>
+                        <th><?= sort_link_dashboard('promos', 'discount', 'Zniżka') ?></th>
                         <th>Min. dni</th>
                         <th>Okres</th>
                         <th class="text-end">Akcje</th>

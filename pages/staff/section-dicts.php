@@ -42,19 +42,36 @@ if (in_array($kind, ['car_class', 'car_type'], true)) {
 // termy
 $terms = [];
 if ($dictType) {
+    // Sortowanie słowników
+    $dictOrder = '';
+    if ($section === 'dicts' && !empty($sort)) {
+        $dictOrder = match ($sort) {
+            'id' => "ORDER BY id $dir",
+            'name' => "ORDER BY name $dir",
+            'slug' => "ORDER BY slug $dir",
+            'sort' => "ORDER BY sort_order $dir",
+            'status' => "ORDER BY status $dir",
+            'price' => "ORDER BY price $dir",
+            'charge_type' => "ORDER BY charge_type $dir",
+            default => "ORDER BY sort_order ASC, name ASC"
+        };
+    } else {
+        $dictOrder = "ORDER BY sort_order ASC, name ASC";
+    }
+    
     if ($kind === 'addon') {
         $stmt = $pdo->prepare("
       SELECT id, parent_id, name, slug, sort_order, status, price, charge_type
       FROM dict_terms
       WHERE dict_type_id = :t
-      ORDER BY sort_order ASC, name ASC
+      $dictOrder
     ");
     } else {
         $stmt = $pdo->prepare("
       SELECT id, parent_id, name, slug, sort_order, status
       FROM dict_terms
       WHERE dict_type_id = :t
-      ORDER BY sort_order ASC, name ASC
+      $dictOrder
     ");
     }
     $stmt->execute([':t' => $dictType['id']]);
@@ -198,16 +215,16 @@ function isActiveRow(array $row): bool
                 <table class="table align-middle table-sm">
                     <thead>
                         <tr>
-                            <th style="width:42px;">ID</th>
+                            <th style="width:42px;"><?= sort_link_dashboard('dicts', 'id', 'ID') ?></th>
                             <?php if ($isHier): ?><th style="width:180px;">Nadrzędny</th><?php endif; ?>
-                            <th>Nazwa</th>
-                            <th style="width:200px;">Slug</th>
+                            <th><?= sort_link_dashboard('dicts', 'name', 'Nazwa') ?></th>
+                            <th style="width:200px;"><?= sort_link_dashboard('dicts', 'slug', 'Slug') ?></th>
                             <?php if ($kind === 'addon'): ?>
-                                <th style="width:100px;">Cena</th>
-                                <th style="width:120px;">Sposób naliczania</th>
+                                <th style="width:100px;"><?= sort_link_dashboard('dicts', 'price', 'Cena') ?></th>
+                                <th style="width:120px;"><?= sort_link_dashboard('dicts', 'charge_type', 'Sposób naliczania') ?></th>
                             <?php endif; ?>
-                            <th style="width:90px;">Sort</th>
-                            <th style="width:140px;">Status</th>
+                            <th style="width:90px;"><?= sort_link_dashboard('dicts', 'sort', 'Sort') ?></th>
+                            <th style="width:140px;"><?= sort_link_dashboard('dicts', 'status', 'Status') ?></th>
                             <th style="width:210px;" class="text-end">Akcje</th>
                         </tr>
                     </thead>

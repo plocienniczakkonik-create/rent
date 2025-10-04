@@ -23,6 +23,12 @@ $cssVer = file_exists($cssFs) ? filemtime($cssFs) : time();
         integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB"
         crossorigin="anonymous" />
 
+    <!-- Bootstrap Icons -->
+    <link
+        rel="stylesheet"
+        href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css"
+        crossorigin="anonymous" />
+
     <!-- Twój skompilowany CSS z cache-busterem -->
     <link rel="stylesheet" href="<?= htmlspecialchars($cssUrl) ?>?v=<?= $cssVer ?>" />
 

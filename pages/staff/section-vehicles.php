@@ -65,7 +65,7 @@ function v_sort_link(string $key, string $label): string
     }
 
     .table-vehicles .th-name {
-        min-width: 220px;
+        min-width: 150px;
     }
 
     /* rezerwa na nazwę */
@@ -114,10 +114,164 @@ function v_sort_link(string $key, string $label): string
         padding: 0 .5rem;
     }
 
-    /* Na mniejszych ekranach lekko ściskamy marginesy */
+    /* Optymalizacja szerokości kolumn */
+    .table-vehicles .th-id {
+        width: 60px;
+        max-width: 60px;
+    }
+
+    .table-vehicles .th-name {
+        width: 80px;
+        max-width: 80px;
+    }
+
+    /* Łamanie długich nazw w wąskiej kolumnie */
+    .table-vehicles td:nth-child(2) {
+        word-break: break-word;
+        hyphens: auto;
+        line-height: 1.3;
+    }
+
+    .table-vehicles .th-sku {
+        width: 80px;
+        max-width: 80px;
+    }
+
+    .table-vehicles .th-total {
+        width: 100px;
+        max-width: 100px;
+    }
+
+    /* Kolumny statusów - bardzo wąskie */
+    .table-vehicles th:nth-child(5),
+    /* Dostępne */
+    .table-vehicles th:nth-child(6),
+    /* Serwis */
+    .table-vehicles th:nth-child(7),
+    /* Rezerwacje */
+    .table-vehicles th:nth-child(8) {
+        /* Niedostępne */
+        width: 70px;
+        max-width: 70px;
+        padding: 0.5rem 0.25rem;
+    }
+
+    .table-vehicles td:nth-child(5),
+    .table-vehicles td:nth-child(6),
+    .table-vehicles td:nth-child(7),
+    .table-vehicles td:nth-child(8) {
+        padding: 0.5rem 0.25rem;
+    }
+
+    .table-vehicles .th-actions {
+        width: 120px;
+        max-width: 120px;
+    }
+
+    /* Style dla przycisku z ikoną */
+    .table-vehicles .btn-sm {
+        min-width: 55px;
+        height: 35px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        padding: 10;
+    }
+
+    .table-vehicles .btn-sm i {
+        font-size: 0.875rem;
+    }
+
+    .table-vehicles .btn-sm .bi-gear {
+        padding-right: 4px;
+    }
+
+    /* Na mniejszych ekranach optymalizacje */
     @media (max-width: 1200px) {
         .table-vehicles .th-name {
-            min-width: 180px;
+            width: 75px;
+            max-width: 75px;
+        }
+
+        /* Jeszcze mniejsze kolumny statusów */
+        .table-vehicles th:nth-child(5),
+        .table-vehicles th:nth-child(6),
+        .table-vehicles th:nth-child(7),
+        .table-vehicles th:nth-child(8) {
+            width: 60px;
+            max-width: 60px;
+        }
+    }
+
+    @media (max-width: 992px) {
+        .table-vehicles .th-name {
+            width: 70px;
+            max-width: 70px;
+        }
+
+        .table-vehicles th:nth-child(5),
+        .table-vehicles th:nth-child(8) {
+            width: 65px;
+            max-width: 65px;
+        }
+    }
+
+    @media (max-width: 768px) {
+        .table-vehicles .th-name {
+            width: 65px;
+            max-width: 65px;
+        }
+
+        .table-vehicles .th-id {
+            width: 50px;
+            max-width: 50px;
+        }
+
+        .table-vehicles .th-total {
+            width: 85px;
+            max-width: 85px;
+        }
+
+        .table-vehicles th:nth-child(5) {
+            /* Dostępne - jedyna widoczna */
+            width: 60px;
+            max-width: 60px;
+        }
+
+        .table-vehicles .th-actions {
+            width: 110px;
+            max-width: 110px;
+        }
+
+        /* Zmniejsz padding w komórkach */
+        .table-vehicles td,
+        .table-vehicles th {
+            padding: 0.5rem 0.3rem;
+        }
+
+        /* Zmniejsz czcionkę */
+        .table-vehicles {
+            font-size: 0.875rem;
+        }
+
+        /* Zmniejsz badges */
+        .table-vehicles .badge-dot {
+            min-width: 1.5rem;
+            height: 1.5rem;
+            font-size: 0.75rem;
+        }
+
+        .table-vehicles .badge-count {
+            font-size: 0.75rem;
+            padding: 0.25rem 0.4rem;
+        }
+
+        /* Zmniejsz przycisk na mobile */
+        .table-vehicles .btn-sm {
+            font-size: 0.75rem;
+            padding: 0.2rem 0.4rem;
+            min-width: 90px;
+            gap: 0.2rem;
         }
     }
 </style>
@@ -133,13 +287,13 @@ function v_sort_link(string $key, string $label): string
                     <tr>
                         <th class="th-id th-narrow"><?= v_sort_link('id', 'ID') ?></th>
                         <th class="th-name"><?= v_sort_link('name', 'Nazwa') ?></th>
-                        <th class="th-sku th-narrow"><?= v_sort_link('sku', 'SKU') ?></th>
-                        <th class="th-total th-narrow text-end"><?= v_sort_link('total', 'Egzemplarze') ?></th>
+                        <th class="th-sku th-narrow d-none d-xl-table-cell"><?= v_sort_link('sku', 'SKU') ?></th>
+                        <th class="th-total th-narrow text-end"><?= v_sort_link('total', 'Egz.') ?></th>
 
-                        <th class="th-narrow text-center"><?= v_sort_link('available', 'Dostępne') ?></th>
-                        <th class="th-narrow text-center"><?= v_sort_link('maintenance', 'Serwis') ?></th>
-                        <th class="th-narrow text-center"><?= v_sort_link('booked', 'Rezerwacje') ?></th>
-                        <th class="th-narrow text-center"><?= v_sort_link('unavailable', 'Niedostępne') ?></th>
+                        <th class="th-narrow text-center" title="Dostępne"><?= v_sort_link('available', 'Dost.') ?></th>
+                        <th class="th-narrow text-center d-none d-lg-table-cell" title="Serwis"><?= v_sort_link('maintenance', 'Serw.') ?></th>
+                        <th class="th-narrow text-center d-none d-lg-table-cell" title="Rezerwacje"><?= v_sort_link('booked', 'Rez.') ?></th>
+                        <th class="th-narrow text-center d-none d-md-table-cell" title="Niedostępne"><?= v_sort_link('unavailable', 'Niedost.') ?></th>
 
                         <th class="th-actions th-narrow text-end">Akcje</th>
                     </tr>
@@ -159,7 +313,7 @@ function v_sort_link(string $key, string $label): string
                                     </a>
                                 </td>
 
-                                <td class="text-muted"><?= htmlspecialchars($r['sku'] ?? '') ?></td>
+                                <td class="text-muted d-none d-xl-table-cell"><?= htmlspecialchars($r['sku'] ?? '') ?></td>
 
                                 <td class="text-end">
                                     <span class="badge bg-secondary badge-count"><?= (int)$r['total'] ?> egz.</span>
@@ -169,20 +323,20 @@ function v_sort_link(string $key, string $label): string
                                 <td class="text-center">
                                     <span class="badge bg-success badge-dot"><?= (int)$r['available'] ?></span>
                                 </td>
-                                <td class="text-center">
+                                <td class="text-center d-none d-lg-table-cell">
                                     <span class="badge bg-warning text-dark badge-dot"><?= (int)$r['maintenance'] ?></span>
                                 </td>
-                                <td class="text-center">
+                                <td class="text-center d-none d-lg-table-cell">
                                     <span class="badge bg-secondary badge-dot"><?= (int)$r['booked'] ?></span>
                                 </td>
-                                <td class="text-center">
+                                <td class="text-center d-none d-md-table-cell">
                                     <span class="badge bg-danger badge-dot"><?= (int)$r['unavailable'] ?></span>
                                 </td>
 
                                 <td class="text-end">
-                                    <a class="btn btn-sm btn-outline-primary"
+                                    <a class="btn btn-sm btn-primary" title="Zarządzaj flotą"
                                         href="<?= $BASE ?>/index.php?page=vehicles-manage&product=<?= (int)$r['id'] ?>">
-                                        Zarządzaj
+                                        <i class="bi bi-gear"></i> Zarządzaj
                                     </a>
                                 </td>
                             </tr>

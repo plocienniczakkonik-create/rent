@@ -33,7 +33,23 @@ if (strpos($sql, 'LIKE :q') !== false) {
     $sqlCount .= " AND (product_name LIKE :q OR sku LIKE :q OR customer_name LIKE :q OR customer_email LIKE :q)";
 }
 
-$sql .= " ORDER BY id DESC LIMIT :limit OFFSET :offset";
+// Sortowanie zamówień
+$orderSort = '';
+if ($section === 'orders' && !empty($sort)) {
+    $orderSort = match ($sort) {
+        'id' => "ORDER BY id $dir",
+        'created' => "ORDER BY created_at $dir",
+        'product' => "ORDER BY product_name $dir",
+        'days' => "ORDER BY rental_days $dir",
+        'total' => "ORDER BY total_gross $dir",
+        'status' => "ORDER BY status $dir",
+        default => "ORDER BY id DESC"
+    };
+} else {
+    $orderSort = "ORDER BY id DESC";
+}
+
+$sql .= " $orderSort LIMIT :limit OFFSET :offset";
 
 $stmt = $db->prepare($sql);
 foreach ($bind as $k => $v) {
@@ -72,13 +88,13 @@ $pages = max(1, (int)ceil($total / $perPage));
             <table class="table table-sm align-middle mb-0">
                 <thead class="small text-muted">
                     <tr>
-                        <th>ID</th>
-                        <th>Dodano</th>
-                        <th>Produkt</th>
+                        <th><?= sort_link_dashboard('orders', 'id', 'ID') ?></th>
+                        <th><?= sort_link_dashboard('orders', 'created', 'Dodano') ?></th>
+                        <th><?= sort_link_dashboard('orders', 'product', 'Produkt') ?></th>
                         <th>Terminy</th>
-                        <th>Dni</th>
-                        <th class="text-end">Suma</th>
-                        <th>Status</th>
+                        <th><?= sort_link_dashboard('orders', 'days', 'Dni') ?></th>
+                        <th class="text-end"><?= sort_link_dashboard('orders', 'total', 'Suma') ?></th>
+                        <th><?= sort_link_dashboard('orders', 'status', 'Status') ?></th>
                         <th class="text-end">Akcje</th>
                     </tr>
                 </thead>

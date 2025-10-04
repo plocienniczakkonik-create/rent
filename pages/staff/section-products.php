@@ -12,12 +12,12 @@
             <table class="table table-sm align-middle mb-0">
                 <thead class="small text-muted">
                     <tr>
-                        <th>ID</th>
-                        <th>Nazwa</th>
-                        <th>SKU</th>
-                        <th>Cena</th>
-                        <th>Stan</th>
-                        <th>Status</th>
+                        <th><?= sort_link_dashboard('products', 'id', 'ID') ?></th>
+                        <th><?= sort_link_dashboard('products', 'name', 'Nazwa') ?></th>
+                        <th><?= sort_link_dashboard('products', 'sku', 'SKU') ?></th>
+                        <th><?= sort_link_dashboard('products', 'price', 'Cena') ?></th>
+                        <th><?= sort_link_dashboard('products', 'stock', 'Stan') ?></th>
+                        <th><?= sort_link_dashboard('products', 'status', 'Status') ?></th>
                         <th class="text-end">Akcje</th>
                     </tr>
                 </thead>
