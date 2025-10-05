@@ -6,7 +6,9 @@ declare(strict_types=1);
 require_once dirname(__DIR__, 2) . '/includes/db.php';
 
 // Autoloader dla klas Fleet Management
-require_once dirname(__DIR__, 2) . '/test_classes.php';
+if (file_exists(dirname(__DIR__, 2) . '/classes/FleetManager.php')) {
+    require_once dirname(__DIR__, 2) . '/classes/FleetManager.php';
+}
 
 /**
  * Wejście: $_GET z formularza.

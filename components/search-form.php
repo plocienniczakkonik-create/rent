@@ -60,9 +60,11 @@ $labelFuel = [
 $locations = [];
 try {
     // Autoloader dla klas Fleet Management
-    require_once dirname(__DIR__) . '/test_classes.php';
-
-    $fleetManager = new FleetManager();
+    if (class_exists('FleetManager')) {
+        $fleetManager = new FleetManager();
+    } else {
+        throw new Exception('FleetManager class not available');
+    }
 
     if ($fleetManager->isEnabled()) {
         // Używaj lokalizacji z Fleet Management

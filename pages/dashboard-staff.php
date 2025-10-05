@@ -102,11 +102,96 @@ $promos = db()->query("
   $promoOrder
 ")->fetchAll(PDO::FETCH_ASSOC);
 
-// === DATA: Raporty (mock) ===
+// === DATA: Raporty (rozbudowane) ===
+// Pobieranie rzeczywistych danych z bazy
+$today = date('Y-m-d');
+$thisMonth = date('Y-m');
+$lastMonth = date('Y-m', strtotime('-1 month'));
+
+try {
+    // Przychód dziś - z potwierdzonych rezerwacji gdzie pickup jest dziś
+    $stmt = db()->prepare("SELECT COALESCE(SUM(total_gross), 0) as revenue FROM reservations WHERE DATE(pickup_at) = ? AND status = 'confirmed'");
+    $stmt->execute([$today]);
+    $revenueToday = $stmt->fetch(PDO::FETCH_ASSOC)['revenue'] ?? 0;
+
+    // Zamówienia dziś - wszystkie utworzone dziś
+    $stmt = db()->prepare("SELECT COUNT(*) as count FROM reservations WHERE DATE(created_at) = ?");
+    $stmt->execute([$today]);
+    $ordersToday = $stmt->fetch(PDO::FETCH_ASSOC)['count'] ?? 0;
+
+    // Top produkt tego miesiąca
+    $stmt = db()->prepare("
+        SELECT product_name as name, COUNT(id) as count
+        FROM reservations
+        WHERE DATE(created_at) LIKE ? AND status = 'confirmed'
+        GROUP BY product_name
+        ORDER BY count DESC
+        LIMIT 1
+    ");
+    $stmt->execute([$thisMonth . '%']);
+    $topProduct = $stmt->fetch(PDO::FETCH_ASSOC);
+
+    // Przychód miesięczny (ostatnie 6 miesięcy) - na podstawie pickup_at
+    $monthlyRevenue = [];
+    for ($i = 5; $i >= 0; $i--) {
+        $month = date('Y-m', strtotime("-$i month"));
+        $stmt = db()->prepare("SELECT COALESCE(SUM(total_gross), 0) as revenue FROM reservations WHERE DATE_FORMAT(pickup_at, '%Y-%m') = ? AND status = 'confirmed'");
+        $stmt->execute([$month]);
+        $revenue = $stmt->fetch(PDO::FETCH_ASSOC)['revenue'] ?? 0;
+
+        $monthlyRevenue[] = [
+            'month' => date('M Y', strtotime($month . '-01')),
+            'revenue' => (float)$revenue
+        ];
+    }
+
+    // Statystyki pojazdów
+    $vehicleStats = db()->query("SELECT status, COUNT(*) as count FROM vehicles GROUP BY status")->fetchAll(PDO::FETCH_ASSOC);
+
+    // Top produkty (ostatnie 30 dni)
+    $topProducts = db()->query("
+        SELECT 
+            product_name as name,
+            COUNT(id) as reservations,
+            SUM(total_gross) as revenue
+        FROM reservations
+        WHERE created_at >= DATE_SUB(NOW(), INTERVAL 30 DAY)
+        AND status != 'cancelled'
+        GROUP BY product_name
+        ORDER BY reservations DESC
+        LIMIT 10
+    ")->fetchAll(PDO::FETCH_ASSOC);
+
+    // Statystyki użytkowników
+    $userStats = db()->query("
+        SELECT 
+            COUNT(*) as total_users,
+            SUM(CASE WHEN created_at >= DATE_SUB(NOW(), INTERVAL 1 WEEK) THEN 1 ELSE 0 END) as new_this_week,
+            SUM(CASE WHEN updated_at >= DATE_SUB(NOW(), INTERVAL 1 WEEK) THEN 1 ELSE 0 END) as active_this_week
+        FROM users
+        WHERE role != 'admin'
+    ")->fetch(PDO::FETCH_ASSOC);
+} catch (PDOException $e) {
+    error_log("Database error in reports: " . $e->getMessage());
+    // Ustawienie domyślnych wartości w przypadku błędu
+    $revenueToday = 0;
+    $ordersToday = 0;
+    $topProduct = ['name' => 'Brak danych', 'count' => 0];
+    $monthlyRevenue = [];
+    $vehicleStats = [];
+    $topProducts = [];
+    $userStats = ['total_users' => 0, 'new_this_week' => 0, 'active_this_week' => 0];
+}
+
 $reports = [
-    'revenue_today' => 457.00,
-    'orders_today'  => 6,
-    'top_product'   => 'Toyota Corolla',
+    'revenue_today' => (float)$revenueToday,
+    'orders_today' => (int)$ordersToday,
+    'top_product' => $topProduct['name'] ?? __('no_data', 'admin', 'Brak danych'),
+    'top_product_count' => $topProduct['count'] ?? 0,
+    'monthly_revenue' => $monthlyRevenue,
+    'vehicle_stats' => $vehicleStats,
+    'top_products' => $topProducts,
+    'user_stats' => $userStats ?? ['total_users' => 0, 'new_this_week' => 0, 'active_this_week' => 0]
 ];
 ?>
 <main class="container-fluid staff-main"
