@@ -4,6 +4,16 @@ require_once __DIR__ . '/../includes/config.php';
 require_once __DIR__ . '/../includes/db.php';
 require_once __DIR__ . '/includes/search.php';
 
+// Autoloader dla klas Fleet Management
+function autoload_fleet_classes($className)
+{
+    $classFile = __DIR__ . '/../classes/' . $className . '.php';
+    if (file_exists($classFile)) {
+        require_once $classFile;
+    }
+}
+spl_autoload_register('autoload_fleet_classes');
+
 // We expect POST from product-details reservation form
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     header('Location: ' . (defined('BASE_URL') ? BASE_URL : '') . '/index.php');
@@ -83,6 +93,65 @@ foreach ($addonRows as $row) {
 $baseTotal  = $perDayBase  * $days + $addonsTotal;
 $finalTotal = $perDayFinal * $days + $addonsTotal;
 
+// --- FLEET MANAGEMENT: Obliczanie kaucji i opłat lokalizacyjnych ---
+$depositAmount = 0.0;
+$depositType = null;
+$locationFee = 0.0;
+$fleetEnabled = false;
+
+try {
+    $pdo = db();
+    $depositManager = new DepositManager($pdo);
+    $locationFeeManager = new LocationFeeManager($pdo);
+    $fleetManager = new FleetManager($pdo);
+
+    $fleetEnabled = $fleetManager->isEnabled();
+
+    if ($fleetEnabled) {
+        // 1. Oblicz kaucję na podstawie ustawień produktu
+        if ($product['deposit_enabled']) {
+            $depositType = $product['deposit_type'] ?? 'fixed';
+            $depositAmount = $depositManager->calculateDeposit(
+                $product['id'],
+                $finalTotal, // Suma wynajmu bez kaucji
+                $depositType,
+                $product['deposit_amount'] ?? 0
+            );
+        }
+
+        // 2. Oblicz opłatę lokalizacyjną (jeśli lokalizacje są różne)
+        if ($pickupLocation !== $dropLocation) {
+            // Znajdź ID lokalizacji
+            $locations = $fleetManager->getActiveLocations();
+            $pickupLocationId = null;
+            $dropoffLocationId = null;
+
+            foreach ($locations as $location) {
+                $displayName = $location['name'] . ' (' . $location['city'] . ')';
+                if ($displayName === $pickupLocation || $location['name'] === $pickupLocation || $location['city'] === $pickupLocation) {
+                    $pickupLocationId = $location['id'];
+                }
+                if ($displayName === $dropLocation || $location['name'] === $dropLocation || $location['city'] === $dropLocation) {
+                    $dropoffLocationId = $location['id'];
+                }
+            }
+
+            if ($pickupLocationId && $dropoffLocationId && $pickupLocationId !== $dropoffLocationId) {
+                $feeData = $locationFeeManager->calculateLocationFee($pickupLocationId, $dropoffLocationId);
+                $locationFee = $feeData['amount'] ?? 0.0;
+            }
+        }
+    }
+} catch (Exception $e) {
+    // W przypadku błędu, kontynuuj bez Fleet Management
+    $depositAmount = 0.0;
+    $locationFee = 0.0;
+}
+
+// Aktualizuj sumy z uwzględnieniem Fleet Management
+$finalTotal += $locationFee;
+$totalWithDeposit = $finalTotal + $depositAmount;
+
 // Basic formatting helper
 $fmt = function ($n) {
     return number_format((float)$n, 2, ',', ' ');
@@ -105,8 +174,50 @@ $fmt = function ($n) {
                     <input type="email" class="form-control" name="customer_email" required form="checkout-form">
                 </div>
                 <div class="mb-2">
-                    <label class="form-label">Telefon</label>
-                    <input type="tel" class="form-control" name="customer_phone" required form="checkout-form">
+                    <label class="form-label">Telefon <small class="text-muted">(z kodem kraju, np. +48)</small></label>
+                    <input type="tel" class="form-control" name="customer_phone" required form="checkout-form"
+                        placeholder="+48 123 456 789" pattern="^\+[1-9]\d{1,14}$" title="Numer telefonu z kodem kraju (np. +48123456789)">
+                </div>
+                <div class="mb-2">
+                    <label class="form-label">Adres</label>
+                    <input type="text" class="form-control" name="billing_address" required form="checkout-form"
+                        placeholder="ul. Przykładowa 123">
+                </div>
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="mb-2">
+                            <label class="form-label">Miasto</label>
+                            <input type="text" class="form-control" name="billing_city" required form="checkout-form">
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="mb-2">
+                            <label class="form-label">Kod pocztowy</label>
+                            <input type="text" class="form-control" name="billing_postcode" required form="checkout-form"
+                                placeholder="00-000">
+                        </div>
+                    </div>
+                </div>
+                <div class="mb-2">
+                    <label class="form-label">Kraj</label>
+                    <select class="form-select" name="billing_country" required form="checkout-form">
+                        <option value="" disabled selected>Wybierz kraj...</option>
+                        <option value="PL" selected>Polska</option>
+                        <option value="DE">Niemcy</option>
+                        <option value="CZ">Czechy</option>
+                        <option value="SK">Słowacja</option>
+                        <option value="UA">Ukraina</option>
+                        <option value="LT">Litwa</option>
+                        <option value="LV">Łotwa</option>
+                        <option value="EE">Estonia</option>
+                        <option value="AT">Austria</option>
+                        <option value="HU">Węgry</option>
+                        <option value="RO">Rumunia</option>
+                        <option value="BG">Bułgaria</option>
+                        <option value="HR">Chorwacja</option>
+                        <option value="SI">Słowenia</option>
+                        <option value="Other">Inny</option>
+                    </select>
                 </div>
                 <div class="mb-3">
                     <label class="form-label">Forma płatności</label>
@@ -191,12 +302,39 @@ $fmt = function ($n) {
                                     <td class="text-end"><strong><?= $fmt($addonsTotal) ?> PLN</strong></td>
                                 </tr>
                             <?php endif; ?>
+
+                            <?php if ($fleetEnabled && ($locationFee > 0 || $depositAmount > 0)): ?>
+                                <tr class="border-top">
+                                    <td colspan="2" class="pt-3"><small class="text-muted">Fleet Management</small></td>
+                                </tr>
+                                <?php if ($locationFee > 0): ?>
+                                    <tr>
+                                        <td>Opłata międzymiastowa</td>
+                                        <td class="text-end"><?= $fmt($locationFee) ?> PLN</td>
+                                    </tr>
+                                <?php endif; ?>
+                                <?php if ($depositAmount > 0): ?>
+                                    <tr>
+                                        <td>
+                                            Kaucja
+                                            <small class="text-muted">(<?= $depositType === 'percentage' ? 'procent' : 'stała kwota' ?>)</small>
+                                        </td>
+                                        <td class="text-end"><?= $fmt($depositAmount) ?> PLN</td>
+                                    </tr>
+                                <?php endif; ?>
+                            <?php endif; ?>
                         </tbody>
                         <tfoot>
                             <tr>
-                                <th>Suma</th>
+                                <th>Suma do zapłaty</th>
                                 <th class="text-end"><?= $fmt($finalTotal) ?> PLN</th>
                             </tr>
+                            <?php if ($fleetEnabled && $depositAmount > 0): ?>
+                                <tr>
+                                    <th>Łącznie z kaucją</th>
+                                    <th class="text-end"><?= $fmt($totalWithDeposit) ?> PLN</th>
+                                </tr>
+                            <?php endif; ?>
                         </tfoot>
                     </table>
                 </div>

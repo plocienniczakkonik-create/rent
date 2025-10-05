@@ -5,6 +5,9 @@ declare(strict_types=1);
 // z /pages/includes/ cofamy się dwa poziomy do /includes/db.php
 require_once dirname(__DIR__, 2) . '/includes/db.php';
 
+// Autoloader dla klas Fleet Management
+require_once dirname(__DIR__, 2) . '/test_classes.php';
+
 /**
  * Wejście: $_GET z formularza.
  * Wyjście:
@@ -89,10 +92,15 @@ function run_search(array $input): array
     $stmt->execute($bind);
     $items = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-    // --- 4) Pobierz aktywne promocje, ale tylko gdy faktycznie je naliczamy ---
+    // --- 4) Filtrowanie według dostępności w lokalizacji (Fleet Management) ---
+    if ($pickup_location !== '') {
+        $items = filter_products_by_location($items, $pickup_location, $pickup_dt_raw, $dropoff_dt_raw);
+    }
+
+    // --- 5) Pobierz aktywne promocje, ale tylko gdy faktycznie je naliczamy ---
     $promos = $applyPromos ? fetch_active_promotions($pickup_ts, $dropoff_ts) : [];
 
-    // --- 5) Naliczenie promocji (wybieramy najlepszą) albo ustawiamy ceny bazowe ---
+    // --- 6) Naliczenie promocji (wybieramy najlepszą) albo ustawiamy ceny bazowe ---
     foreach ($items as &$p) {
         if ($applyPromos) {
             [$final, $applied, $label] = apply_promotions_to_product(
@@ -252,5 +260,65 @@ function product_matches_promo(
 
         default:
             return false;
+    }
+}
+
+/**
+ * Filtruje produkty według dostępności w określonej lokalizacji (Fleet Management)
+ */
+function filter_products_by_location(array $products, string $pickup_location, string $pickup_dt_raw = '', string $dropoff_dt_raw = ''): array
+{
+    try {
+        // Inicjalizacja połączenia z bazą danych
+        $pdo = db(); // Używamy funkcji db() z config.php
+        $fleetManager = new FleetManager($pdo);
+
+        // Jeśli system Fleet Management jest wyłączony, zwróć wszystkie produkty
+        if (!$fleetManager->isEnabled()) {
+            return $products;
+        }
+
+        // Znajdź ID lokalizacji na podstawie nazwy
+        $locations = $fleetManager->getActiveLocations();
+        $locationId = null;
+
+        foreach ($locations as $location) {
+            // Porównaj z formatem nazwy jak w formularzu: "Nazwa (Miasto)"
+            $displayName = $location['name'] . ' (' . $location['city'] . ')';
+            if (
+                $displayName === $pickup_location ||
+                $location['name'] === $pickup_location ||
+                $location['city'] === $pickup_location
+            ) {
+                $locationId = $location['id'];
+                break;
+            }
+        }
+
+        // Jeśli nie znaleziono lokalizacji, zwróć puste wyniki
+        if (!$locationId) {
+            return [];
+        }
+
+        // Filtruj produkty według dostępności w tej lokalizacji
+        $filteredProducts = [];
+
+        foreach ($products as $product) {
+            $isAvailable = $fleetManager->isProductAvailableInLocation(
+                $product['id'],  // Używamy product_id zamiast sku
+                $locationId,
+                $pickup_dt_raw ?: null,
+                $dropoff_dt_raw ?: null
+            );
+
+            if ($isAvailable) {
+                $filteredProducts[] = $product;
+            }
+        }
+
+        return $filteredProducts;
+    } catch (Exception $e) {
+        // W przypadku błędu, zwróć wszystkie produkty (graceful degradation)
+        return $products;
     }
 }

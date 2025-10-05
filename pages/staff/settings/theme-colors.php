@@ -58,20 +58,22 @@ $current_settings = array_merge($defaults, $current_colors, $current_gradients, 
 ?>
 
 <style>
-.gradient-preview {
-    width: 100%;
-    height: 60px;
-    border-radius: 8px;
-    border: 2px solid #e9ecef;
-    margin-top: 10px;
-}
-.card {
-    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-    border: 1px solid #e9ecef;
-}
-.card-body {
-    padding: 1rem;
-}
+    .gradient-preview {
+        width: 100%;
+        height: 60px;
+        border-radius: 8px;
+        border: 2px solid #e9ecef;
+        margin-top: 10px;
+    }
+
+    .card {
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        border: 1px solid #e9ecef;
+    }
+
+    .card-body {
+        padding: 1rem;
+    }
 </style>
 
 <?php if (isset($success_message)): ?>
@@ -96,7 +98,7 @@ $current_settings = array_merge($defaults, $current_colors, $current_gradients, 
                 <i class="bi bi-palette"></i> <?= __('basic_colors', 'admin', 'Kolory podstawowe') ?>
             </h5>
         </div>
-        
+
         <div class="col-lg-6 mb-3">
             <div class="card">
                 <div class="card-body">
@@ -104,15 +106,15 @@ $current_settings = array_merge($defaults, $current_colors, $current_gradients, 
                         <?= __('primary_color', 'admin', 'Kolor główny') ?>
                     </label>
                     <div class="d-flex align-items-center gap-3">
-                        <input type="color" class="form-control form-control-color" id="primary_color" name="primary_color" 
-                               value="<?= htmlspecialchars($current_settings['primary_color']) ?>" style="width: 60px; height: 40px;">
+                        <input type="color" class="form-control form-control-color" id="primary_color" name="primary_color"
+                            value="<?= htmlspecialchars($current_settings['primary_color']) ?>" style="width: 60px; height: 40px;">
                         <span class="color-preview" style="background-color: <?= htmlspecialchars($current_settings['primary_color']) ?>; width: 40px; height: 40px; border-radius: 8px; border: 2px solid #dee2e6;"></span>
                         <small class="text-muted">Wybierz kolor</small>
                     </div>
                 </div>
             </div>
         </div>
-        
+
         <div class="col-lg-6 mb-3">
             <div class="card">
                 <div class="card-body">
@@ -120,15 +122,15 @@ $current_settings = array_merge($defaults, $current_colors, $current_gradients, 
                         <?= __('secondary_color', 'admin', 'Kolor drugorzędny') ?>
                     </label>
                     <div class="d-flex align-items-center gap-3">
-                        <input type="color" class="form-control form-control-color" id="secondary_color" name="secondary_color" 
-                               value="<?= htmlspecialchars($current_settings['secondary_color']) ?>" style="width: 60px; height: 40px;">
+                        <input type="color" class="form-control form-control-color" id="secondary_color" name="secondary_color"
+                            value="<?= htmlspecialchars($current_settings['secondary_color']) ?>" style="width: 60px; height: 40px;">
                         <span class="color-preview" style="background-color: <?= htmlspecialchars($current_settings['secondary_color']) ?>; width: 40px; height: 40px; border-radius: 8px; border: 2px solid #dee2e6;"></span>
                         <small class="text-muted">Wybierz kolor</small>
                     </div>
                 </div>
             </div>
         </div>
-        
+
         <div class="col-lg-6 mb-3">
             <div class="card">
                 <div class="card-body">
@@ -136,15 +138,15 @@ $current_settings = array_merge($defaults, $current_colors, $current_gradients, 
                         <?= __('success_color', 'admin', 'Kolor sukcesu') ?>
                     </label>
                     <div class="d-flex align-items-center gap-3">
-                        <input type="color" class="form-control form-control-color" id="success_color" name="success_color" 
-                               value="<?= htmlspecialchars($current_settings['success_color']) ?>" style="width: 60px; height: 40px;">
+                        <input type="color" class="form-control form-control-color" id="success_color" name="success_color"
+                            value="<?= htmlspecialchars($current_settings['success_color']) ?>" style="width: 60px; height: 40px;">
                         <span class="color-preview" style="background-color: <?= htmlspecialchars($current_settings['success_color']) ?>; width: 40px; height: 40px; border-radius: 8px; border: 2px solid #dee2e6;"></span>
                         <small class="text-muted">Wybierz kolor</small>
                     </div>
                 </div>
             </div>
         </div>
-        
+
         <div class="col-lg-6 mb-3">
             <div class="card">
                 <div class="card-body">
@@ -152,15 +154,15 @@ $current_settings = array_merge($defaults, $current_colors, $current_gradients, 
                         <?= __('warning_color', 'admin', 'Kolor ostrzeżenia') ?>
                     </label>
                     <div class="d-flex align-items-center gap-3">
-                        <input type="color" class="form-control form-control-color" id="warning_color" name="warning_color" 
-                               value="<?= htmlspecialchars($current_settings['warning_color']) ?>" style="width: 60px; height: 40px;">
+                        <input type="color" class="form-control form-control-color" id="warning_color" name="warning_color"
+                            value="<?= htmlspecialchars($current_settings['warning_color']) ?>" style="width: 60px; height: 40px;">
                         <span class="color-preview" style="background-color: <?= htmlspecialchars($current_settings['warning_color']) ?>; width: 40px; height: 40px; border-radius: 8px; border: 2px solid #dee2e6;"></span>
                         <small class="text-muted">Wybierz kolor</small>
                     </div>
                 </div>
             </div>
         </div>
-        
+
         <div class="col-lg-6 mb-3">
             <div class="card">
                 <div class="card-body">
@@ -168,15 +170,15 @@ $current_settings = array_merge($defaults, $current_colors, $current_gradients, 
                         <?= __('danger_color', 'admin', 'Kolor błędu') ?>
                     </label>
                     <div class="d-flex align-items-center gap-3">
-                        <input type="color" class="form-control form-control-color" id="danger_color" name="danger_color" 
-                               value="<?= htmlspecialchars($current_settings['danger_color']) ?>" style="width: 60px; height: 40px;">
+                        <input type="color" class="form-control form-control-color" id="danger_color" name="danger_color"
+                            value="<?= htmlspecialchars($current_settings['danger_color']) ?>" style="width: 60px; height: 40px;">
                         <span class="color-preview" style="background-color: <?= htmlspecialchars($current_settings['danger_color']) ?>; width: 40px; height: 40px; border-radius: 8px; border: 2px solid #dee2e6;"></span>
                         <small class="text-muted">Wybierz kolor</small>
                     </div>
                 </div>
             </div>
         </div>
-        
+
         <div class="col-lg-6 mb-3">
             <div class="card">
                 <div class="card-body">
@@ -184,8 +186,8 @@ $current_settings = array_merge($defaults, $current_colors, $current_gradients, 
                         <?= __('info_color', 'admin', 'Kolor informacyjny') ?>
                     </label>
                     <div class="d-flex align-items-center gap-3">
-                        <input type="color" class="form-control form-control-color" id="info_color" name="info_color" 
-                               value="<?= htmlspecialchars($current_settings['info_color']) ?>" style="width: 60px; height: 40px;">
+                        <input type="color" class="form-control form-control-color" id="info_color" name="info_color"
+                            value="<?= htmlspecialchars($current_settings['info_color']) ?>" style="width: 60px; height: 40px;">
                         <span class="color-preview" style="background-color: <?= htmlspecialchars($current_settings['info_color']) ?>; width: 40px; height: 40px; border-radius: 8px; border: 2px solid #dee2e6;"></span>
                         <small class="text-muted">Wybierz kolor</small>
                     </div>
@@ -203,34 +205,34 @@ $current_settings = array_merge($defaults, $current_colors, $current_gradients, 
                 <i class="bi bi-rainbow"></i> <?= __('gradient_settings', 'admin', 'Ustawienia gradientu') ?>
             </h5>
         </div>
-        
+
         <div class="col-12 mb-3">
             <div class="form-check">
-                <input class="form-check-input" type="checkbox" id="gradient_enabled" name="gradient_enabled" 
-                       <?= $current_settings['gradient_enabled'] ? 'checked' : '' ?>>
+                <input class="form-check-input" type="checkbox" id="gradient_enabled" name="gradient_enabled"
+                    <?= $current_settings['gradient_enabled'] ? 'checked' : '' ?>>
                 <label class="form-check-label" for="gradient_enabled">
                     <?= __('enable_gradient', 'admin', 'Włącz gradient dla kolorów głównych') ?>
                 </label>
             </div>
         </div>
-        
+
         <div id="gradient_settings" style="<?= $current_settings['gradient_enabled'] ? '' : 'display: none;' ?>">
             <div class="col-md-4 mb-3">
                 <label for="gradient_start" class="form-label">
                     <?= __('gradient_start', 'admin', 'Kolor początkowy gradientu') ?>
                 </label>
-                <input type="color" class="form-control form-control-color" id="gradient_start" name="gradient_start" 
-                       value="<?= htmlspecialchars($current_settings['gradient_start']) ?>">
+                <input type="color" class="form-control form-control-color" id="gradient_start" name="gradient_start"
+                    value="<?= htmlspecialchars($current_settings['gradient_start']) ?>">
             </div>
-            
+
             <div class="col-md-4 mb-3">
                 <label for="gradient_end" class="form-label">
                     <?= __('gradient_end', 'admin', 'Kolor końcowy gradientu') ?>
                 </label>
-                <input type="color" class="form-control form-control-color" id="gradient_end" name="gradient_end" 
-                       value="<?= htmlspecialchars($current_settings['gradient_end']) ?>">
+                <input type="color" class="form-control form-control-color" id="gradient_end" name="gradient_end"
+                    value="<?= htmlspecialchars($current_settings['gradient_end']) ?>">
             </div>
-            
+
             <div class="col-md-4 mb-3">
                 <label for="gradient_direction" class="form-label">
                     <?= __('gradient_direction', 'admin', 'Kierunek gradientu') ?>
@@ -242,7 +244,7 @@ $current_settings = array_merge($defaults, $current_colors, $current_gradients, 
                     <option value="135deg" <?= $current_settings['gradient_direction'] === '135deg' ? 'selected' : '' ?>>135° (ukośny odwrócony)</option>
                 </select>
             </div>
-            
+
             <div class="col-12">
                 <label class="form-label"><?= __('gradient_preview', 'admin', 'Podgląd gradientu') ?></label>
                 <div id="gradient_preview" class="gradient-preview" style="width: 100%; height: 60px; border-radius: 8px; border: 2px solid #e9ecef; margin-top: 10px; background: linear-gradient(<?= htmlspecialchars($current_settings['gradient_direction']) ?>, <?= htmlspecialchars($current_settings['gradient_start']) ?>, <?= htmlspecialchars($current_settings['gradient_end']) ?>);"></div>
@@ -254,7 +256,7 @@ $current_settings = array_merge($defaults, $current_colors, $current_gradients, 
         <button type="submit" name="save_theme" class="btn btn-primary">
             <i class="bi bi-check-lg"></i> <?= __('save_settings', 'admin', 'Zapisz ustawienia') ?>
         </button>
-        
+
         <button type="button" class="btn btn-outline-secondary" id="reset_defaults_btn">
             <i class="bi bi-arrow-clockwise"></i> <?= __('reset_defaults', 'admin', 'Przywróć domyślne') ?>
         </button>
@@ -262,130 +264,130 @@ $current_settings = array_merge($defaults, $current_colors, $current_gradients, 
 </form>
 
 <script>
-function updateColorPreview(input, preview) {
-    if (preview) {
-        preview.style.backgroundColor = input.value;
+    function updateColorPreview(input, preview) {
+        if (preview) {
+            preview.style.backgroundColor = input.value;
+        }
     }
-}
 
-function toggleGradientSettings() {
-    const enabled = document.getElementById('gradient_enabled');
-    const settings = document.getElementById('gradient_settings');
-    if (enabled && settings) {
-        settings.style.display = enabled.checked ? 'block' : 'none';
-        if (enabled.checked) {
+    function toggleGradientSettings() {
+        const enabled = document.getElementById('gradient_enabled');
+        const settings = document.getElementById('gradient_settings');
+        if (enabled && settings) {
+            settings.style.display = enabled.checked ? 'block' : 'none';
+            if (enabled.checked) {
+                updateGradientPreview();
+            }
+        }
+    }
+
+    function updateGradientPreview() {
+        const start = document.getElementById('gradient_start');
+        const end = document.getElementById('gradient_end');
+        const direction = document.getElementById('gradient_direction');
+        const preview = document.getElementById('gradient_preview');
+
+        if (start && end && direction && preview) {
+            preview.style.background = `linear-gradient(${direction.value}, ${start.value}, ${end.value})`;
+        }
+    }
+
+    function resetToDefaults() {
+        if (confirm('<?= __('confirm_reset_defaults', 'admin', 'Czy na pewno chcesz przywrócić domyślne ustawienia kolorów?') ?>')) {
+            const elements = {
+                'primary_color': '#667eea',
+                'secondary_color': '#764ba2',
+                'success_color': '#198754',
+                'warning_color': '#ffc107',
+                'danger_color': '#dc3545',
+                'info_color': '#0dcaf0',
+                'gradient_start': '#667eea',
+                'gradient_end': '#764ba2',
+                'gradient_direction': '45deg'
+            };
+
+            // Update form elements
+            Object.keys(elements).forEach(id => {
+                const element = document.getElementById(id);
+                if (element) {
+                    element.value = elements[id];
+                }
+            });
+
+            const gradientCheckbox = document.getElementById('gradient_enabled');
+            if (gradientCheckbox) {
+                gradientCheckbox.checked = true;
+            }
+
+            // Update previews
+            const colors = ['#667eea', '#764ba2', '#198754', '#ffc107', '#dc3545', '#0dcaf0'];
+            document.querySelectorAll('.color-preview').forEach((preview, index) => {
+                if (index < colors.length) {
+                    preview.style.backgroundColor = colors[index];
+                }
+            });
+
+            toggleGradientSettings();
             updateGradientPreview();
         }
     }
-}
 
-function updateGradientPreview() {
-    const start = document.getElementById('gradient_start');
-    const end = document.getElementById('gradient_end');
-    const direction = document.getElementById('gradient_direction');
-    const preview = document.getElementById('gradient_preview');
-    
-    if (start && end && direction && preview) {
-        preview.style.background = `linear-gradient(${direction.value}, ${start.value}, ${end.value})`;
-    }
-}
+    // Initialize on page load
+    document.addEventListener('DOMContentLoaded', function() {
+        // Initialize gradient preview
+        setTimeout(updateGradientPreview, 100);
 
-function resetToDefaults() {
-    if (confirm('<?= __('confirm_reset_defaults', 'admin', 'Czy na pewno chcesz przywrócić domyślne ustawienia kolorów?') ?>')) {
-        const elements = {
-            'primary_color': '#667eea',
-            'secondary_color': '#764ba2',
-            'success_color': '#198754',
-            'warning_color': '#ffc107',
-            'danger_color': '#dc3545',
-            'info_color': '#0dcaf0',
-            'gradient_start': '#667eea',
-            'gradient_end': '#764ba2',
-            'gradient_direction': '45deg'
-        };
-        
-        // Update form elements
-        Object.keys(elements).forEach(id => {
-            const element = document.getElementById(id);
-            if (element) {
-                element.value = elements[id];
-            }
+        // Add event listeners for color inputs
+        document.querySelectorAll('input[type="color"]').forEach(input => {
+            input.addEventListener('change', function() {
+                try {
+                    const preview = this.parentElement.querySelector('.color-preview');
+                    updateColorPreview(this, preview);
+
+                    // Update gradient preview if it's gradient colors
+                    if (this.id === 'gradient_start' || this.id === 'gradient_end') {
+                        updateGradientPreview();
+                    }
+                } catch (e) {
+                    console.warn('Error updating color preview:', e);
+                }
+            });
         });
-        
+
+        // Add event listener for gradient checkbox
         const gradientCheckbox = document.getElementById('gradient_enabled');
         if (gradientCheckbox) {
-            gradientCheckbox.checked = true;
-        }
-        
-        // Update previews
-        const colors = ['#667eea', '#764ba2', '#198754', '#ffc107', '#dc3545', '#0dcaf0'];
-        document.querySelectorAll('.color-preview').forEach((preview, index) => {
-            if (index < colors.length) {
-                preview.style.backgroundColor = colors[index];
-            }
-        });
-        
-        toggleGradientSettings();
-        updateGradientPreview();
-    }
-}
-
-// Initialize on page load
-document.addEventListener('DOMContentLoaded', function() {
-    // Initialize gradient preview
-    setTimeout(updateGradientPreview, 100);
-    
-    // Add event listeners for color inputs
-    document.querySelectorAll('input[type="color"]').forEach(input => {
-        input.addEventListener('change', function() {
-            try {
-                const preview = this.parentElement.querySelector('.color-preview');
-                updateColorPreview(this, preview);
-                
-                // Update gradient preview if it's gradient colors
-                if (this.id === 'gradient_start' || this.id === 'gradient_end') {
-                    updateGradientPreview();
+            gradientCheckbox.addEventListener('change', function() {
+                try {
+                    toggleGradientSettings();
+                } catch (e) {
+                    console.warn('Error toggling gradient settings:', e);
                 }
-            } catch (e) {
-                console.warn('Error updating color preview:', e);
-            }
-        });
+            });
+        }
+
+        // Add event listener for gradient direction
+        const gradientDirection = document.getElementById('gradient_direction');
+        if (gradientDirection) {
+            gradientDirection.addEventListener('change', function() {
+                try {
+                    updateGradientPreview();
+                } catch (e) {
+                    console.warn('Error updating gradient preview:', e);
+                }
+            });
+        }
+
+        // Add event listener for reset button
+        const resetBtn = document.getElementById('reset_defaults_btn');
+        if (resetBtn) {
+            resetBtn.addEventListener('click', function() {
+                try {
+                    resetToDefaults();
+                } catch (e) {
+                    console.warn('Error resetting to defaults:', e);
+                }
+            });
+        }
     });
-    
-    // Add event listener for gradient checkbox
-    const gradientCheckbox = document.getElementById('gradient_enabled');
-    if (gradientCheckbox) {
-        gradientCheckbox.addEventListener('change', function() {
-            try {
-                toggleGradientSettings();
-            } catch (e) {
-                console.warn('Error toggling gradient settings:', e);
-            }
-        });
-    }
-    
-    // Add event listener for gradient direction
-    const gradientDirection = document.getElementById('gradient_direction');
-    if (gradientDirection) {
-        gradientDirection.addEventListener('change', function() {
-            try {
-                updateGradientPreview();
-            } catch (e) {
-                console.warn('Error updating gradient preview:', e);
-            }
-        });
-    }
-    
-    // Add event listener for reset button
-    const resetBtn = document.getElementById('reset_defaults_btn');
-    if (resetBtn) {
-        resetBtn.addEventListener('click', function() {
-            try {
-                resetToDefaults();
-            } catch (e) {
-                console.warn('Error resetting to defaults:', e);
-            }
-        });
-    }
-});
 </script>

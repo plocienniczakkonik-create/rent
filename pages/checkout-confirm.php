@@ -4,6 +4,17 @@ require_once __DIR__ . '/../includes/config.php';
 require_once __DIR__ . '/../includes/db.php';
 require_once __DIR__ . '/includes/search.php';
 require_once __DIR__ . '/../auth/auth.php';
+
+// Autoloader dla klas Fleet Management
+function autoload_fleet_classes($className)
+{
+    $classFile = __DIR__ . '/../classes/' . $className . '.php';
+    if (file_exists($classFile)) {
+        require_once $classFile;
+    }
+}
+spl_autoload_register('autoload_fleet_classes');
+
 csrf_verify();
 
 $BASE = defined('BASE_URL') ? rtrim(BASE_URL, '/') : '';
@@ -43,12 +54,18 @@ $extrasIn       = (array)($_POST['extra'] ?? []);
 $customerName   = trim((string)($_POST['customer_name'] ?? ''));
 $customerEmail  = trim((string)($_POST['customer_email'] ?? ''));
 $customerPhone  = trim((string)($_POST['customer_phone'] ?? ''));
+$billingAddress = trim((string)($_POST['billing_address'] ?? ''));
+$billingCity    = trim((string)($_POST['billing_city'] ?? ''));
+$billingPostcode = trim((string)($_POST['billing_postcode'] ?? ''));
+$billingCountry = trim((string)($_POST['billing_country'] ?? ''));
 $paymentMethod  = trim((string)($_POST['payment_method'] ?? ''));
 
 $errors = [];
 if ($sku === '') $errors[] = 'Brak identyfikatora produktu.';
 if ($pickupLocation === '' || $dropLocation === '') $errors[] = 'Wybierz miejsca odbioru i zwrotu.';
 if ($customerName === '' || $customerEmail === '' || $customerPhone === '') $errors[] = 'Uzupełnij dane kontaktowe.';
+if ($billingAddress === '' || $billingCity === '' || $billingCountry === '') $errors[] = 'Uzupełnij adres rozliczeniowy.';
+if (!preg_match('/^\+[1-9]\d{1,14}$/', $customerPhone)) $errors[] = 'Numer telefonu musi zawierać kod kraju (np. +48123456789).';
 if (!in_array($paymentMethod, ['online', 'card_on_pickup', 'cash_on_pickup'], true)) $errors[] = 'Nieprawidłowa forma płatności.';
 
 $pickupAt = parse_dt($pickupAtRaw);
@@ -112,6 +129,70 @@ foreach ($addonRows as $row) {
 $baseTotal  = $perDayBase  * $days + $addonsTotal;
 $finalTotal = $perDayFinal * $days + $addonsTotal;
 
+// --- FLEET MANAGEMENT: Obliczanie kaucji, opłat i wybór pojazdu ---
+$depositAmount = 0.0;
+$depositType = null;
+$locationFee = 0.0;
+$selectedVehicleId = null;
+$pickupLocationId = null;
+$dropoffLocationId = null;
+$fleetEnabled = false;
+
+try {
+    $depositManager = new DepositManager($pdo);
+    $locationFeeManager = new LocationFeeManager($pdo);
+    $fleetManager = new FleetManager($pdo);
+
+    $fleetEnabled = $fleetManager->isEnabled();
+
+    if ($fleetEnabled) {
+        // 1. Znajdź ID lokalizacji
+        $locations = $fleetManager->getActiveLocations();
+        foreach ($locations as $location) {
+            $displayName = $location['name'] . ' (' . $location['city'] . ')';
+            if ($displayName === $pickupLocation || $location['name'] === $pickupLocation || $location['city'] === $pickupLocation) {
+                $pickupLocationId = $location['id'];
+            }
+            if ($displayName === $dropLocation || $location['name'] === $dropLocation || $location['city'] === $dropLocation) {
+                $dropoffLocationId = $location['id'];
+            }
+        }
+
+        // 2. Wybierz dostępny pojazd dla tego produktu w lokalizacji odbioru
+        if ($pickupLocationId) {
+            $availableVehicles = $fleetManager->getAvailableVehiclesInLocation($pickupLocationId, $product['sku']);
+            if (!empty($availableVehicles)) {
+                $selectedVehicleId = $availableVehicles[0]['id']; // Wybierz pierwszy dostępny
+            }
+        }
+
+        // 3. Oblicz kaucję
+        if ($product['deposit_enabled']) {
+            $depositType = $product['deposit_type'] ?? 'fixed';
+            $depositAmount = $depositManager->calculateDeposit(
+                $product['id'],
+                $finalTotal,
+                $depositType,
+                $product['deposit_amount'] ?? 0
+            );
+        }
+
+        // 4. Oblicz opłatę lokalizacyjną
+        if ($pickupLocationId && $dropoffLocationId && $pickupLocationId !== $dropoffLocationId) {
+            $locationFeeResult = $locationFeeManager->calculateLocationFee($pickupLocationId, $dropoffLocationId);
+            $locationFee = $locationFeeResult['amount'] ?? 0;
+        }
+    }
+} catch (Exception $e) {
+    // Błąd Fleet Management - kontynuuj bez niego
+    $depositAmount = 0.0;
+    $locationFee = 0.0;
+}
+
+// Przelicz sumy z Fleet Management
+$totalWithFees = $finalTotal + $locationFee;
+$totalWithDeposit = $totalWithFees + $depositAmount;
+
 // Walidacja dostępności: sprawdź ile rezerwacji nachodzi na zakres vs. stock produktu
 if (empty($errors)) {
     try {
@@ -145,11 +226,13 @@ if (empty($errors)) {
         $ins = $pdo->prepare("INSERT INTO reservations
       (sku, product_name, pickup_location, dropoff_location, pickup_at, return_at, rental_days,
        price_per_day_base, price_per_day_final, addons_total, total_gross, promo_applied, promo_label,
-       customer_name, customer_email, customer_phone, payment_method, status)
+       customer_name, customer_email, customer_phone, billing_address, billing_city, billing_postcode, billing_country, payment_method, status,
+       vehicle_id, pickup_location_id, dropoff_location_id, deposit_amount, deposit_type, location_fee, total_with_deposit)
        VALUES
       (:sku, :pname, :pick_loc, :drop_loc, :pick_at, :ret_at, :days,
        :ppb, :ppf, :addons, :total, :promo_applied, :promo_label,
-       :cname, :cemail, :cphone, :pmethod, 'pending')");
+       :cname, :cemail, :cphone, :billing_address, :billing_city, :billing_postcode, :billing_country, :pmethod, 'pending',
+       :vehicle_id, :pickup_location_id, :dropoff_location_id, :deposit_amount, :deposit_type, :location_fee, :total_with_deposit)");
 
         $ins->execute([
             ':sku'   => $sku,
@@ -162,13 +245,25 @@ if (empty($errors)) {
             ':ppb'      => $perDayBase,
             ':ppf'      => $perDayFinal,
             ':addons'   => $addonsTotal,
-            ':total'    => $finalTotal,
+            ':total'    => $totalWithFees, // Używamy sumy z opłatami lokalizacyjnymi
             ':promo_applied' => $promoApplied ? 1 : 0,
             ':promo_label'   => $promoLabel ?: null,
             ':cname'   => $customerName,
             ':cemail'  => $customerEmail,
             ':cphone'  => $customerPhone,
+            ':billing_address' => $billingAddress,
+            ':billing_city' => $billingCity,
+            ':billing_postcode' => $billingPostcode,
+            ':billing_country' => $billingCountry,
             ':pmethod' => $paymentMethod,
+            // Fleet Management parametry
+            ':vehicle_id' => $selectedVehicleId,
+            ':pickup_location_id' => $pickupLocationId,
+            ':dropoff_location_id' => $dropoffLocationId,
+            ':deposit_amount' => $depositAmount,
+            ':deposit_type' => $depositType,
+            ':location_fee' => $locationFee,
+            ':total_with_deposit' => $totalWithDeposit,
         ]);
 
         $reservationId = (int)$pdo->lastInsertId();
@@ -189,6 +284,12 @@ if (empty($errors)) {
                     ':line'  => $line,
                 ]);
             }
+        }
+
+        // Update vehicle status to 'booked' if Fleet Management is active
+        if ($selectedVehicleId) {
+            $updateVehicleStmt = $pdo->prepare("UPDATE vehicles SET status = 'booked' WHERE id = :vehicle_id");
+            $updateVehicleStmt->execute([':vehicle_id' => $selectedVehicleId]);
         }
 
         $pdo->commit();
@@ -231,10 +332,38 @@ if (empty($errors)) {
             <h6>Szczegóły</h6>
             <ul class="list-unstyled mb-0">
                 <li><strong>Pojazd:</strong> <?= htmlspecialchars((string)$product['name']) ?> (SKU: <?= htmlspecialchars($sku) ?>)</li>
+                <?php if ($selectedVehicleId): ?>
+                    <li><strong>Numer pojazdu:</strong> #<?= (int)$selectedVehicleId ?></li>
+                <?php endif; ?>
                 <li><strong>Odbiór:</strong> <?= htmlspecialchars($pickupLocation) ?>, <?= htmlspecialchars($pickupAt) ?></li>
                 <li><strong>Zwrot:</strong> <?= htmlspecialchars($dropLocation) ?>, <?= htmlspecialchars($returnAt) ?></li>
                 <li><strong>Liczba dni:</strong> <?= (int)$days ?></li>
+                <?php if ($locationFee > 0): ?>
+                    <li><strong>Opłata za trasę:</strong> <?= number_format($locationFee, 2, ',', ' ') ?> PLN</li>
+                <?php endif; ?>
+                <?php if ($depositAmount > 0): ?>
+                    <li><strong>Kaucja (<?= htmlspecialchars($depositType) ?>):</strong> <?= number_format($depositAmount, 2, ',', ' ') ?> PLN</li>
+                <?php endif; ?>
                 <li><strong>Suma:</strong> <?= number_format($finalTotal, 2, ',', ' ') ?> PLN</li>
+                <?php if ($totalWithDeposit > $finalTotal): ?>
+                    <li><strong>Do zapłaty (z kaucją):</strong> <?= number_format($totalWithDeposit, 2, ',', ' ') ?> PLN</li>
+                <?php endif; ?>
+            </ul>
+        </div>
+        <div class="card p-3 mb-3">
+            <h6>Dane klienta</h6>
+            <ul class="list-unstyled mb-0">
+                <li><strong>Imię i nazwisko:</strong> <?= htmlspecialchars($customerName) ?></li>
+                <li><strong>E-mail:</strong> <?= htmlspecialchars($customerEmail) ?></li>
+                <li><strong>Telefon:</strong> <?= htmlspecialchars($customerPhone) ?></li>
+                <li><strong>Adres:</strong> <?= htmlspecialchars($billingAddress) ?></li>
+                <li><strong>Miasto:</strong> <?= htmlspecialchars($billingCity) ?>
+                    <?php if ($billingPostcode): ?>
+                        <?= htmlspecialchars($billingPostcode) ?>
+                    <?php endif; ?>
+                </li>
+                <li><strong>Kraj:</strong> <?= htmlspecialchars($billingCountry) ?></li>
+                <li><strong>Płatność:</strong> <?= htmlspecialchars($paymentMethod) ?></li>
             </ul>
         </div>
         <div class="d-flex gap-2">

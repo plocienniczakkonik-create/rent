@@ -48,6 +48,20 @@ $themeCssVer = file_exists($themeCssFs) ? filemtime($themeCssFs) : time();
     <!-- Twój skompilowany CSS z cache-busterem -->
     <link rel="stylesheet" href="<?= htmlspecialchars($cssUrl) ?>?v=<?= $cssVer ?>" />
 
+    <style>
+        /* Fix dla sticky navbar */
+        .navbar.position-sticky {
+            z-index: 1030 !important;
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+        }
+
+        /* Zapewnienie że dropdown menu ma odpowiedni z-index */
+        .navbar .dropdown-menu {
+            z-index: 1031 !important;
+        }
+    </style>
+
     <!-- Font Awesome -->
     <link
         rel="stylesheet"

@@ -56,22 +56,35 @@ $labelFuel = [
     'elektryczny' => i18n::__('electric', 'frontend'),
 ];
 
-/** ⬇️ Dynamiczne lokalizacje ze słownika 'location' (tylko aktywne) */
+/** ⬇️ Dynamiczne lokalizacje z systemu Fleet Management */
 $locations = [];
 try {
-    $pdo = db();
-    $stmt = $pdo->prepare("
-        SELECT t.name
-        FROM dict_terms t
-        JOIN dict_types dt ON dt.id = t.dict_type_id
-        WHERE dt.slug = :slug AND t.status = 'active'
-        ORDER BY t.sort_order ASC, t.name ASC
-    ");
-    $stmt->execute([':slug' => 'location']);
-    $rows = $stmt->fetchAll(PDO::FETCH_COLUMN);
-    if ($rows) {
-        // upewnijmy się, że to stringi i bez duplikatów
-        $locations = array_values(array_unique(array_map('strval', $rows)));
+    // Autoloader dla klas Fleet Management
+    require_once dirname(__DIR__) . '/test_classes.php';
+
+    $fleetManager = new FleetManager();
+
+    if ($fleetManager->isEnabled()) {
+        // Używaj lokalizacji z Fleet Management
+        $fleetLocations = $fleetManager->getActiveLocations();
+        foreach ($fleetLocations as $location) {
+            $locations[] = $location['name'] . ' (' . $location['city'] . ')';
+        }
+    } else {
+        // Fallback do słownika jeśli Fleet Management wyłączony
+        $pdo = db();
+        $stmt = $pdo->prepare("
+            SELECT t.name
+            FROM dict_terms t
+            JOIN dict_types dt ON dt.id = t.dict_type_id
+            WHERE dt.slug = :slug AND t.status = 'active'
+            ORDER BY t.sort_order ASC, t.name ASC
+        ");
+        $stmt->execute([':slug' => 'location']);
+        $rows = $stmt->fetchAll(PDO::FETCH_COLUMN);
+        if ($rows) {
+            $locations = array_values(array_unique(array_map('strval', $rows)));
+        }
     }
 } catch (Throwable $e) {
     $locations = [];

@@ -1,8 +1,14 @@
 <?php
-// /pages/staff/settings/shop-general.php
+// Zawartość dla shop-general w dashboard-staff
+require_once dirname(__DIR__, 3) . '/includes/db.php';
+require_once dirname(__DIR__, 3) . '/includes/i18n.php';
+
+// Initialize i18n if not already done
+if (!class_exists('i18n') || !method_exists('i18n', 'getAdminLanguage')) {
+    i18n::init();
+}
 
 $db = db();
-i18n::init();
 
 // Pobierz ustawienia sklepu
 $shop_settings = [];
@@ -50,15 +56,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['save_shop_settings'])
             'thousand_separator' => $_POST['thousand_separator'] ?? ' ',
             'decimal_separator' => $_POST['decimal_separator'] ?? ',',
 
-            // Godziny pracy
-            'business_hours_enabled' => isset($_POST['business_hours_enabled']) ? '1' : '0',
-            'business_hours_monday' => $_POST['business_hours_monday'] ?? '',
-            'business_hours_tuesday' => $_POST['business_hours_tuesday'] ?? '',
-            'business_hours_wednesday' => $_POST['business_hours_wednesday'] ?? '',
-            'business_hours_thursday' => $_POST['business_hours_thursday'] ?? '',
-            'business_hours_friday' => $_POST['business_hours_friday'] ?? '',
-            'business_hours_saturday' => $_POST['business_hours_saturday'] ?? '',
-            'business_hours_sunday' => $_POST['business_hours_sunday'] ?? '',
+            // System zarządzania flotą
+            'fleet_management_enabled' => isset($_POST['fleet_management_enabled']) ? '1' : '0',
+            'fleet_default_location' => $_POST['fleet_default_location'] ?? '',
+            'fleet_auto_update_location' => isset($_POST['fleet_auto_update_location']) ? '1' : '0',
+            'fleet_require_location_selection' => isset($_POST['fleet_require_location_selection']) ? '1' : '0',
+
+            // System kaucji zwrotnych
+            'deposits_enabled' => isset($_POST['deposits_enabled']) ? '1' : '0',
+            'default_deposit_type' => $_POST['default_deposit_type'] ?? 'percentage',
+            'default_deposit_amount' => $_POST['default_deposit_amount'] ?? '200',
+            'default_deposit_percentage' => $_POST['default_deposit_percentage'] ?? '10',
+            'deposits_include_in_payment' => isset($_POST['deposits_include_in_payment']) ? '1' : '0',
 
             // Ustawienia rezerwacji
             'min_rental_hours' => $_POST['min_rental_hours'] ?? '24',
@@ -72,13 +81,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['save_shop_settings'])
             'notification_cancellation' => isset($_POST['notification_cancellation']) ? '1' : '0',
             'notification_payment' => isset($_POST['notification_payment']) ? '1' : '0',
             'notification_email' => $_POST['notification_email'] ?? '',
-
-            // SEO i marketing
-            'site_title' => $_POST['site_title'] ?? '',
-            'meta_description' => $_POST['meta_description'] ?? '',
-            'meta_keywords' => $_POST['meta_keywords'] ?? '',
-            'google_analytics_id' => $_POST['google_analytics_id'] ?? '',
-            'facebook_pixel_id' => $_POST['facebook_pixel_id'] ?? ''
         ];
 
         foreach ($settings_to_save as $key => $value) {
@@ -86,42 +88,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['save_shop_settings'])
         }
 
         $db->commit();
-        $success_message = __('shop_settings_saved', 'admin', 'Ustawienia sklepu zostały zapisane!');
+        $success_message = __('settings_saved_successfully', 'admin', 'Ustawienia zostały zapisane pomyślnie.');
 
         // Odśwież ustawienia
-        $shop_settings = [];
-        $stmt = $db->query("SELECT setting_key, setting_value FROM shop_settings");
-        while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
-            $shop_settings[$row['setting_key']] = $row['setting_value'];
-        }
-    } catch (PDOException $e) {
-        $db->rollback();
-        $error_message = __('saving_error', 'admin', 'Błąd podczas zapisywania') . ": " . $e->getMessage();
-    }
-}
-
-// Wartości domyślne
-$defaults = [
-    'company_country' => 'Polska',
-    'default_currency' => 'PLN',
-    'timezone' => 'Europe/Warsaw',
-    'date_format' => 'd.m.Y',
-    'time_format' => 'H:i',
-    'default_tax_rate' => '23',
-    'currency_symbol_position' => 'after',
-    'decimal_places' => '2',
-    'thousand_separator' => ' ',
-    'decimal_separator' => ',',
-    'min_rental_hours' => '24',
-    'max_rental_days' => '30',
-    'advance_booking_days' => '365',
-    'cancellation_hours' => '24'
-];
-
-// Połącz z wartościami domyślnymi
-foreach ($defaults as $key => $default_value) {
-    if (!isset($shop_settings[$key])) {
-        $shop_settings[$key] = $default_value;
+        $shop_settings = array_merge($shop_settings, $settings_to_save);
+    } catch (Exception $e) {
+        $db->rollBack();
+        $error_message = __('error_saving_settings', 'admin', 'Wystąpił błąd podczas zapisywania ustawień.') . ' ' . $e->getMessage();
     }
 }
 
@@ -162,7 +135,6 @@ $timezones = [
     'Europe/Paris' => 'Europa/Paryż (GMT+1)',
     'UTC' => 'UTC (GMT+0)'
 ];
-
 ?>
 
 <div class="d-flex justify-content-between align-items-center mb-3">
@@ -170,9 +142,9 @@ $timezones = [
         <h5 class="mb-1"><?= __('shop_general_settings', 'admin', 'Ustawienia sklepu') ?></h5>
         <p class="text-muted mb-0"><?= __('shop_configuration', 'admin', 'Konfiguracja biznesowa i regionalna') ?></p>
     </div>
-    <button class="btn btn-outline-secondary btn-sm" onclick="location.reload()">
-        <i class="bi bi-arrow-clockwise"></i> <?= __('refresh', 'admin', 'Odśwież') ?>
-    </button>
+    <a href="<?= $BASE ?>/location-fees.php" class="btn btn-outline-primary btn-sm">
+        <i class="bi bi-geo-alt"></i> <?= __('manage_location_fees', 'admin', 'Zarządzaj opłatami lokalizacyjnymi') ?>
+    </a>
 </div>
 
 <?php if (isset($success_message)): ?>
@@ -359,19 +331,209 @@ $timezones = [
                             </select>
                         </div>
                         <div class="col-4">
-                            <label class="form-label"><?= __('thousands_separator', 'admin', 'Sep. tysięcy') ?></label>
+                            <label class="form-label"><?= __('thousand_separator', 'admin', 'Sep. tysięcy') ?></label>
                             <select name="thousand_separator" class="form-select">
                                 <option value=" " <?= ($shop_settings['thousand_separator'] ?? '') === ' ' ? 'selected' : '' ?>><?= __('space', 'admin', 'Spacja') ?></option>
-                                <option value="," <?= ($shop_settings['thousand_separator'] ?? '') === ',' ? 'selected' : '' ?>><?= __('comma', 'admin', 'Przecinek') ?></option>
-                                <option value="." <?= ($shop_settings['thousand_separator'] ?? '') === '.' ? 'selected' : '' ?>><?= __('dot', 'admin', 'Kropka') ?></option>
+                                <option value="," <?= ($shop_settings['thousand_separator'] ?? '') === ',' ? 'selected' : '' ?>>,</option>
+                                <option value="." <?= ($shop_settings['thousand_separator'] ?? '') === '.' ? 'selected' : '' ?>>.</option>
                             </select>
                         </div>
                         <div class="col-4">
                             <label class="form-label"><?= __('decimal_separator', 'admin', 'Sep. dziesiętny') ?></label>
                             <select name="decimal_separator" class="form-select">
-                                <option value="," <?= ($shop_settings['decimal_separator'] ?? '') === ',' ? 'selected' : '' ?>><?= __('comma', 'admin', 'Przecinek') ?></option>
-                                <option value="." <?= ($shop_settings['decimal_separator'] ?? '') === '.' ? 'selected' : '' ?>><?= __('dot', 'admin', 'Kropka') ?></option>
+                                <option value="," <?= ($shop_settings['decimal_separator'] ?? '') === ',' ? 'selected' : '' ?>>,</option>
+                                <option value="." <?= ($shop_settings['decimal_separator'] ?? '') === '.' ? 'selected' : '' ?>>.</option>
                             </select>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Zarządzanie flotą -->
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h6 class="mb-0"><i class="bi bi-geo-alt-fill"></i> <?= __('fleet_management', 'admin', 'Zarządzanie flotą') ?></h6>
+                </div>
+                <div class="card-body">
+                    <div class="row g-3">
+                        <div class="col-12">
+                            <div class="form-check form-switch">
+                                <input class="form-check-input" type="checkbox" id="fleet_management_enabled"
+                                    name="fleet_management_enabled" <?= ($shop_settings['fleet_management_enabled'] ?? '0') == '1' ? 'checked' : '' ?>>
+                                <label class="form-check-label" for="fleet_management_enabled">
+                                    <strong><?= __('enable_fleet_management', 'admin', 'Włącz zarządzanie flotą') ?></strong>
+                                </label>
+                            </div>
+                            <div class="form-text"><?= __('fleet_management_description', 'admin', 'Umożliwia śledzenie lokalizacji pojazdów i kontrolowanie dostępności w różnych miastach') ?></div>
+                        </div>
+
+                        <div class="col-md-6">
+                            <label class="form-label"><?= __('default_fleet_location', 'admin', 'Domyślna lokalizacja') ?></label>
+                            <select class="form-select" name="fleet_default_location">
+                                <option value=""><?= __('select_location', 'admin', 'Wybierz lokalizację') ?></option>
+                                <?php
+                                try {
+                                    $locations = $db->query("SELECT id, name, city FROM locations WHERE is_active = 1 ORDER BY name")->fetchAll();
+                                    foreach ($locations as $location) {
+                                        $selected = ($shop_settings['fleet_default_location'] ?? '') == $location['id'] ? 'selected' : '';
+                                        echo "<option value='{$location['id']}' $selected>{$location['name']} ({$location['city']})</option>";
+                                    }
+                                } catch (Exception $e) {
+                                    echo "<option value=''>" . __('error_loading_locations', 'admin', 'Błąd ładowania lokalizacji') . "</option>";
+                                }
+                                ?>
+                            </select>
+                        </div>
+
+                        <div class="col-md-6">
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="fleet_auto_update_location"
+                                    name="fleet_auto_update_location" <?= ($shop_settings['fleet_auto_update_location'] ?? '1') == '1' ? 'checked' : '' ?>>
+                                <label class="form-check-label" for="fleet_auto_update_location">
+                                    <?= __('auto_update_vehicle_location', 'admin', 'Automatycznie aktualizuj lokalizację pojazdu') ?>
+                                </label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="fleet_require_location_selection"
+                                    name="fleet_require_location_selection" <?= ($shop_settings['fleet_require_location_selection'] ?? '1') == '1' ? 'checked' : '' ?>>
+                                <label class="form-check-label" for="fleet_require_location_selection">
+                                    <?= __('require_location_selection', 'admin', 'Wymagaj wyboru lokalizacji przy rezerwacji') ?>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Opłaty lokalizacyjne -->
+        <div class="col-12" id="location-fees">
+            <div class="card">
+                <div class="card-header">
+                    <h6 class="mb-0"><i class="bi bi-geo-alt-fill"></i> <?= __('location_fees', 'admin', 'Opłaty lokalizacyjne') ?></h6>
+                </div>
+                <div class="card-body">
+                    <div class="row g-3">
+                        <div class="col-12">
+                            <div class="alert alert-info">
+                                <i class="bi bi-info-circle"></i>
+                                <strong><?= __('location_fees_info', 'admin', 'Informacja o opłatach lokalizacyjnych') ?></strong><br>
+                                <?= __('location_fees_description', 'admin', 'System automatycznie zarządza opłatami za różne trasy między lokalizacjami. Opłaty są symetryczne - trasa A→B ma taką samą cenę jak B→A.') ?>
+                            </div>
+                        </div>
+
+                        <?php
+                        // Pobierz podstawowe statystyki opłat lokalizacyjnych
+                        try {
+                            $locationFeesStats = $db->query("
+                                SELECT 
+                                    COUNT(*) as total_routes,
+                                    MIN(fee_amount) as min_fee,
+                                    MAX(fee_amount) as max_fee,
+                                    AVG(fee_amount) as avg_fee
+                                FROM location_fees 
+                                WHERE is_active = 1
+                            ")->fetch();
+
+                            $totalLocations = $db->query("SELECT COUNT(*) FROM locations WHERE is_active = 1")->fetchColumn();
+                        ?>
+                            <div class="col-md-3">
+                                <div class="text-center p-3 bg-light rounded">
+                                    <h4 class="text-primary mb-1"><?= (int)$totalLocations ?></h4>
+                                    <small class="text-muted"><?= __('active_locations', 'admin', 'Aktywne lokalizacje') ?></small>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="text-center p-3 bg-light rounded">
+                                    <h4 class="text-success mb-1"><?= (int)$locationFeesStats['total_routes'] ?></h4>
+                                    <small class="text-muted"><?= __('configured_routes', 'admin', 'Skonfigurowane trasy') ?></small>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="text-center p-3 bg-light rounded">
+                                    <h4 class="text-info mb-1"><?= number_format($locationFeesStats['min_fee'] ?? 0, 0, ',', ' ') ?> PLN</h4>
+                                    <small class="text-muted"><?= __('min_fee', 'admin', 'Minimalna opłata') ?></small>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="text-center p-3 bg-light rounded">
+                                    <h4 class="text-warning mb-1"><?= number_format($locationFeesStats['max_fee'] ?? 0, 0, ',', ' ') ?> PLN</h4>
+                                    <small class="text-muted"><?= __('max_fee', 'admin', 'Maksymalna opłata') ?></small>
+                                </div>
+                            </div>
+
+                            <?php if ($locationFeesStats['total_routes'] == 0): ?>
+                                <div class="col-12">
+                                    <div class="alert alert-warning">
+                                        <i class="bi bi-exclamation-triangle"></i>
+                                        <?= __('no_location_fees_configured', 'admin', 'Nie skonfigurowano jeszcze opłat lokalizacyjnych. Użyj przycisku "Zarządzaj opłatami" aby dodać pierwsze trasy.') ?>
+                                    </div>
+                                </div>
+                            <?php endif; ?>
+
+                        <?php
+                        } catch (Exception $e) {
+                            echo '<div class="col-12"><div class="alert alert-danger"><i class="bi bi-exclamation-triangle"></i> ' .
+                                __('error_loading_location_fees', 'admin', 'Błąd ładowania opłat lokalizacyjnych') . ': ' . htmlspecialchars($e->getMessage()) . '</div></div>';
+                        }
+                        ?>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- System kaucji zwrotnych -->
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h6 class="mb-0"><i class="bi bi-shield-check"></i> <?= __('deposit_system', 'admin', 'System kaucji zwrotnych') ?></h6>
+                </div>
+                <div class="card-body">
+                    <div class="row g-3">
+                        <div class="col-12">
+                            <div class="form-check form-switch">
+                                <input class="form-check-input" type="checkbox" id="deposits_enabled"
+                                    name="deposits_enabled" <?= ($shop_settings['deposits_enabled'] ?? '0') == '1' ? 'checked' : '' ?>>
+                                <label class="form-check-label" for="deposits_enabled">
+                                    <strong><?= __('enable_deposit_system', 'admin', 'Włącz system kaucji') ?></strong>
+                                </label>
+                            </div>
+                            <div class="form-text"><?= __('deposit_system_description', 'admin', 'Automatyczne zarządzanie kaucjami zwrotnymi przy rezerwacjach') ?></div>
+                        </div>
+
+                        <div class="col-md-6">
+                            <label class="form-label"><?= __('default_deposit_type', 'admin', 'Domyślny typ kaucji') ?></label>
+                            <select class="form-select" name="default_deposit_type">
+                                <option value="fixed" <?= ($shop_settings['default_deposit_type'] ?? '') === 'fixed' ? 'selected' : '' ?>><?= __('fixed_amount', 'admin', 'Stała kwota') ?></option>
+                                <option value="percentage" <?= ($shop_settings['default_deposit_type'] ?? '') === 'percentage' ? 'selected' : '' ?>><?= __('percentage_of_rental', 'admin', 'Procent od wynajmu') ?></option>
+                            </select>
+                        </div>
+
+                        <div class="col-md-3">
+                            <label class="form-label"><?= __('fixed_deposit_amount', 'admin', 'Stała kwota kaucji') ?> (PLN)</label>
+                            <input type="number" class="form-control" name="default_deposit_amount"
+                                value="<?= htmlspecialchars($shop_settings['default_deposit_amount'] ?? '200') ?>"
+                                min="0" step="10">
+                        </div>
+
+                        <div class="col-md-3">
+                            <label class="form-label"><?= __('percentage_deposit', 'admin', 'Procent kaucji') ?> (%)</label>
+                            <input type="number" class="form-control" name="default_deposit_percentage"
+                                value="<?= htmlspecialchars($shop_settings['default_deposit_percentage'] ?? '10') ?>"
+                                min="0" max="100" step="1">
+                        </div>
+
+                        <div class="col-12">
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="deposits_include_in_payment"
+                                    name="deposits_include_in_payment" <?= ($shop_settings['deposits_include_in_payment'] ?? '1') == '1' ? 'checked' : '' ?>>
+                                <label class="form-check-label" for="deposits_include_in_payment">
+                                    <?= __('include_deposit_in_payment', 'admin', 'Wliczaj kaucję w płatność online') ?>
+                                </label>
+                            </div>
+                            <div class="form-text"><?= __('deposit_payment_description', 'admin', 'Jeśli wyłączone, kaucja będzie pokazywana tylko informacyjnie') ?></div>
                         </div>
                     </div>
                 </div>
@@ -382,43 +544,43 @@ $timezones = [
         <div class="col-lg-6">
             <div class="card">
                 <div class="card-header">
-                    <h6 class="mb-0"><i class="bi bi-calendar-check"></i> <?= __('booking_rules', 'admin', 'Zasady rezerwacji') ?></h6>
+                    <h6 class="mb-0"><i class="bi bi-calendar-check"></i> <?= __('reservation_settings', 'admin', 'Ustawienia rezerwacji') ?></h6>
                 </div>
                 <div class="card-body">
-                    <div class="mb-3">
-                        <label class="form-label"><?= __('min_rental_hours', 'admin', 'Min. czas wynajmu (godziny)') ?></label>
-                        <input type="number" name="min_rental_hours" class="form-control"
-                            value="<?= htmlspecialchars($shop_settings['min_rental_hours'] ?? '') ?>"
-                            min="1" max="168">
-                    </div>
-
-                    <div class="mb-3">
-                        <label class="form-label"><?= __('max_rental_days', 'admin', 'Max. czas wynajmu (dni)') ?></label>
-                        <input type="number" name="max_rental_days" class="form-control"
-                            value="<?= htmlspecialchars($shop_settings['max_rental_days'] ?? '') ?>"
-                            min="1" max="365">
-                    </div>
-
-                    <div class="mb-3">
-                        <label class="form-label"><?= __('advance_booking_days', 'admin', 'Wyprzedzenie rezerwacji (dni)') ?></label>
-                        <input type="number" name="advance_booking_days" class="form-control"
-                            value="<?= htmlspecialchars($shop_settings['advance_booking_days'] ?? '') ?>"
-                            min="1" max="730">
-                    </div>
-
-                    <div class="mb-3">
-                        <label class="form-label"><?= __('cancellation_hours', 'admin', 'Anulowanie przed (godziny)') ?></label>
-                        <input type="number" name="cancellation_hours" class="form-control"
-                            value="<?= htmlspecialchars($shop_settings['cancellation_hours'] ?? '') ?>"
-                            min="1" max="168">
-                    </div>
-
-                    <div class="form-check form-switch">
-                        <input type="checkbox" name="auto_confirmation" class="form-check-input"
-                            id="auto_confirmation" <?= ($shop_settings['auto_confirmation'] ?? '') === '1' ? 'checked' : '' ?>>
-                        <label class="form-check-label" for="auto_confirmation">
-                            <?= __('auto_confirmation', 'admin', 'Automatyczne potwierdzanie') ?>
-                        </label>
+                    <div class="row g-3">
+                        <div class="col-6">
+                            <label class="form-label"><?= __('min_rental_hours', 'admin', 'Min. czas wynajmu (godziny)') ?></label>
+                            <input type="number" name="min_rental_hours" class="form-control"
+                                value="<?= htmlspecialchars($shop_settings['min_rental_hours'] ?? '24') ?>"
+                                min="1" step="1">
+                        </div>
+                        <div class="col-6">
+                            <label class="form-label"><?= __('max_rental_days', 'admin', 'Max. czas wynajmu (dni)') ?></label>
+                            <input type="number" name="max_rental_days" class="form-control"
+                                value="<?= htmlspecialchars($shop_settings['max_rental_days'] ?? '30') ?>"
+                                min="1" step="1">
+                        </div>
+                        <div class="col-6">
+                            <label class="form-label"><?= __('advance_booking_days', 'admin', 'Wyprzedzenie rezerwacji (dni)') ?></label>
+                            <input type="number" name="advance_booking_days" class="form-control"
+                                value="<?= htmlspecialchars($shop_settings['advance_booking_days'] ?? '365') ?>"
+                                min="1" step="1">
+                        </div>
+                        <div class="col-6">
+                            <label class="form-label"><?= __('cancellation_hours', 'admin', 'Anulowanie przed (godziny)') ?></label>
+                            <input type="number" name="cancellation_hours" class="form-control"
+                                value="<?= htmlspecialchars($shop_settings['cancellation_hours'] ?? '24') ?>"
+                                min="1" step="1">
+                        </div>
+                        <div class="col-12">
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="auto_confirmation"
+                                    name="auto_confirmation" <?= ($shop_settings['auto_confirmation'] ?? '0') == '1' ? 'checked' : '' ?>>
+                                <label class="form-check-label" for="auto_confirmation">
+                                    <?= __('auto_confirm_bookings', 'admin', 'Automatyczne potwierdzanie rezerwacji') ?>
+                                </label>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -437,78 +599,43 @@ $timezones = [
                             value="<?= htmlspecialchars($shop_settings['notification_email'] ?? '') ?>">
                     </div>
 
-                    <div class="form-check form-switch mb-2">
-                        <input type="checkbox" name="notification_new_booking" class="form-check-input"
-                            id="notif_booking" <?= ($shop_settings['notification_new_booking'] ?? '') === '1' ? 'checked' : '' ?>>
-                        <label class="form-check-label" for="notif_booking">
-                            <?= __('new_bookings', 'admin', 'Nowe rezerwacje') ?>
+                    <div class="form-check mb-2">
+                        <input class="form-check-input" type="checkbox" id="notification_new_booking"
+                            name="notification_new_booking" <?= ($shop_settings['notification_new_booking'] ?? '1') == '1' ? 'checked' : '' ?>>
+                        <label class="form-check-label" for="notification_new_booking">
+                            <?= __('notify_new_bookings', 'admin', 'Nowe rezerwacje') ?>
                         </label>
                     </div>
 
-                    <div class="form-check form-switch mb-2">
-                        <input type="checkbox" name="notification_cancellation" class="form-check-input"
-                            id="notif_cancel" <?= ($shop_settings['notification_cancellation'] ?? '') === '1' ? 'checked' : '' ?>>
-                        <label class="form-check-label" for="notif_cancel">
-                            <?= __('cancellations', 'admin', 'Anulowania') ?>
+                    <div class="form-check mb-2">
+                        <input class="form-check-input" type="checkbox" id="notification_cancellation"
+                            name="notification_cancellation" <?= ($shop_settings['notification_cancellation'] ?? '1') == '1' ? 'checked' : '' ?>>
+                        <label class="form-check-label" for="notification_cancellation">
+                            <?= __('notify_cancellations', 'admin', 'Anulowania') ?>
                         </label>
                     </div>
 
-                    <div class="form-check form-switch mb-2">
-                        <input type="checkbox" name="notification_payment" class="form-check-input"
-                            id="notif_payment" <?= ($shop_settings['notification_payment'] ?? '') === '1' ? 'checked' : '' ?>>
-                        <label class="form-check-label" for="notif_payment">
-                            <?= __('payments', 'admin', 'Płatności') ?>
+                    <div class="form-check mb-2">
+                        <input class="form-check-input" type="checkbox" id="notification_payment"
+                            name="notification_payment" <?= ($shop_settings['notification_payment'] ?? '1') == '1' ? 'checked' : '' ?>>
+                        <label class="form-check-label" for="notification_payment">
+                            <?= __('notify_payments', 'admin', 'Płatności') ?>
                         </label>
                     </div>
                 </div>
             </div>
         </div>
-    </div>
 
-    <!-- Przyciski akcji -->
-    <div class="mt-4 d-flex gap-2">
-        <button type="submit" name="save_shop_settings" class="btn btn-primary">
-            <i class="bi bi-check-lg"></i> <?= __('save_all_settings', 'admin', 'Zapisz wszystkie ustawienia') ?>
-        </button>
-        <button type="button" class="btn btn-outline-secondary" onclick="location.reload()">
-            <i class="bi bi-arrow-clockwise"></i> <?= __('cancel_changes', 'admin', 'Anuluj zmiany') ?>
-        </button>
-        <button type="button" class="btn btn-outline-info" data-bs-toggle="modal" data-bs-target="#previewModal">
-            <i class="bi bi-eye"></i> <?= __('preview_settings', 'admin', 'Podgląd ustawień') ?>
-        </button>
+        <!-- Przycisk zapisu -->
+        <div class="col-12">
+            <div class="d-flex justify-content-end">
+                <button type="submit" name="save_shop_settings" class="btn btn-primary">
+                    <i class="bi bi-check-lg"></i> <?= __('save_settings', 'admin', 'Zapisz ustawienia') ?>
+                </button>
+            </div>
+        </div>
     </div>
 </form>
-
-<!-- Modal podglądu -->
-<div class="modal fade" id="previewModal" tabindex="-1">
-    <div class="modal-dialog modal-lg">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title"><?= __('shop_settings_preview', 'admin', 'Podgląd ustawień sklepu') ?></h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-            </div>
-            <div class="modal-body">
-                <div class="row g-3">
-                    <div class="col-md-6">
-                        <strong>Firma:</strong> <?= htmlspecialchars($shop_settings['company_name'] ?? 'Nie ustawiono') ?>
-                    </div>
-                    <div class="col-md-6">
-                        <strong>Waluta:</strong> <?= htmlspecialchars($shop_settings['default_currency'] ?? 'PLN') ?>
-                    </div>
-                    <div class="col-md-6">
-                        <strong>Strefa czasowa:</strong> <?= htmlspecialchars($shop_settings['timezone'] ?? 'Europe/Warsaw') ?>
-                    </div>
-                    <div class="col-md-6">
-                        <strong>VAT:</strong> <?= htmlspecialchars($shop_settings['default_tax_rate'] ?? '23') ?>%
-                    </div>
-                    <div class="col-md-6">
-                        <strong>Min. wynajem:</strong> <?= htmlspecialchars($shop_settings['min_rental_hours'] ?? '24') ?> godz.
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
 
 <style>
     .auto-fade {
@@ -527,6 +654,17 @@ $timezones = [
                     successAlert.style.display = 'none';
                 }, 500);
             }, 3000);
+        }
+
+        // Jeśli to był POST request (zapisywanie ustawień), usuń hash z URL
+        // żeby po zapisaniu nie przewijało do kotwicy
+        const urlParams = new URLSearchParams(window.location.search);
+        if (window.location.hash && document.referrer.includes('location-fees.php')) {
+            // Usuń hash tylko jeśli przyszliśmy z location-fees
+            // ale nie usuwaj go przy normalnym ładowaniu strony
+        } else if (window.location.hash === '#location-fees' && successAlert) {
+            // Jeśli pokazuje się alert sukcesu (po POST) i mamy hash location-fees, usuń go
+            history.replaceState(null, null, window.location.pathname + window.location.search);
         }
     });
 </script>

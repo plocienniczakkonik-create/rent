@@ -234,17 +234,53 @@ $reports = [
             var urlParams = new URLSearchParams(window.location.search);
             var section = urlParams.get('section');
 
+            console.log('URL params:', {
+                section: section,
+                hash: hash
+            });
+
             // Jeśli mamy parametr section, użyj go
             if (section && !hash) {
                 hash = '#pane-' + section;
             }
 
+            // Jeśli mamy hash z kotwicą, nadal aktywuj odpowiednią zakładkę
+            if (section === 'settings' || hash === '#location-fees') {
+                hash = '#pane-settings';
+            }
+
+            console.log('Target hash:', hash);
+
             if (hash) {
                 var trigger = document.querySelector('button[data-bs-target="' + hash + '"]');
+                console.log('Found trigger:', trigger);
                 if (trigger) {
-                    // Użyj Bootstrap Tab API
-                    var tab = new bootstrap.Tab(trigger);
-                    tab.show();
+                    // Dezaktywuj obecną aktywną zakładkę
+                    var activeTab = document.querySelector('.nav-link.active');
+                    var activePane = document.querySelector('.tab-pane.active');
+                    if (activeTab) activeTab.classList.remove('active');
+                    if (activePane) {
+                        activePane.classList.remove('active', 'show');
+                    }
+
+                    // Aktywuj nową zakładkę
+                    trigger.classList.add('active');
+                    var targetPane = document.querySelector(hash);
+                    if (targetPane) {
+                        targetPane.classList.add('active', 'show');
+                    }
+
+                    // Przewiń do kotwicy tylko jeśli jest w URL i to nie jest POST request
+                    if (window.location.hash && window.location.hash !== hash && window.location.hash === '#location-fees') {
+                        setTimeout(function() {
+                            var anchor = document.querySelector(window.location.hash);
+                            if (anchor) {
+                                anchor.scrollIntoView({
+                                    behavior: 'smooth'
+                                });
+                            }
+                        }, 200);
+                    }
                 }
             }
         }, 100);

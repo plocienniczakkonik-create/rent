@@ -29,7 +29,7 @@ $overlay  = ($page === 'home');
 
 $navPosClass = $overlay
     ? 'position-absolute top-0 start-0 w-100 z-3'   // overlay tylko na HOME
-    : 'position-static';                             // normalnie w flow na pozostałych
+    : 'position-sticky top-0 bg-white shadow-sm';    // sticky na pozostałych stronach z wyższym z-index
 ?>
 
 <nav id="siteNav" class="navbar navbar-expand-lg navbar-light bg-transparent <?= $navPosClass ?>">
