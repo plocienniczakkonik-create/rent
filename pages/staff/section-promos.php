@@ -81,9 +81,9 @@ $maps = [
 
 ?>
 <div class="card section-promos">
-    <div class="card-header d-flex align-items-center justify-content-between">
-        <h2 class="h6 mb-0"><?= __('promotions', 'admin', 'Promocje') ?></h2>
-        <a class="btn btn-sm btn-primary" href="pages/promo-form.php"><?= __('add_promotion', 'admin', 'Dodaj promocję') ?></a>
+    <div class="card-header d-flex align-items-center justify-content-between" style="background: var(--gradient-primary); color: white; border-bottom: 1px solid var(--color-primary-dark);">
+        <h2 class="h6 mb-0"><i class="bi bi-stars me-2"></i><?= __('promotions', 'admin', 'Promocje') ?></h2>
+    <a class="btn btn-sm btn-clean" href="pages/promo-form.php"><i class="bi bi-plus-lg me-1"></i><?= __('add_promotion', 'admin', 'Dodaj promocję') ?></a>
     </div>
     <div class="card-body p-0">
         <div class="table-responsive">
@@ -145,9 +145,9 @@ $maps = [
                                 <td><?= $period ?></td>
                                 <td class="text-end">
                                     <div class="d-flex gap-1 justify-content-end">
-                                        <a href="pages/promo-form.php?id=<?= $id ?>" class="btn btn-outline-primary btn-sm"><?= __('edit', 'admin', 'Edytuj') ?></a>
+                                        <a href="pages/promo-form.php?id=<?= $id ?>" class="btn btn-clean btn-sm"><i class="bi bi-pencil-square me-1"></i><?= __('edit', 'admin', 'Edytuj') ?></a>
                                         <a href="pages/promo-delete.php?id=<?= $id ?>&_token=<?= htmlspecialchars(csrf_token(), ENT_QUOTES) ?>"
-                                            class="btn btn-outline-danger btn-sm"
+                                            class="btn btn-clean-danger btn-sm"
                                             onclick="return confirm('<?= __('confirm_delete_promotion', 'admin', 'Usunąć promocję') ?> #<?= $id ?>?');"><?= __('delete', 'admin', 'Usuń') ?></a>
                                     </div>
                                 </td>

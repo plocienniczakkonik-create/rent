@@ -277,8 +277,8 @@ function v_sort_link(string $key, string $label): string
 </style>
 
 <div class="card section-vehicles">
-    <div class="card-header d-flex align-items-center justify-content-between">
-        <h2 class="h6 mb-0"><?= __('fleet_management', 'admin', 'Zarządzaj flotą') ?></h2>
+    <div class="card-header d-flex align-items-center justify-content-between" style="background: var(--gradient-primary); color: white; border-bottom: 1px solid var(--color-primary-dark);">
+        <h2 class="h6 mb-0"><i class="bi bi-truck me-2"></i><?= __('fleet_management', 'admin', 'Zarządzaj flotą') ?></h2>
     </div>
     <div class="card-body p-0">
         <div class="table-responsive">
@@ -334,9 +334,9 @@ function v_sort_link(string $key, string $label): string
                                 </td>
 
                                 <td class="text-end">
-                                    <a class="btn btn-sm btn-primary" title="<?= __('fleet_management', 'admin', 'Zarządzaj flotą') ?>"
+                                    <a class="btn btn-sm btn-clean" title="<?= __('fleet_management', 'admin', 'Zarządzaj flotą') ?>"
                                         href="<?= $BASE ?>/index.php?page=vehicles-manage&product=<?= (int)$r['id'] ?>">
-                                        <i class="bi bi-gear"></i> <?= __('manage', 'admin', 'Zarządzaj') ?>
+                                        <i class="bi bi-gear me-1"></i><?= __('manage', 'admin', 'Zarządzaj') ?>
                                     </a>
                                 </td>
                             </tr>

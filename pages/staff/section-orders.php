@@ -70,8 +70,8 @@ $total = (int)$stmtC->fetchColumn();
 $pages = max(1, (int)ceil($total / $perPage));
 ?>
 <div class="card section-orders">
-    <div class="card-header">
-        <h2 class="h6 mb-0"><?= __('orders', 'admin', 'Zamówienia') ?></h2>
+    <div class="card-header d-flex align-items-center justify-content-between" style="background: var(--gradient-primary); color: white; border-bottom: 1px solid var(--color-primary-dark);">
+        <h2 class="h6 mb-0"><i class="bi bi-receipt me-2"></i><?= __('orders', 'admin', 'Zamówienia') ?></h2>
     </div>
     <div class="card-body">
         <form method="get" class="d-flex gap-2 align-items-center mb-3">
@@ -82,7 +82,7 @@ $pages = max(1, (int)ceil($total / $perPage));
                     <option value="<?= e($s) ?>" <?= $status === $s ? 'selected' : '' ?>><?= __($s, 'admin', $s) ?></option>
                 <?php endforeach; ?>
             </select>
-            <button class="btn btn-sm btn-outline-primary" type="submit"><?= __('filter', 'admin', 'Filtruj') ?></button>
+            <button class="btn btn-sm btn-clean" type="submit"><i class="bi bi-funnel me-1"></i><?= __('filter', 'admin', 'Filtruj') ?></button>
         </form>
 
         <div class="table-responsive">
@@ -130,11 +130,11 @@ $pages = max(1, (int)ceil($total / $perPage));
                                                 <option value="<?= e($s) ?>" <?= ((string)$r['status'] === $s) ? 'selected' : '' ?>><?= __($s, 'admin', $s) ?></option>
                                             <?php endforeach; ?>
                                         </select>
-                                        <button class="btn btn-sm btn-outline-success" type="submit"><?= __('change', 'admin', 'Zmień') ?></button>
+                                        <button class="btn btn-sm btn-clean" type="submit"><i class="bi bi-check2-circle me-1"></i><?= __('change', 'admin', 'Zmień') ?></button>
                                     </form>
                                 </td>
                                 <td class="text-end">
-                                    <a href="index.php?page=reservation-details&id=<?= (int)$r['id'] ?>" class="btn btn-outline-primary btn-sm"><?= __('details', 'admin', 'Szczegóły') ?></a>
+                                    <a href="index.php?page=reservation-details&id=<?= (int)$r['id'] ?>" class="btn btn-clean btn-sm"><i class="bi bi-eye me-1"></i><?= __('details', 'admin', 'Szczegóły') ?></a>
                                 </td>
                             </tr>
                     <?php endforeach;
@@ -153,8 +153,8 @@ $pages = max(1, (int)ceil($total / $perPage));
                     return http_build_query(['page' => 'dashboard-staff', 'status' => $status, 'q' => $q, 'p' => $pageNum]);
                 };
                 ?>
-                <a class="btn btn-sm btn-outline-secondary <?= $p <= 1 ? 'disabled' : '' ?>" href="<?= $baseUrl ?>?<?= htmlspecialchars($qs(max(1, $p - 1))) ?>">« <?= __('previous', 'admin', 'Poprzednia') ?></a>
-                <a class="btn btn-sm btn-outline-secondary <?= $p >= $pages ? 'disabled' : '' ?>" href="<?= $baseUrl ?>?<?= htmlspecialchars($qs(min($pages, $p + 1))) ?>"><?= __('next', 'admin', 'Następna') ?> »</a>
+                <a class="btn btn-sm btn-clean <?= $p <= 1 ? 'disabled' : '' ?>" href="<?= $baseUrl ?>?<?= htmlspecialchars($qs(max(1, $p - 1))) ?>"><i class="bi bi-arrow-left me-1"></i><?= __('previous', 'admin', 'Poprzednia') ?></a>
+                <a class="btn btn-sm btn-clean <?= $p >= $pages ? 'disabled' : '' ?>" href="<?= $baseUrl ?>?<?= htmlspecialchars($qs(min($pages, $p + 1))) ?>"><?= __('next', 'admin', 'Następna') ?> <i class="bi bi-arrow-right ms-1"></i></a>
             </div>
         </div>
     </div>

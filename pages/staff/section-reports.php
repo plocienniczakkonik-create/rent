@@ -7,8 +7,8 @@ $reports = $reports ?? [
 ];
 ?>
 <div class="card section-reports">
-    <div class="card-header">
-        <h2 class="h6 mb-0"><?= __('reports', 'admin', 'Raporty') ?></h2>
+    <div class="card-header d-flex align-items-center justify-content-between" style="background: var(--gradient-primary); color: white; border-bottom: 1px solid var(--color-primary-dark);">
+        <h2 class="h6 mb-0"><i class="bi bi-bar-chart-line me-2"></i><?= __('reports', 'admin', 'Raporty') ?></h2>
     </div>
     <div class="card-body">
         <div class="row g-3">

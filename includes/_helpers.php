@@ -1,4 +1,33 @@
 <?php
+// ...existing code...
+// Funkcja sortowania dla dashboard-staff i sekcji
+function sort_link_dashboard(string $section, string $key, string $label): string
+{
+    $currentSection = $_GET['section'] ?? '';
+    $currentSort = $_GET['sort'] ?? '';
+    $currentDir = strtolower($_GET['dir'] ?? 'asc');
+
+    // Tylko sortuj jeśli jesteśmy w tej sekcji
+    $nextDir = ($currentSection === $section && $currentSort === $key && $currentDir === 'asc') ? 'desc' : 'asc';
+    $arrowUpActive = ($currentSection === $section && $currentSort === $key && $currentDir === 'asc');
+    $arrowDownActive = ($currentSection === $section && $currentSort === $key && $currentDir === 'desc');
+
+    $BASE = defined('BASE_URL') ? rtrim(BASE_URL, '/') : '';
+    $qs = http_build_query([
+        'page' => 'dashboard-staff',
+        'section' => $section,
+        'sort' => $key,
+        'dir' => $nextDir,
+    ]);
+
+    // Dodaj hash dla sekcji
+    $hash = '#pane-' . $section;
+
+    return '<a class="th-sort-link" href="' . htmlspecialchars($BASE . '/index.php?' . $qs . $hash) . '">' .
+        '<span class="label">' . htmlspecialchars($label) . '</span>' .
+        '<span class="chevs"><span class="chev ' . ($arrowUpActive ? 'active' : '') . '">▲</span><span class="chev ' . ($arrowDownActive ? 'active' : '') . '">▼</span></span>' .
+        '</a>';
+}
 // Uniwersalne helpery CSRF (i tylko one). Bez innych include’ów.
 if (session_status() !== PHP_SESSION_ACTIVE) {
     session_start();

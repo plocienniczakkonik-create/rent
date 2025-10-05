@@ -1,48 +1,18 @@
-<?php
-// /pages/dashboard-staff.php
-require_once dirname(__DIR__) . '/auth/auth.php';
-$staff = require_staff();
 
+<?php
 require_once dirname(__DIR__) . '/partials/head.php';
 require_once dirname(__DIR__) . '/partials/header.php';
 require_once dirname(__DIR__) . '/includes/db.php';
 require_once dirname(__DIR__) . '/includes/_helpers.php';
 require_once dirname(__DIR__) . '/includes/i18n.php';
+require_once dirname(__DIR__) . '/includes/theme-config.php';
 require_once __DIR__ . '/staff/_helpers.php';
 
 // Force reload translations after header initialization
 i18n::init();
 
 $BASE = defined('BASE_URL') ? rtrim(BASE_URL, '/') : '';
-
-// === FUNKCJA SORTOWANIA ===
-function sort_link_dashboard(string $section, string $key, string $label): string
-{
-    $currentSection = $_GET['section'] ?? '';
-    $currentSort = $_GET['sort'] ?? '';
-    $currentDir = strtolower($_GET['dir'] ?? 'asc');
-
-    // Tylko sortuj jeśli jesteśmy w tej sekcji
-    $nextDir = ($currentSection === $section && $currentSort === $key && $currentDir === 'asc') ? 'desc' : 'asc';
-    $arrowUpActive = ($currentSection === $section && $currentSort === $key && $currentDir === 'asc');
-    $arrowDownActive = ($currentSection === $section && $currentSort === $key && $currentDir === 'desc');
-
-    $BASE = defined('BASE_URL') ? rtrim(BASE_URL, '/') : '';
-    $qs = http_build_query([
-        'page' => 'dashboard-staff',
-        'section' => $section,
-        'sort' => $key,
-        'dir' => $nextDir,
-    ]);
-
-    // Dodaj hash dla sekcji
-    $hash = '#pane-' . $section;
-
-    return '<a class="th-sort-link" href="' . htmlspecialchars($BASE . '/index.php?' . $qs . $hash) . '">'
-        . '<span class="label">' . htmlspecialchars($label) . '</span>'
-        . '<span class="chevs"><span class="chev ' . ($arrowUpActive ? 'active' : '') . '">▲</span><span class="chev ' . ($arrowDownActive ? 'active' : '') . '">▼</span></span>'
-        . '</a>';
-}
+echo '<style>' . ThemeConfig::generateCSSVariables() . '</style>';
 
 // === SORTOWANIE PARAMETRY ===
 $section = $_GET['section'] ?? '';
@@ -145,52 +115,50 @@ $reports = [
     <div class="w-100" style="margin: 0 auto; padding: 0 60px;">
         <div class="row g-3">
             <div class="col-12">
-                <div class="d-flex align-items-center justify-content-between flex-wrap gap-2">
+                <div class="dashboard-header p-4 rounded-4 mb-4 d-flex align-items-center justify-content-between flex-wrap gap-3" style="background: var(--gradient-primary); color: white; border-bottom: 1px solid var(--color-primary-dark);">
                     <div>
-                        <h1 class="h4 mb-0"><?= __('dashboard', 'admin', 'Panel pracownika') ?></h1>
-                        <div class="text-muted small">
+                        <h1 class="h3 mb-2 fw-bold text-white"><i class="bi bi-person-badge me-2"></i><?= __('dashboard', 'admin', 'Panel główny') ?></h1>
+                        <div class="text-white-50 fs-5">
                             <?= htmlspecialchars($staff['first_name'] ?? '') . ' ' . htmlspecialchars($staff['last_name'] ?? '') ?>
                             <?= !empty($staff['job_title']) ? ' • ' . htmlspecialchars($staff['job_title']) : '' ?>
                         </div>
                     </div>
                     <div class="d-flex gap-2">
-                        <a class="btn btn-outline-secondary btn-sm" href="<?= $BASE ?>/index.php"><?= __('view_site', 'admin', 'Podgląd strony') ?></a>
-                        <a class="btn btn-primary btn-sm" href="index.php?page=product-form" id="product-new">+ <?= __('add_product', 'admin', 'Dodaj produkt') ?></a>
+                        <a class="btn btn-clean btn-sm" href="<?= $BASE ?>/index.php"><i class="bi bi-eye"></i> <?= __('view_site', 'admin', 'Podgląd strony') ?></a>
+                        <a class="btn btn-clean btn-sm fw-medium" href="index.php?page=product-form" id="product-new"><i class="bi bi-plus-lg"></i> <?= __('add_product', 'admin', 'Dodaj produkt') ?></a>
                     </div>
                 </div>
             </div>
 
             <div class="col-12">
-                <ul class="nav nav-pills gap-2" id="staffTabs" role="tablist">
-                    <li class="nav-item" role="presentation">
-                        <button class="nav-link active" id="tab-products" data-bs-toggle="pill" data-bs-target="#pane-products" type="button" role="tab"><?= __('products', 'admin', 'Produkty') ?></button>
-                    </li>
-                    <li class="nav-item" role="presentation">
-                        <button class="nav-link" id="tab-vehicles" data-bs-toggle="pill" data-bs-target="#pane-vehicles" type="button" role="tab">
-                            <?= __('vehicles', 'admin', 'Pojazdy') ?>
-                        </button>
-                    </li>
-                    <li class="nav-item" role="presentation">
-                        <button class="nav-link" id="tab-orders" data-bs-toggle="pill" data-bs-target="#pane-orders" type="button" role="tab"><?= __('orders', 'admin', 'Zamówienia') ?></button>
-                    </li>
-                    <li class="nav-item" role="presentation">
-                        <button class="nav-link" id="tab-promos" data-bs-toggle="pill" data-bs-target="#pane-promos" type="button" role="tab"><?= __('promotions', 'admin', 'Promocje') ?></button>
-                    </li>
-                    <li class="nav-item" role="presentation">
-                        <button class="nav-link" id="tab-upcoming" data-bs-toggle="pill" data-bs-target="#pane-upcoming" type="button" role="tab"><?= __('upcoming_dates', 'admin', 'Najbliższe terminy') ?></button>
-                    </li>
-                    <li class="nav-item" role="presentation">
-                        <button class="nav-link" id="tab-reports" data-bs-toggle="pill" data-bs-target="#pane-reports" type="button" role="tab"><?= __('reports', 'admin', 'Raporty') ?></button>
-                    </li>
-
-                    <li class="nav-item" role="presentation">
-                        <button class="nav-link" id="tab-dicts" data-bs-toggle="pill" data-bs-target="#pane-dicts" type="button" role="tab"><?= __('dictionaries', 'admin', 'Słowniki') ?></button>
-                    </li>
-
-                    <li class="nav-item" role="presentation">
-                        <button class="nav-link" id="tab-settings" data-bs-toggle="pill" data-bs-target="#pane-settings" type="button" role="tab"><?= __('settings', 'admin', 'Ustawienia') ?></button>
-                    </li>
-                </ul>
+                <div class="nav-container p-3 bg-white rounded-4 shadow-sm">
+                    <ul class="nav nav-pills-custom gap-2" id="staffTabs" role="tablist" style="background: transparent;">
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link-custom active" id="tab-products" data-bs-toggle="pill" data-bs-target="#pane-products" type="button" role="tab"><i class="bi bi-box-seam"></i> <?= __('products', 'admin', 'Produkty') ?></button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link-custom" id="tab-vehicles" data-bs-toggle="pill" data-bs-target="#pane-vehicles" type="button" role="tab"><i class="bi bi-truck"></i> <?= __('vehicles', 'admin', 'Pojazdy') ?></button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link-custom" id="tab-orders" data-bs-toggle="pill" data-bs-target="#pane-orders" type="button" role="tab"><i class="bi bi-receipt"></i> <?= __('orders', 'admin', 'Zamówienia') ?></button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link-custom" id="tab-promos" data-bs-toggle="pill" data-bs-target="#pane-promos" type="button" role="tab"><i class="bi bi-stars"></i> <?= __('promotions', 'admin', 'Promocje') ?></button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link-custom" id="tab-upcoming" data-bs-toggle="pill" data-bs-target="#pane-upcoming" type="button" role="tab"><i class="bi bi-calendar-event"></i> <?= __('upcoming_dates', 'admin', 'Najbliższe terminy') ?></button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link-custom" id="tab-reports" data-bs-toggle="pill" data-bs-target="#pane-reports" type="button" role="tab"><i class="bi bi-bar-chart"></i> <?= __('reports', 'admin', 'Raporty') ?></button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link-custom" id="tab-dicts" data-bs-toggle="pill" data-bs-target="#pane-dicts" type="button" role="tab"><i class="bi bi-journal-bookmark"></i> <?= __('dictionaries', 'admin', 'Słowniki') ?></button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link-custom" id="tab-settings" data-bs-toggle="pill" data-bs-target="#pane-settings" type="button" role="tab"><i class="bi bi-gear"></i> <?= __('settings', 'admin', 'Ustawienia') ?></button>
+                        </li>
+                    </ul>
+                </div>
             </div>
 
             <div class="col-12">

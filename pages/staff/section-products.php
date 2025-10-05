@@ -1,8 +1,9 @@
 <?php // expects: $products, $BASE 
+require_once dirname(__DIR__, 2) . '/includes/_helpers.php';
 ?>
 <div class="card section-products">
-    <div class="card-header d-flex align-items-center justify-content-between">
-        <h2 class="h6 mb-0"><?= __('products', 'admin', 'Produkty') ?></h2>
+    <div class="card-header d-flex align-items-center justify-content-between" style="background: var(--gradient-primary); color: white; border-bottom: 1px solid var(--color-primary-dark);">
+        <h2 class="h6 mb-0"><i class="bi bi-box-seam me-2"></i><?= __('products', 'admin', 'Produkty') ?></h2>
         <!-- usunięto lokalny przycisk "Dodaj produkt" -->
     </div>
     <div class="card-body p-0">
@@ -37,14 +38,14 @@
                                 <td class="text-end">
                                     <!-- NOWE: Flota (egzemplarze tego modelu) -->
                                     <a href="<?= $BASE ?>/index.php?page=vehicles-manage&product=<?= (int)$p['id'] ?>"
-                                        class="btn btn-outline-info btn-sm"><?= __('fleet', 'admin', 'Flota') ?></a>
+                                        class="btn btn-clean btn-sm"><i class="bi bi-truck me-1"></i><?= __('fleet', 'admin', 'Flota') ?></a>
 
                                     <!-- Istniejące akcje -->
                                     <a href="<?= $BASE ?>/index.php?page=product-form&id=<?= (int)$p['id'] ?>"
-                                        class="btn btn-outline-primary btn-sm"><?= __('edit', 'admin', 'Edytuj') ?></a>
+                                        class="btn btn-clean btn-sm"><i class="bi bi-pencil-square me-1"></i><?= __('edit', 'admin', 'Edytuj') ?></a>
                                     <a href="<?= $BASE ?>/index.php?page=product-delete&id=<?= (int)$p['id'] ?>&csrf=<?= htmlspecialchars(csrf_token()) ?>"
-                                        class="btn btn-outline-danger btn-sm"
-                                        onclick="return confirm('<?= __('confirm_delete_product', 'admin', 'Usunąć produkt') ?> #<?= (int)$p['id'] ?>?');"><?= __('delete', 'admin', 'Usuń') ?></a>
+                                        class="btn btn-clean-danger btn-sm"
+                                        onclick="return confirm('<?= __('confirm_delete_product', 'admin', 'Usunąć produkt') ?> #<?= (int)$p['id'] ?>?');"><i class="bi bi-trash me-1"></i><?= __('delete', 'admin', 'Usuń') ?></a>
                                 </td>
                             </tr>
                     <?php endforeach;

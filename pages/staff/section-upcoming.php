@@ -59,8 +59,8 @@ $insurances = $db->query("SELECT v.id, v.registration_number, v.product_id, v.in
     LIMIT 10")->fetchAll(PDO::FETCH_ASSOC);
 ?>
 <div class="card section-upcoming">
-    <div class="card-header">
-        <h2 class="h6 mb-0"><?= __('upcoming_dates', 'admin', 'Najbliższe terminy') ?></h2>
+    <div class="card-header d-flex align-items-center justify-content-between" style="background: var(--gradient-primary); color: white; border-bottom: 1px solid var(--color-primary-dark);">
+        <h2 class="h6 mb-0"><i class="bi bi-calendar-event me-2"></i><?= __('upcoming_dates', 'admin', 'Najbliższe terminy') ?></h2>
     </div>
     <div class="card-body">
         <div class="row g-4">

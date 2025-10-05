@@ -87,16 +87,16 @@ function isActiveRow(array $row): bool
 }
 ?>
 <div class="card section-dicts">
-    <div class="card-header d-flex justify-content-between align-items-center">
+    <div class="card-header d-flex justify-content-between align-items-center" style="background: var(--gradient-primary); color: white; border-bottom: 1px solid var(--color-primary-dark);">
         <div>
-            <strong><?= __('dictionaries', 'admin', 'Słowniki') ?></strong>
-            <span class="text-muted">/ <?= htmlspecialchars($validKinds[$kind]) ?></span>
+            <strong><i class="bi bi-journal-bookmark me-2"></i><?= __('dictionaries', 'admin', 'Słowniki') ?></strong>
+            <span class="text-light">/ <?= htmlspecialchars($validKinds[$kind]) ?></span>
         </div>
         <div class="d-flex gap-2">
-            <a class="btn btn-outline-secondary btn-sm" href="<?= panel_url(['kind' => 'location']) ?>"><?= __('locations', 'admin', 'Lokalizacje') ?></a>
-            <a class="btn btn-outline-secondary btn-sm" href="<?= panel_url(['kind' => 'car_class']) ?>"><?= __('car_class', 'admin', 'Klasa samochodu') ?></a>
-            <a class="btn btn-outline-secondary btn-sm" href="<?= panel_url(['kind' => 'car_type']) ?>"><?= __('car_type', 'admin', 'Typ samochodu') ?></a>
-            <a class="btn btn-outline-secondary btn-sm" href="<?= panel_url(['kind' => 'addon']) ?>"><?= __('addons', 'admin', 'Dodatki') ?></a>
+            <a class="btn btn-outline-light btn-sm" href="<?= panel_url(['kind' => 'location']) ?>"><?= __('locations', 'admin', 'Lokalizacje') ?></a>
+            <a class="btn btn-outline-light btn-sm" href="<?= panel_url(['kind' => 'car_class']) ?>"><?= __('car_class', 'admin', 'Klasa samochodu') ?></a>
+            <a class="btn btn-outline-light btn-sm" href="<?= panel_url(['kind' => 'car_type']) ?>"><?= __('car_type', 'admin', 'Typ samochodu') ?></a>
+            <a class="btn btn-outline-light btn-sm" href="<?= panel_url(['kind' => 'addon']) ?>"><?= __('addons', 'admin', 'Dodatki') ?></a>
         </div>
     </div>
 
@@ -143,8 +143,8 @@ function isActiveRow(array $row): bool
 
         <div class="d-flex justify-content-between align-items-center mb-3">
             <h6 class="mb-0"><?= __('positions', 'admin', 'Pozycje') ?></h6>
-            <button class="btn btn-primary btn-sm" type="button" data-bs-toggle="collapse" data-bs-target="#dictAddForm">
-                + <?= __('add_position', 'admin', 'Dodaj pozycję') ?>
+            <button class="btn btn-clean btn-sm" type="button" data-bs-toggle="collapse" data-bs-target="#dictAddForm">
+                <i class="bi bi-plus-lg me-1"></i><?= __('add_position', 'admin', 'Dodaj pozycję') ?>
             </button>
         </div>
 
@@ -200,8 +200,8 @@ function isActiveRow(array $row): bool
                         </select>
                     </div>
                     <div class="col-12 d-flex gap-2">
-                        <button type="submit" class="btn btn-primary btn-sm"><?= __('save', 'admin', 'Zapisz') ?></button>
-                        <button type="button" class="btn btn-outline-secondary btn-sm" data-bs-toggle="collapse" data-bs-target="#dictAddForm"><?= __('cancel', 'admin', 'Anuluj') ?></button>
+                        <button type="submit" class="btn btn-clean btn-sm"><i class="bi bi-save me-1"></i><?= __('save', 'admin', 'Zapisz') ?></button>
+                        <button type="button" class="btn btn-clean btn-sm" data-bs-toggle="collapse" data-bs-target="#dictAddForm"><i class="bi bi-x-lg me-1"></i><?= __('cancel', 'admin', 'Anuluj') ?></button>
                     </div>
                 </div>
             </form>
@@ -262,12 +262,12 @@ function isActiveRow(array $row): bool
                                 </td>
                                 <td class="text-end">
                                     <div class="d-inline-flex gap-2">
-                                        <button class="btn btn-outline-primary btn-sm" type="button" data-bs-toggle="collapse" data-bs-target="#editRow<?= (int)$row['id'] ?>"><?= __('edit', 'admin', 'Edytuj') ?></button>
+                                        <button class="btn btn-clean btn-sm" type="button" data-bs-toggle="collapse" data-bs-target="#editRow<?= (int)$row['id'] ?>"><i class="bi bi-pencil-square me-1"></i><?= __('edit', 'admin', 'Edytuj') ?></button>
                                         <form method="post" action="<?= $BASE ?>/pages/staff/dicts-delete.php" onsubmit="return confirm('<?= __('confirm_delete_position', 'admin', 'Usunąć pozycję?') ?>');" class="d-inline">
                                             <?= csrf_field(); ?>
                                             <input type="hidden" name="id" value="<?= (int)$row['id'] ?>">
                                             <input type="hidden" name="kind" value="<?= htmlspecialchars($kind) ?>">
-                                            <button type="submit" class="btn btn-outline-danger btn-sm"><?= __('delete', 'admin', 'Usuń') ?></button>
+                                            <button type="submit" class="btn btn-clean-danger btn-sm"><i class="bi bi-trash me-1"></i><?= __('delete', 'admin', 'Usuń') ?></button>
                                         </form>
                                     </div>
                                 </td>
@@ -326,8 +326,8 @@ function isActiveRow(array $row): bool
                                             </select>
                                         </div>
                                         <div class="col-12 d-flex gap-2">
-                                            <button type="submit" class="btn btn-primary btn-sm"><?= __('save_changes', 'admin', 'Zapisz zmiany') ?></button>
-                                            <button type="button" class="btn btn-outline-secondary btn-sm" data-bs-toggle="collapse" data-bs-target="#editRow<?= (int)$row['id'] ?>"><?= __('close_edit', 'admin', 'Zamknij edycję') ?></button>
+                                            <button type="submit" class="btn btn-clean btn-sm"><i class="bi bi-save me-1"></i><?= __('save_changes', 'admin', 'Zapisz zmiany') ?></button>
+                                            <button type="button" class="btn btn-clean btn-sm" data-bs-toggle="collapse" data-bs-target="#editRow<?= (int)$row['id'] ?>"><i class="bi bi-x-lg me-1"></i><?= __('close_edit', 'admin', 'Zamknij edycję') ?></button>
                                         </div>
                                     </form>
                                 </td>

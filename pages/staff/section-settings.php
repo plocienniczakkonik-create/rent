@@ -149,8 +149,8 @@ function settings_link(string $section, string $subsection, string $label, strin
 </style>
 
 <div class="card section-settings">
-    <div class="card-header">
-        <h2 class="h6 mb-0"><?= __('system_settings', 'admin', 'Ustawienia systemu') ?></h2>
+    <div class="card-header d-flex align-items-center justify-content-between" style="background: var(--gradient-primary); color: white; border-bottom: 1px solid var(--color-primary-dark);">
+        <h2 class="h6 mb-0"><i class="bi bi-gear me-2"></i><?= __('system_settings', 'admin', 'Ustawienia systemu') ?></h2>
     </div>
     <div class="card-body">
         <div class="settings-container">
