@@ -59,17 +59,8 @@ $labelFuel = [
 /** ⬇️ Dynamiczne lokalizacje z systemu Fleet Management */
 $locations = [];
 try {
-    // Autoloader dla klas Fleet Management (produkcyjny)
-    if (!function_exists('autoload_fleet_classes')) {
-        function autoload_fleet_classes($className)
-        {
-            $classFile = dirname(__DIR__) . '/classes/' . $className . '.php';
-            if (is_file($classFile)) {
-                require_once $classFile;
-            }
-        }
-        spl_autoload_register('autoload_fleet_classes');
-    }
+    // Autoloader dla klas Fleet Management
+    require_once dirname(__DIR__) . '/test_classes.php';
 
     $fleetManager = new FleetManager();
 

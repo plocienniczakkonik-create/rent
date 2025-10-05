@@ -6,17 +6,7 @@ declare(strict_types=1);
 require_once dirname(__DIR__, 2) . '/includes/db.php';
 
 // Autoloader dla klas Fleet Management
-// Autoloader dla klas Fleet Management (ładuje z katalogu /classes)
-if (!function_exists('autoload_fleet_classes')) {
-    function autoload_fleet_classes($className)
-    {
-        $classFile = dirname(__DIR__, 2) . '/classes/' . $className . '.php';
-        if (is_file($classFile)) {
-            require_once $classFile;
-        }
-    }
-    spl_autoload_register('autoload_fleet_classes');
-}
+require_once dirname(__DIR__, 2) . '/test_classes.php';
 
 /**
  * Wejście: $_GET z formularza.

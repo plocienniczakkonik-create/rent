@@ -194,6 +194,45 @@ $reports = [
 
 <script>
     document.addEventListener('DOMContentLoaded', function() {
+        // Funkcja do dezaktywacji wszystkich zakładek
+        function clearAllActiveStates() {
+            // Usuń klasy active z wszystkich przycisków nawigacji
+            document.querySelectorAll('.nav-link-custom').forEach(function(tab) {
+                tab.classList.remove('active');
+            });
+
+            // Usuń klasy active i show z wszystkich pane
+            document.querySelectorAll('.tab-pane').forEach(function(pane) {
+                pane.classList.remove('active', 'show');
+            });
+        }
+
+        // Funkcja do aktywacji konkretnej zakładki
+        function activateTab(targetHash) {
+            clearAllActiveStates();
+
+            var trigger = document.querySelector('button[data-bs-target="' + targetHash + '"]');
+            var targetPane = document.querySelector(targetHash);
+
+            if (trigger && targetPane) {
+                trigger.classList.add('active');
+                targetPane.classList.add('active', 'show');
+                return true;
+            }
+            return false;
+        }
+
+        // Obsługa kliknięć w zakładki
+        document.querySelectorAll('.nav-link-custom').forEach(function(tab) {
+            tab.addEventListener('click', function(e) {
+                e.preventDefault();
+                var target = this.getAttribute('data-bs-target');
+                if (target) {
+                    activateTab(target);
+                }
+            });
+        });
+
         // Małe opóźnienie dla Bootstrap
         setTimeout(function() {
             // Obsługa hash URL - tylko przy załadowaniu strony
@@ -219,36 +258,25 @@ $reports = [
             console.log('Target hash:', hash);
 
             if (hash) {
-                var trigger = document.querySelector('button[data-bs-target="' + hash + '"]');
-                console.log('Found trigger:', trigger);
-                if (trigger) {
-                    // Dezaktywuj obecną aktywną zakładkę
-                    var activeTab = document.querySelector('.nav-link-custom.active');
-                    var activePane = document.querySelector('.tab-pane.active');
-                    if (activeTab) activeTab.classList.remove('active');
-                    if (activePane) {
-                        activePane.classList.remove('active', 'show');
-                    }
-
-                    // Aktywuj nową zakładkę
-                    trigger.classList.add('active');
-                    var targetPane = document.querySelector(hash);
-                    if (targetPane) {
-                        targetPane.classList.add('active', 'show');
-                    }
-
-                    // Przewiń do kotwicy tylko jeśli jest w URL i to nie jest POST request
-                    if (window.location.hash && window.location.hash !== hash && window.location.hash === '#location-fees') {
-                        setTimeout(function() {
-                            var anchor = document.querySelector(window.location.hash);
-                            if (anchor) {
-                                anchor.scrollIntoView({
-                                    behavior: 'smooth'
-                                });
-                            }
-                        }, 200);
-                    }
+                if (!activateTab(hash)) {
+                    // Jeśli nie udało się aktywować zakładki z hash, aktywuj domyślną
+                    activateTab('#pane-products');
                 }
+            } else {
+                // Upewnij się, że produkty są aktywne domyślnie
+                activateTab('#pane-products');
+            }
+
+            // Przewiń do kotwicy tylko jeśli jest w URL i to nie jest POST request
+            if (window.location.hash && window.location.hash === '#location-fees') {
+                setTimeout(function() {
+                    var anchor = document.querySelector(window.location.hash);
+                    if (anchor) {
+                        anchor.scrollIntoView({
+                            behavior: 'smooth'
+                        });
+                    }
+                }, 200);
             }
         }, 100);
     });
