@@ -1,5 +1,11 @@
 <?php
 // /pages/staff/settings/email-smtp.php
+require_once dirname(dirname(dirname(__DIR__))) . '/includes/i18n.php';
+
+// Initialize i18n if not already done
+if (!class_exists('i18n') || !method_exists('i18n', 'getAdminLanguage')) {
+    i18n::init();
+}
 
 $db = db();
 
@@ -14,13 +20,13 @@ while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['save_smtp'])) {
     try {
         $db->beginTransaction();
-        
+
         $stmt = $db->prepare("
             INSERT INTO email_settings (setting_key, setting_value) 
             VALUES (?, ?) 
             ON DUPLICATE KEY UPDATE setting_value = VALUES(setting_value)
         ");
-        
+
         $settings_to_save = [
             'smtp_enabled' => isset($_POST['smtp_enabled']) ? '1' : '0',
             'smtp_host' => $_POST['smtp_host'] ?? '',
@@ -35,21 +41,20 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['save_smtp'])) {
             'smtp_keepalive' => isset($_POST['smtp_keepalive']) ? '1' : '0',
             'smtp_debug' => isset($_POST['smtp_debug']) ? '1' : '0'
         ];
-        
+
         foreach ($settings_to_save as $key => $value) {
             $stmt->execute([$key, $value]);
         }
-        
+
         $db->commit();
         $success_message = __('smtp_settings_saved', 'admin', 'Ustawienia SMTP zostały zapisane!');
-        
+
         // Odśwież ustawienia
         $smtp_settings = [];
         $stmt = $db->query("SELECT setting_key, setting_value FROM email_settings WHERE setting_key LIKE 'smtp_%'");
         while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
             $smtp_settings[$row['setting_key']] = $row['setting_value'];
         }
-        
     } catch (PDOException $e) {
         $db->rollback();
         $error_message = __('saving_error', 'admin', 'Błąd podczas zapisywania') . ": " . $e->getMessage();
@@ -71,12 +76,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['test_smtp'])) {
 }
 
 // Funkcja testowania SMTP (mock)
-function test_smtp_connection($settings) {
+function test_smtp_connection($settings)
+{
     // Mock function - w rzeczywistości testowałaby połączenie SMTP
     if (empty($settings['smtp_host']) || empty($settings['smtp_username'])) {
         return ['success' => false, 'error' => __('missing_required_config', 'admin', 'Brak wymaganych danych konfiguracyjnych')];
     }
-    
+
     // Symulacja testu
     return ['success' => true, 'message' => 'Połączenie SMTP działa poprawnie'];
 }
@@ -185,9 +191,9 @@ $smtp_presets = [
                 <div class="card-header d-flex justify-content-between align-items-center">
                     <h6 class="mb-0"><i class="bi bi-server"></i> <?= __('smtp_connection_settings', 'admin', 'Konfiguracja serwera SMTP') ?></h6>
                     <div class="form-check form-switch">
-                        <input type="checkbox" name="smtp_enabled" class="form-check-input" 
-                               id="smtp_enabled" <?= $smtp_settings['smtp_enabled'] === '1' ? 'checked' : '' ?>
-                               onchange="toggleSmtpFields(this.checked)">
+                        <input type="checkbox" name="smtp_enabled" class="form-check-input"
+                            id="smtp_enabled" <?= $smtp_settings['smtp_enabled'] === '1' ? 'checked' : '' ?>
+                            onchange="toggleSmtpFields(this.checked)">
                         <label class="form-check-label" for="smtp_enabled">
                             <?= __('smtp_enabled', 'admin', 'SMTP aktywny') ?>
                         </label>
@@ -197,22 +203,22 @@ $smtp_presets = [
                     <div class="row g-3">
                         <div class="col-md-8">
                             <label class="form-label"><?= __('smtp_host', 'admin', 'Serwer SMTP') ?></label>
-                            <input type="text" name="smtp_host" class="form-control" 
-                                   value="<?= htmlspecialchars($smtp_settings['smtp_host'] ?? '') ?>"
-                                   placeholder="smtp.example.com" 
-                                   <?= $smtp_settings['smtp_enabled'] !== '1' ? 'disabled' : '' ?>>
+                            <input type="text" name="smtp_host" class="form-control"
+                                value="<?= htmlspecialchars($smtp_settings['smtp_host'] ?? '') ?>"
+                                placeholder="smtp.example.com"
+                                <?= $smtp_settings['smtp_enabled'] !== '1' ? 'disabled' : '' ?>>
                         </div>
                         <div class="col-md-4">
                             <label class="form-label"><?= __('smtp_port', 'admin', 'Port') ?></label>
-                            <input type="number" name="smtp_port" class="form-control" 
-                                   value="<?= htmlspecialchars($smtp_settings['smtp_port']) ?>"
-                                   min="1" max="65535"
-                                   <?= $smtp_settings['smtp_enabled'] !== '1' ? 'disabled' : '' ?>>
+                            <input type="number" name="smtp_port" class="form-control"
+                                value="<?= htmlspecialchars($smtp_settings['smtp_port']) ?>"
+                                min="1" max="65535"
+                                <?= $smtp_settings['smtp_enabled'] !== '1' ? 'disabled' : '' ?>>
                         </div>
                         <div class="col-md-6">
                             <label class="form-label"><?= __('smtp_security', 'admin', 'Zabezpieczenie') ?></label>
-                            <select name="smtp_security" class="form-select" 
-                                    <?= $smtp_settings['smtp_enabled'] !== '1' ? 'disabled' : '' ?>>
+                            <select name="smtp_security" class="form-select"
+                                <?= $smtp_settings['smtp_enabled'] !== '1' ? 'disabled' : '' ?>>
                                 <option value="none" <?= $smtp_settings['smtp_security'] === 'none' ? 'selected' : '' ?>><?= __('none_security', 'admin', 'Brak') ?></option>
                                 <option value="tls" <?= $smtp_settings['smtp_security'] === 'tls' ? 'selected' : '' ?>><?= __('tls_security', 'admin', 'TLS') ?></option>
                                 <option value="ssl" <?= $smtp_settings['smtp_security'] === 'ssl' ? 'selected' : '' ?>><?= __('ssl_security', 'admin', 'SSL') ?></option>
@@ -220,30 +226,30 @@ $smtp_presets = [
                         </div>
                         <div class="col-md-6">
                             <label class="form-label"><?= __('smtp_timeout', 'admin', 'Timeout (sekundy)') ?></label>
-                            <input type="number" name="smtp_timeout" class="form-control" 
-                                   value="<?= htmlspecialchars($smtp_settings['smtp_timeout']) ?>"
-                                   min="10" max="300"
-                                   <?= $smtp_settings['smtp_enabled'] !== '1' ? 'disabled' : '' ?>>
+                            <input type="number" name="smtp_timeout" class="form-control"
+                                value="<?= htmlspecialchars($smtp_settings['smtp_timeout']) ?>"
+                                min="10" max="300"
+                                <?= $smtp_settings['smtp_enabled'] !== '1' ? 'disabled' : '' ?>>
                         </div>
                         <div class="col-md-6">
                             <label class="form-label"><?= __('smtp_username', 'admin', 'Nazwa użytkownika') ?></label>
-                            <input type="text" name="smtp_username" class="form-control" 
-                                   value="<?= htmlspecialchars($smtp_settings['smtp_username'] ?? '') ?>"
-                                   placeholder="user@example.com"
-                                   <?= $smtp_settings['smtp_enabled'] !== '1' ? 'disabled' : '' ?>>
+                            <input type="text" name="smtp_username" class="form-control"
+                                value="<?= htmlspecialchars($smtp_settings['smtp_username'] ?? '') ?>"
+                                placeholder="user@example.com"
+                                <?= $smtp_settings['smtp_enabled'] !== '1' ? 'disabled' : '' ?>>
                         </div>
                         <div class="col-md-6">
                             <label class="form-label"><?= __('smtp_password', 'admin', 'Hasło') ?></label>
-                            <input type="password" name="smtp_password" class="form-control" 
-                                   value="<?= htmlspecialchars($smtp_settings['smtp_password'] ?? '') ?>"
-                                   placeholder="••••••••"
-                                   <?= $smtp_settings['smtp_enabled'] !== '1' ? 'disabled' : '' ?>>
+                            <input type="password" name="smtp_password" class="form-control"
+                                value="<?= htmlspecialchars($smtp_settings['smtp_password'] ?? '') ?>"
+                                placeholder="••••••••"
+                                <?= $smtp_settings['smtp_enabled'] !== '1' ? 'disabled' : '' ?>>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
-        
+
         <!-- Status i test -->
         <div class="col-lg-4">
             <div class="card">
@@ -260,28 +266,28 @@ $smtp_presets = [
                                 <span class="badge bg-secondary"><?= __('inactive', 'admin', 'Nieaktywny') ?></span>
                             <?php endif; ?>
                         </div>
-                        
+
                         <?php if (!empty($smtp_settings['smtp_host'])): ?>
                             <small class="text-muted">
                                 <?= __('server', 'admin', 'Serwer') ?>: <?= htmlspecialchars($smtp_settings['smtp_host']) ?>:<?= htmlspecialchars($smtp_settings['smtp_port']) ?>
                             </small>
                         <?php endif; ?>
                     </div>
-                    
+
                     <div class="mb-3">
                         <label class="form-label"><?= __('test_email_address', 'admin', 'Email testowy') ?></label>
-                        <input type="email" name="test_email" class="form-control" 
-                               placeholder="test@example.com">
+                        <input type="email" name="test_email" class="form-control"
+                            placeholder="test@example.com">
                     </div>
-                    
+
                     <button type="submit" name="test_smtp" class="btn btn-outline-primary btn-sm w-100"
-                            <?= $smtp_settings['smtp_enabled'] !== '1' ? 'disabled' : '' ?>>
+                        <?= $smtp_settings['smtp_enabled'] !== '1' ? 'disabled' : '' ?>>
                         <i class="bi bi-send"></i> <?= __('send_test_email', 'admin', 'Wyślij test') ?>
                     </button>
                 </div>
             </div>
         </div>
-        
+
         <!-- Ustawienia nadawcy -->
         <div class="col-lg-6">
             <div class="card">
@@ -291,31 +297,31 @@ $smtp_presets = [
                 <div class="card-body">
                     <div class="mb-3">
                         <label class="form-label"><?= __('smtp_from_email', 'admin', 'Email nadawcy') ?></label>
-                        <input type="email" name="smtp_from_email" class="form-control" 
-                               value="<?= htmlspecialchars($smtp_settings['smtp_from_email'] ?? '') ?>"
-                               placeholder="noreply@example.com"
-                               <?= $smtp_settings['smtp_enabled'] !== '1' ? 'disabled' : '' ?>>
+                        <input type="email" name="smtp_from_email" class="form-control"
+                            value="<?= htmlspecialchars($smtp_settings['smtp_from_email'] ?? '') ?>"
+                            placeholder="noreply@example.com"
+                            <?= $smtp_settings['smtp_enabled'] !== '1' ? 'disabled' : '' ?>>
                     </div>
-                    
+
                     <div class="mb-3">
                         <label class="form-label"><?= __('smtp_from_name', 'admin', 'Nazwa nadawcy') ?></label>
-                        <input type="text" name="smtp_from_name" class="form-control" 
-                               value="<?= htmlspecialchars($smtp_settings['smtp_from_name'] ?? '') ?>"
-                               placeholder="Wypożyczalnia"
-                               <?= $smtp_settings['smtp_enabled'] !== '1' ? 'disabled' : '' ?>>
+                        <input type="text" name="smtp_from_name" class="form-control"
+                            value="<?= htmlspecialchars($smtp_settings['smtp_from_name'] ?? '') ?>"
+                            placeholder="Wypożyczalnia"
+                            <?= $smtp_settings['smtp_enabled'] !== '1' ? 'disabled' : '' ?>>
                     </div>
-                    
+
                     <div class="mb-3">
                         <label class="form-label"><?= __('smtp_reply_to', 'admin', 'Email odpowiedzi') ?></label>
-                        <input type="email" name="smtp_reply_to" class="form-control" 
-                               value="<?= htmlspecialchars($smtp_settings['smtp_reply_to'] ?? '') ?>"
-                               placeholder="contact@example.com"
-                               <?= $smtp_settings['smtp_enabled'] !== '1' ? 'disabled' : '' ?>>
+                        <input type="email" name="smtp_reply_to" class="form-control"
+                            value="<?= htmlspecialchars($smtp_settings['smtp_reply_to'] ?? '') ?>"
+                            placeholder="contact@example.com"
+                            <?= $smtp_settings['smtp_enabled'] !== '1' ? 'disabled' : '' ?>>
                     </div>
                 </div>
             </div>
         </div>
-        
+
         <!-- Zaawansowane opcje -->
         <div class="col-lg-6">
             <div class="card">
@@ -324,23 +330,23 @@ $smtp_presets = [
                 </div>
                 <div class="card-body">
                     <div class="form-check form-switch mb-3">
-                        <input type="checkbox" name="smtp_keepalive" class="form-check-input" 
-                               id="smtp_keepalive" <?= $smtp_settings['smtp_keepalive'] === '1' ? 'checked' : '' ?>
-                               <?= $smtp_settings['smtp_enabled'] !== '1' ? 'disabled' : '' ?>>
+                        <input type="checkbox" name="smtp_keepalive" class="form-check-input"
+                            id="smtp_keepalive" <?= $smtp_settings['smtp_keepalive'] === '1' ? 'checked' : '' ?>
+                            <?= $smtp_settings['smtp_enabled'] !== '1' ? 'disabled' : '' ?>>
                         <label class="form-check-label" for="smtp_keepalive">
                             <?= __('smtp_keepalive', 'admin', 'Utrzymuj połączenie (keepalive)') ?>
                         </label>
                     </div>
-                    
+
                     <div class="form-check form-switch mb-3">
-                        <input type="checkbox" name="smtp_debug" class="form-check-input" 
-                               id="smtp_debug" <?= $smtp_settings['smtp_debug'] === '1' ? 'checked' : '' ?>
-                               <?= $smtp_settings['smtp_enabled'] !== '1' ? 'disabled' : '' ?>>
+                        <input type="checkbox" name="smtp_debug" class="form-check-input"
+                            id="smtp_debug" <?= $smtp_settings['smtp_debug'] === '1' ? 'checked' : '' ?>
+                            <?= $smtp_settings['smtp_enabled'] !== '1' ? 'disabled' : '' ?>>
                         <label class="form-check-label" for="smtp_debug">
                             <?= __('smtp_debug', 'admin', 'Tryb debug') ?>
                         </label>
                     </div>
-                    
+
                     <div class="alert alert-info">
                         <small>
                             <strong><?= __('keepalive_label', 'admin', 'Keepalive') ?>:</strong> <?= __('keepalive_description', 'admin', 'Utrzymuje połączenie dla kolejnych emaili') ?><br>
@@ -351,7 +357,7 @@ $smtp_presets = [
             </div>
         </div>
     </div>
-    
+
     <div class="mt-4 d-flex gap-2">
         <button type="submit" name="save_smtp" class="btn btn-primary">
             <i class="bi bi-check-lg"></i> <?= __('save_smtp_configuration', 'admin', 'Zapisz konfigurację SMTP') ?>
@@ -377,8 +383,8 @@ $smtp_presets = [
                             <strong><?= $preset['name'] ?></strong><br>
                             <small class="text-muted"><?= $preset['host'] ?>:<?= $preset['port'] ?> (<?= strtoupper($preset['security']) ?>)</small>
                         </div>
-                        <button type="button" class="btn btn-outline-primary btn-sm" 
-                                onclick="applyPreset('<?= $key ?>')">
+                        <button type="button" class="btn btn-outline-primary btn-sm"
+                            onclick="applyPreset('<?= $key ?>')">
                             Użyj
                         </button>
                     </div>
@@ -389,52 +395,52 @@ $smtp_presets = [
 </div>
 
 <script>
-const presets = <?= json_encode($smtp_presets) ?>;
+    const presets = <?= json_encode($smtp_presets) ?>;
 
-function toggleSmtpFields(enabled) {
-    const inputs = document.querySelectorAll('input[name^="smtp_"], select[name^="smtp_"]');
-    inputs.forEach(input => {
-        if (input.name !== 'smtp_enabled') {
-            input.disabled = !enabled;
-        }
-    });
-}
-
-function applyPreset(presetKey) {
-    const preset = presets[presetKey];
-    if (preset) {
-        document.querySelector('input[name="smtp_host"]').value = preset.host;
-        document.querySelector('input[name="smtp_port"]').value = preset.port;
-        document.querySelector('select[name="smtp_security"]').value = preset.security;
-        
-        // Zamknij modal
-        const modal = bootstrap.Modal.getInstance(document.getElementById('presetsModal'));
-        modal.hide();
+    function toggleSmtpFields(enabled) {
+        const inputs = document.querySelectorAll('input[name^="smtp_"], select[name^="smtp_"]');
+        inputs.forEach(input => {
+            if (input.name !== 'smtp_enabled') {
+                input.disabled = !enabled;
+            }
+        });
     }
-}
 
-// Initialize on page load
-document.addEventListener('DOMContentLoaded', function() {
-    const enabled = document.getElementById('smtp_enabled').checked;
-    toggleSmtpFields(enabled);
-    
-    // Auto-hide success alerts after 3 seconds with fade effect
-    ['successAlert', 'testAlert'].forEach(function(alertId) {
-        const alert = document.getElementById(alertId);
-        if (alert) {
-            setTimeout(function() {
-                alert.style.opacity = '0';
-                setTimeout(function() {
-                    alert.style.display = 'none';
-                }, 500); // Wait for fade transition to complete
-            }, 3000); // Start fade after 3 seconds
+    function applyPreset(presetKey) {
+        const preset = presets[presetKey];
+        if (preset) {
+            document.querySelector('input[name="smtp_host"]').value = preset.host;
+            document.querySelector('input[name="smtp_port"]').value = preset.port;
+            document.querySelector('select[name="smtp_security"]').value = preset.security;
+
+            // Zamknij modal
+            const modal = bootstrap.Modal.getInstance(document.getElementById('presetsModal'));
+            modal.hide();
         }
+    }
+
+    // Initialize on page load
+    document.addEventListener('DOMContentLoaded', function() {
+        const enabled = document.getElementById('smtp_enabled').checked;
+        toggleSmtpFields(enabled);
+
+        // Auto-hide success alerts after 3 seconds with fade effect
+        ['successAlert', 'testAlert'].forEach(function(alertId) {
+            const alert = document.getElementById(alertId);
+            if (alert) {
+                setTimeout(function() {
+                    alert.style.opacity = '0';
+                    setTimeout(function() {
+                        alert.style.display = 'none';
+                    }, 500); // Wait for fade transition to complete
+                }, 3000); // Start fade after 3 seconds
+            }
+        });
     });
-});
 </script>
 
 <style>
-.auto-fade {
-    transition: opacity 0.5s ease-out;
-}
+    .auto-fade {
+        transition: opacity 0.5s ease-out;
+    }
 </style>

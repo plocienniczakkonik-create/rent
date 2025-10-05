@@ -58,7 +58,7 @@ if ($dictType) {
     } else {
         $dictOrder = "ORDER BY sort_order ASC, name ASC";
     }
-    
+
     if ($kind === 'addon') {
         $stmt = $pdo->prepare("
       SELECT id, parent_id, name, slug, sort_order, status, price, charge_type

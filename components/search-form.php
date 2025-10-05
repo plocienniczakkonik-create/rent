@@ -3,6 +3,10 @@
 
 require_once dirname(__DIR__) . '/includes/db.php';
 
+// Initialize i18n
+require_once dirname(__DIR__) . '/includes/i18n.php';
+i18n::init();
+
 // Wspólny index z BASE_URL (niezależnie skąd include)
 $BASE = defined('BASE_URL') ? rtrim(BASE_URL, '/') : '';
 $ROOT_INDEX = ($BASE ? $BASE . '/' : '') . 'index.php';
@@ -24,20 +28,20 @@ $seatsMin    = $_GET['seats_min']        ?? '';
 $fuel        = $_GET['fuel']             ?? '';
 
 $labelVehicle = [
-    '' => 'Typ pojazdu',
-    'economy' => 'Miejski/Economy',
-    'compact' => 'Kompakt',
-    'suv'     => 'SUV',
-    'van'     => 'Van',
-    'premium' => 'Premium',
+    '' => i18n::__('vehicle_type', 'frontend'),
+    'economy' => i18n::__('economy', 'frontend'),
+    'compact' => i18n::__('compact', 'frontend'),
+    'suv'     => i18n::__('suv', 'frontend'),
+    'van'     => i18n::__('van', 'frontend'),
+    'premium' => i18n::__('premium', 'frontend'),
 ];
 $labelTrans = [
-    '' => 'Skrzynia biegów',
-    'manual' => 'Manualna',
-    'automatic' => 'Automatyczna',
+    '' => i18n::__('transmission', 'frontend'),
+    'manual' => i18n::__('manual', 'frontend'),
+    'automatic' => i18n::__('automatic', 'frontend'),
 ];
 $labelSeats = [
-    '' => 'Minimalna liczba miejsc',
+    '' => i18n::__('min_seats', 'frontend'),
     '2' => '2',
     '4' => '4',
     '5' => '5',
@@ -45,11 +49,11 @@ $labelSeats = [
     '9' => '9',
 ];
 $labelFuel = [
-    '' => 'Rodzaj paliwa',
-    'benzyna' => 'Benzyna',
-    'diesel' => 'Diesel',
-    'hybryda' => 'Hybryda',
-    'elektryczny' => 'Elektryczny',
+    '' => i18n::__('fuel_type', 'frontend'),
+    'benzyna' => i18n::__('gasoline', 'frontend'),
+    'diesel' => i18n::__('diesel', 'frontend'),
+    'hybryda' => i18n::__('hybrid', 'frontend'),
+    'elektryczny' => i18n::__('electric', 'frontend'),
 ];
 
 /** ⬇️ Dynamiczne lokalizacje ze słownika 'location' (tylko aktywne) */
@@ -93,7 +97,7 @@ $clearUrl = $ROOT_INDEX . '?page=' . $clearToPage;
     }
 </style>
 
-<section aria-label="Wyszukiwarka" id="offer" class="wyszukiwarkaCL pt-4">
+<section aria-label="<?= i18n::__('search_section', 'frontend') ?>" id="offer" class="wyszukiwarkaCL pt-4">
     <div class="container py-4 search-wrapper ">
         <div class="card p-3 p-md-4" style="border-radius:18px; box-shadow:0 6px 24px rgba(0,0,0,.08); border:1px solid rgba(0,0,0,.06); overflow: visible;">
 
@@ -103,9 +107,9 @@ $clearUrl = $ROOT_INDEX . '?page=' . $clearToPage;
 
                 <div class="row g-3 align-items-end">
                     <div class="col-12 col-lg-3">
-                        <label class="form-label mb-1">Miejsce odbioru</label>
+                        <label class="form-label mb-1"><?= i18n::__('pickup_location', 'frontend') ?></label>
                         <select class="form-select" name="pickup_location">
-                            <option value="" <?= $pickupLoc === '' ? 'selected' : '' ?> disabled>Wybierz...</option>
+                            <option value="" <?= $pickupLoc === '' ? 'selected' : '' ?> disabled><?= i18n::__('choose_option', 'frontend') ?></option>
                             <?php foreach ($locations as $loc): ?>
                                 <option value="<?= htmlspecialchars($loc) ?>" <?= $pickupLoc === $loc ? 'selected' : '' ?>>
                                     <?= htmlspecialchars($loc) ?>
@@ -115,10 +119,10 @@ $clearUrl = $ROOT_INDEX . '?page=' . $clearToPage;
                     </div>
 
                     <div class="col-12 col-lg-3">
-                        <label class="form-label mb-1">Miejsce zwrotu</label>
+                        <label class="form-label mb-1"><?= i18n::__('dropoff_location', 'frontend') ?></label>
                         <select class="form-select" id="dropoffLocation" name="dropoff_location">
-                            <option value="" <?= $dropoffLoc === '' ? 'selected' : '' ?> disabled>Wybierz...</option>
-                            <option value="To samo co odbiór" <?= $dropoffLoc === 'To samo co odbiór' ? 'selected' : '' ?>>To samo co odbiór</option>
+                            <option value="" <?= $dropoffLoc === '' ? 'selected' : '' ?> disabled><?= i18n::__('choose_option', 'frontend') ?></option>
+                            <option value="To samo co odbiór" <?= $dropoffLoc === 'To samo co odbiór' ? 'selected' : '' ?>><?= i18n::__('same_as_pickup', 'frontend') ?></option>
                             <?php foreach ($locations as $loc): ?>
                                 <option value="<?= htmlspecialchars($loc) ?>" <?= $dropoffLoc === $loc ? 'selected' : '' ?>>
                                     <?= htmlspecialchars($loc) ?>
@@ -128,13 +132,13 @@ $clearUrl = $ROOT_INDEX . '?page=' . $clearToPage;
                     </div>
 
                     <div class="col-12 col-lg-3">
-                        <label class="form-label mb-1">Data odbioru</label>
-                        <input type="text" class="form-select search-date" name="pickup_at" value="<?= htmlspecialchars($pickupAt) ?>" placeholder="Data odbioru" autocomplete="off" spellcheck="false" inputmode="none" readonly>
+                        <label class="form-label mb-1"><?= i18n::__('pickup_date', 'frontend') ?></label>
+                        <input type="text" class="form-select search-date" name="pickup_at" value="<?= htmlspecialchars($pickupAt) ?>" placeholder="<?= i18n::__('pickup_date', 'frontend') ?>" autocomplete="off" spellcheck="false" inputmode="none" readonly>
                     </div>
 
                     <div class="col-12 col-lg-3">
-                        <label class="form-label mb-1">Data zwrotu</label>
-                        <input type="text" class="form-select search-date" name="return_at" value="<?= htmlspecialchars($returnAt) ?>" placeholder="Data zwrotu" autocomplete="off" spellcheck="false" inputmode="none" readonly>
+                        <label class="form-label mb-1"><?= i18n::__('return_date', 'frontend') ?></label>
+                        <input type="text" class="form-select search-date" name="return_at" value="<?= htmlspecialchars($returnAt) ?>" placeholder="<?= i18n::__('return_date', 'frontend') ?>" autocomplete="off" spellcheck="false" inputmode="none" readonly>
                     </div>
                 </div>
 
@@ -150,11 +154,11 @@ $clearUrl = $ROOT_INDEX . '?page=' . $clearToPage;
                             </button>
                             <ul class="dropdown-menu shadow mt-2" style="position:absolute; inset:auto auto 0 0; transform:translateY(100%);">
                                 <li><a class="dropdown-item" data-value="">Dowolny</a></li>
-                                <li><a class="dropdown-item" data-value="economy">Miejski/Economy</a></li>
-                                <li><a class="dropdown-item" data-value="compact">Kompakt</a></li>
-                                <li><a class="dropdown-item" data-value="suv">SUV</a></li>
-                                <li><a class="dropdown-item" data-value="van">Van</a></li>
-                                <li><a class="dropdown-item" data-value="premium">Premium</a></li>
+                                <li><a class="dropdown-item" data-value="economy"><?= i18n::__('economy', 'frontend') ?></a></li>
+                                <li><a class="dropdown-item" data-value="compact"><?= i18n::__('compact', 'frontend') ?></a></li>
+                                <li><a class="dropdown-item" data-value="suv"><?= i18n::__('suv', 'frontend') ?></a></li>
+                                <li><a class="dropdown-item" data-value="van"><?= i18n::__('van', 'frontend') ?></a></li>
+                                <li><a class="dropdown-item" data-value="premium"><?= i18n::__('premium', 'frontend') ?></a></li>
                             </ul>
                             <input type="hidden" name="vehicle_type" id="classHidden" value="<?= htmlspecialchars($vehicleType) ?>">
                         </div>
@@ -165,9 +169,9 @@ $clearUrl = $ROOT_INDEX . '?page=' . $clearToPage;
                                 <?= htmlspecialchars($labelTrans[$trans] ?? 'Skrzynia biegów') ?>
                             </button>
                             <ul class="dropdown-menu shadow mt-2" style="position:absolute; inset:auto auto 0 0; transform:translateY(100%);">
-                                <li><a class="dropdown-item" data-value="">Dowolna</a></li>
-                                <li><a class="dropdown-item" data-value="manual">Manualna</a></li>
-                                <li><a class="dropdown-item" data-value="automatic">Automatyczna</a></li>
+                                <li><a class="dropdown-item" data-value=""><?= i18n::__('any_transmission', 'frontend') ?></a></li>
+                                <li><a class="dropdown-item" data-value="manual"><?= i18n::__('manual', 'frontend') ?></a></li>
+                                <li><a class="dropdown-item" data-value="automatic"><?= i18n::__('automatic', 'frontend') ?></a></li>
                             </ul>
                             <input type="hidden" name="transmission" id="transHidden" value="<?= htmlspecialchars($trans) ?>">
                         </div>
@@ -178,7 +182,7 @@ $clearUrl = $ROOT_INDEX . '?page=' . $clearToPage;
                                 <?= htmlspecialchars($labelSeats[$seatsMin] ?? 'Minimalna liczba miejsc') ?>
                             </button>
                             <ul class="dropdown-menu shadow mt-2" style="position:absolute; inset:auto auto 0 0; transform:translateY(100%);">
-                                <li><a class="dropdown-item" data-value="">Dowolna</a></li>
+                                <li><a class="dropdown-item" data-value=""><?= i18n::__('any_seats', 'frontend') ?></a></li>
                                 <li><a class="dropdown-item" data-value="2">2</a></li>
                                 <li><a class="dropdown-item" data-value="4">4</a></li>
                                 <li><a class="dropdown-item" data-value="5">5</a></li>
@@ -194,11 +198,11 @@ $clearUrl = $ROOT_INDEX . '?page=' . $clearToPage;
                                 <?= htmlspecialchars($labelFuel[$fuel] ?? 'Rodzaj paliwa') ?>
                             </button>
                             <ul class="dropdown-menu shadow mt-2" style="position:absolute; inset:auto auto 0 0; transform:translateY(100%);">
-                                <li><a class="dropdown-item" data-value="">Dowolny</a></li>
-                                <li><a class="dropdown-item" data-value="benzyna">Benzyna</a></li>
-                                <li><a class="dropdown-item" data-value="diesel">Diesel</a></li>
-                                <li><a class="dropdown-item" data-value="hybryda">Hybryda</a></li>
-                                <li><a class="dropdown-item" data-value="elektryczny">Elektryczny</a></li>
+                                <li><a class="dropdown-item" data-value=""><?= i18n::__('any_fuel', 'frontend') ?></a></li>
+                                <li><a class="dropdown-item" data-value="benzyna"><?= i18n::__('gasoline', 'frontend') ?></a></li>
+                                <li><a class="dropdown-item" data-value="diesel"><?= i18n::__('diesel', 'frontend') ?></a></li>
+                                <li><a class="dropdown-item" data-value="hybryda"><?= i18n::__('hybrid', 'frontend') ?></a></li>
+                                <li><a class="dropdown-item" data-value="elektryczny"><?= i18n::__('electric', 'frontend') ?></a></li>
                             </ul>
                             <input type="hidden" name="fuel" id="fuelHidden" value="<?= htmlspecialchars($fuel) ?>">
                         </div>
@@ -206,12 +210,11 @@ $clearUrl = $ROOT_INDEX . '?page=' . $clearToPage;
 
                     <!-- CLEAR + CTA -->
                     <?php if ($anyFilterOn): ?>
-                        <a class="btn btn-outline-secondary rounded-pill px-3" href="<?= htmlspecialchars($clearUrl) ?>" title="Wyczyść filtry">Wyczyść filtry</a>
+                        <a class="btn btn-theme btn-light rounded-pill px-3" href="<?= htmlspecialchars($clearUrl) ?>" title="<?= i18n::__('clear_filters', 'frontend') ?>"><?= i18n::__('clear_filters', 'frontend') ?></a>
                     <?php endif; ?>
 
-                    <button class="btn rounded-pill px-4 ms-auto" type="submit"
-                        style="background:#188f45; border-color:#255b35; color:#fff; white-space:nowrap;">
-                        Pokaż samochody
+                    <button class="btn btn-theme btn-primary rounded-pill px-4 ms-auto" type="submit">
+                        <?= i18n::__('show_cars', 'frontend') ?>
                     </button>
                 </div>
             </form>

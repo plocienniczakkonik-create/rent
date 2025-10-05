@@ -1,6 +1,7 @@
 <?php
 // /pages/staff/settings/users-edit.php
 $db = db();
+i18n::init();
 
 $user_id = (int)($_GET['user_id'] ?? 0);
 $success_message = '';
@@ -8,7 +9,7 @@ $error_message = '';
 
 // Sprawdź czy użytkownik istnieje
 if ($user_id <= 0) {
-    echo '<div class="alert alert-danger">Nieprawidłowy ID użytkownika!</div>';
+    echo '<div class="alert alert-danger">' . __('invalid_user_id', 'admin', 'Nieprawidłowy ID użytkownika!') . '</div>';
     return;
 }
 
@@ -17,7 +18,7 @@ $stmt->execute([$user_id]);
 $user = $stmt->fetch(PDO::FETCH_ASSOC);
 
 if (!$user) {
-    echo '<div class="alert alert-danger">Nie znaleziono użytkownika!</div>';
+    echo '<div class="alert alert-danger">' . __('user_not_found', 'admin', 'Nie znaleziono użytkownika!') . '</div>';
     return;
 }
 
@@ -32,9 +33,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['save_user'])) {
     $is_active = isset($_POST['is_active']) ? 1 : 0;
     $new_password = $_POST['new_password'] ?? '';
     $confirm_password = $_POST['confirm_password'] ?? '';
-    
+
     $errors = [];
-    
+
     // Walidacja
     if (empty($first_name)) {
         $errors[] = 'Imię jest wymagane';
@@ -48,7 +49,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['save_user'])) {
     if (!in_array($role, ['client', 'staff', 'admin'])) {
         $errors[] = 'Nieprawidłowa rola';
     }
-    
+
     // Sprawdź czy email nie jest zajęty przez innego użytkownika
     if (empty($errors)) {
         $stmt = $db->prepare("SELECT COUNT(*) FROM users WHERE email = ? AND id != ?");
@@ -57,7 +58,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['save_user'])) {
             $errors[] = 'Email jest już zajęty przez innego użytkownika';
         }
     }
-    
+
     // Walidacja hasła
     if (!empty($new_password)) {
         if (strlen($new_password) < 6) {
@@ -67,7 +68,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['save_user'])) {
             $errors[] = 'Hasła nie są identyczne';
         }
     }
-    
+
     // Zapisz zmiany
     if (empty($errors)) {
         try {
@@ -89,14 +90,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['save_user'])) {
                 ");
                 $stmt->execute([$first_name, $last_name, $email, $phone, $role, $job_title, $is_active, $user_id]);
             }
-            
+
             $success_message = "Dane użytkownika zostały zaktualizowane!";
-            
+
             // Odśwież dane użytkownika
             $stmt = $db->prepare("SELECT * FROM users WHERE id = ?");
             $stmt->execute([$user_id]);
             $user = $stmt->fetch(PDO::FETCH_ASSOC);
-            
         } catch (PDOException $e) {
             $errors[] = 'Błąd podczas zapisywania: ' . $e->getMessage();
         }
@@ -109,8 +109,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['save_user'])) {
         <h5 class="mb-1">Edycja użytkownika</h5>
         <p class="text-muted mb-0">Edytuj dane użytkownika #<?= $user['id'] ?></p>
     </div>
-    <a href="<?= $BASE ?>/index.php?page=dashboard-staff&section=settings&settings_section=users&settings_subsection=list#pane-settings" 
-       class="btn btn-outline-secondary">
+    <a href="<?= $BASE ?>/index.php?page=dashboard-staff&section=settings&settings_section=users&settings_subsection=list#pane-settings"
+        class="btn btn-outline-secondary">
         <i class="bi bi-arrow-left"></i> Powrót do listy
     </a>
 </div>
@@ -145,28 +145,28 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['save_user'])) {
                 <form method="POST" class="row g-3">
                     <div class="col-md-6">
                         <label class="form-label">Imię <span class="text-danger">*</span></label>
-                        <input type="text" name="first_name" class="form-control" 
-                               value="<?= htmlspecialchars($user['first_name']) ?>" required>
+                        <input type="text" name="first_name" class="form-control"
+                            value="<?= htmlspecialchars($user['first_name']) ?>" required>
                     </div>
-                    
+
                     <div class="col-md-6">
                         <label class="form-label">Nazwisko <span class="text-danger">*</span></label>
-                        <input type="text" name="last_name" class="form-control" 
-                               value="<?= htmlspecialchars($user['last_name']) ?>" required>
+                        <input type="text" name="last_name" class="form-control"
+                            value="<?= htmlspecialchars($user['last_name']) ?>" required>
                     </div>
-                    
+
                     <div class="col-md-6">
                         <label class="form-label">Email <span class="text-danger">*</span></label>
-                        <input type="email" name="email" class="form-control" 
-                               value="<?= htmlspecialchars($user['email']) ?>" required>
+                        <input type="email" name="email" class="form-control"
+                            value="<?= htmlspecialchars($user['email']) ?>" required>
                     </div>
-                    
+
                     <div class="col-md-6">
                         <label class="form-label">Telefon</label>
-                        <input type="tel" name="phone" class="form-control" 
-                               value="<?= htmlspecialchars($user['phone']) ?>">
+                        <input type="tel" name="phone" class="form-control"
+                            value="<?= htmlspecialchars($user['phone']) ?>">
                     </div>
-                    
+
                     <div class="col-md-6">
                         <label class="form-label">Rola <span class="text-danger">*</span></label>
                         <select name="role" class="form-select" required>
@@ -175,49 +175,49 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['save_user'])) {
                             <option value="admin" <?= $user['role'] === 'admin' ? 'selected' : '' ?>>Administrator</option>
                         </select>
                     </div>
-                    
+
                     <div class="col-md-6">
                         <label class="form-label">Stanowisko</label>
-                        <input type="text" name="job_title" class="form-control" 
-                               value="<?= htmlspecialchars($user['job_title']) ?>">
+                        <input type="text" name="job_title" class="form-control"
+                            value="<?= htmlspecialchars($user['job_title']) ?>">
                     </div>
-                    
+
                     <div class="col-12">
                         <div class="form-check">
-                            <input type="checkbox" name="is_active" class="form-check-input" id="is_active" 
-                                   <?= $user['is_active'] ? 'checked' : '' ?>>
+                            <input type="checkbox" name="is_active" class="form-check-input" id="is_active"
+                                <?= $user['is_active'] ? 'checked' : '' ?>>
                             <label class="form-check-label" for="is_active">
                                 Konto aktywne
                             </label>
                         </div>
                     </div>
-                    
+
                     <div class="col-12">
                         <hr>
                         <h6><i class="bi bi-shield-lock"></i> Zmiana hasła</h6>
                         <p class="text-muted small">Pozostaw puste aby nie zmieniać hasła</p>
                     </div>
-                    
+
                     <div class="col-md-6">
                         <label class="form-label">Nowe hasło</label>
-                        <input type="password" name="new_password" class="form-control" 
-                               placeholder="Minimum 6 znaków">
+                        <input type="password" name="new_password" class="form-control"
+                            placeholder="Minimum 6 znaków">
                     </div>
-                    
+
                     <div class="col-md-6">
                         <label class="form-label">Potwierdź hasło</label>
-                        <input type="password" name="confirm_password" class="form-control" 
-                               placeholder="Powtórz nowe hasło">
+                        <input type="password" name="confirm_password" class="form-control"
+                            placeholder="Powtórz nowe hasło">
                     </div>
-                    
+
                     <div class="col-12">
                         <hr>
                         <div class="d-flex gap-2">
                             <button type="submit" name="save_user" class="btn btn-primary">
                                 <i class="bi bi-check-lg"></i> Zapisz zmiany
                             </button>
-                            <a href="<?= $BASE ?>/index.php?page=dashboard-staff&section=settings&settings_section=users&settings_subsection=list#pane-settings" 
-                               class="btn btn-outline-secondary">
+                            <a href="<?= $BASE ?>/index.php?page=dashboard-staff&section=settings&settings_section=users&settings_subsection=list#pane-settings"
+                                class="btn btn-outline-secondary">
                                 <i class="bi bi-x-lg"></i> Anuluj
                             </a>
                         </div>
@@ -226,7 +226,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['save_user'])) {
             </div>
         </div>
     </div>
-    
+
     <div class="col-lg-4">
         <div class="card">
             <div class="card-header">
@@ -235,7 +235,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['save_user'])) {
             <div class="card-body">
                 <div class="d-flex align-items-center mb-3">
                     <div class="avatar-circle bg-primary text-white me-3">
-                        <?php 
+                        <?php
                         $initials = '';
                         if ($user['first_name']) $initials .= strtoupper(substr($user['first_name'], 0, 1));
                         if ($user['last_name']) $initials .= strtoupper(substr($user['last_name'], 0, 1));
@@ -248,9 +248,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['save_user'])) {
                         <small class="text-muted">ID: #<?= $user['id'] ?></small>
                     </div>
                 </div>
-                
+
                 <hr>
-                
+
                 <div class="row g-2">
                     <div class="col-6">
                         <small class="text-muted">Status:</small>
@@ -289,33 +289,33 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['save_user'])) {
 </div>
 
 <style>
-.avatar-circle {
-    width: 48px;
-    height: 48px;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 1.25rem;
-    font-weight: 600;
-}
+    .avatar-circle {
+        width: 48px;
+        height: 48px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.25rem;
+        font-weight: 600;
+    }
 
-.auto-fade {
-    transition: opacity 0.5s ease-out;
-}
+    .auto-fade {
+        transition: opacity 0.5s ease-out;
+    }
 </style>
 
 <script>
-// Auto-hide success alerts after 3 seconds with fade effect
-document.addEventListener('DOMContentLoaded', function() {
-    const successAlert = document.getElementById('successAlert');
-    if (successAlert) {
-        setTimeout(function() {
-            successAlert.style.opacity = '0';
+    // Auto-hide success alerts after 3 seconds with fade effect
+    document.addEventListener('DOMContentLoaded', function() {
+        const successAlert = document.getElementById('successAlert');
+        if (successAlert) {
             setTimeout(function() {
-                successAlert.style.display = 'none';
-            }, 500); // Wait for fade transition to complete
-        }, 3000); // Start fade after 3 seconds
-    }
-});
+                successAlert.style.opacity = '0';
+                setTimeout(function() {
+                    successAlert.style.display = 'none';
+                }, 500); // Wait for fade transition to complete
+            }, 3000); // Start fade after 3 seconds
+        }
+    });
 </script>

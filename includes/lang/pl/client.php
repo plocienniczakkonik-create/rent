@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Polish translations for Client Dashboard
  */
@@ -19,4 +20,3 @@ return [
     'change_password' => 'Zmień hasło',
     'language' => 'Język',
 ];
-?>

@@ -84,7 +84,7 @@ $pages = max(1, (int)ceil($total / $perPage));
             </select>
             <button class="btn btn-sm btn-outline-primary" type="submit"><?= __('filter', 'admin', 'Filtruj') ?></button>
         </form>
-        
+
         <div class="table-responsive">
             <table class="table table-sm align-middle mb-0">
                 <thead class="small text-muted">

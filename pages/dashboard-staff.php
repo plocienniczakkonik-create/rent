@@ -10,22 +10,23 @@ require_once dirname(__DIR__) . '/includes/_helpers.php';
 require_once dirname(__DIR__) . '/includes/i18n.php';
 require_once __DIR__ . '/staff/_helpers.php';
 
-// Initialize i18n system
+// Force reload translations after header initialization
 i18n::init();
 
 $BASE = defined('BASE_URL') ? rtrim(BASE_URL, '/') : '';
 
 // === FUNKCJA SORTOWANIA ===
-function sort_link_dashboard(string $section, string $key, string $label): string {
+function sort_link_dashboard(string $section, string $key, string $label): string
+{
     $currentSection = $_GET['section'] ?? '';
     $currentSort = $_GET['sort'] ?? '';
     $currentDir = strtolower($_GET['dir'] ?? 'asc');
-    
+
     // Tylko sortuj jeśli jesteśmy w tej sekcji
     $nextDir = ($currentSection === $section && $currentSort === $key && $currentDir === 'asc') ? 'desc' : 'asc';
     $arrowUpActive = ($currentSection === $section && $currentSort === $key && $currentDir === 'asc');
     $arrowDownActive = ($currentSection === $section && $currentSort === $key && $currentDir === 'desc');
-    
+
     $BASE = defined('BASE_URL') ? rtrim(BASE_URL, '/') : '';
     $qs = http_build_query([
         'page' => 'dashboard-staff',
@@ -33,7 +34,7 @@ function sort_link_dashboard(string $section, string $key, string $label): strin
         'sort' => $key,
         'dir' => $nextDir,
     ]);
-    
+
     // Dodaj hash dla sekcji
     $hash = '#pane-' . $section;
 
@@ -55,7 +56,7 @@ if ($section === 'products') {
     $productOrder = match ($sort) {
         'id' => "ORDER BY id $dir",
         'name' => "ORDER BY name $dir",
-        'sku' => "ORDER BY sku $dir", 
+        'sku' => "ORDER BY sku $dir",
         'price' => "ORDER BY price $dir",
         'stock' => "ORDER BY stock $dir",
         'status' => "ORDER BY status $dir",
@@ -93,7 +94,7 @@ $orders = [
 
 // Sortowanie zamówień
 if ($section === 'orders' && !empty($sort)) {
-    usort($orders, function($a, $b) use ($sort, $dir) {
+    usort($orders, function ($a, $b) use ($sort, $dir) {
         $result = match ($sort) {
             'id' => $a['id'] <=> $b['id'],
             'date' => strcmp($a['date'], $b['date']),
@@ -153,7 +154,6 @@ $reports = [
                         </div>
                     </div>
                     <div class="d-flex gap-2">
-                        <?= i18n::renderLanguageSwitcher('admin', $_SERVER['REQUEST_URI']) ?>
                         <a class="btn btn-outline-secondary btn-sm" href="<?= $BASE ?>/index.php"><?= __('view_site', 'admin', 'Podgląd strony') ?></a>
                         <a class="btn btn-primary btn-sm" href="pages/product-form.php" id="product-new">+ <?= __('add_product', 'admin', 'Dodaj produkt') ?></a>
                     </div>
@@ -233,12 +233,12 @@ $reports = [
             var hash = window.location.hash;
             var urlParams = new URLSearchParams(window.location.search);
             var section = urlParams.get('section');
-            
+
             // Jeśli mamy parametr section, użyj go
             if (section && !hash) {
                 hash = '#pane-' + section;
             }
-            
+
             if (hash) {
                 var trigger = document.querySelector('button[data-bs-target="' + hash + '"]');
                 if (trigger) {
@@ -252,18 +252,18 @@ $reports = [
 </script>
 
 <style>
-/* Responsive padding dla głównego panelu */
-@media (max-width: 768px) {
-    .staff-main > div {
-        padding: 0 20px !important;
+    /* Responsive padding dla głównego panelu */
+    @media (max-width: 768px) {
+        .staff-main>div {
+            padding: 0 20px !important;
+        }
     }
-}
 
-@media (max-width: 576px) {
-    .staff-main > div {
-        padding: 0 15px !important;
+    @media (max-width: 576px) {
+        .staff-main>div {
+            padding: 0 15px !important;
+        }
     }
-}
 </style>
 
 <?php require_once dirname(__DIR__) . '/partials/footer.php'; ?>

@@ -1,5 +1,11 @@
 <?php
 // /pages/staff/settings/payments-general.php
+require_once dirname(dirname(dirname(__DIR__))) . '/includes/i18n.php';
+
+// Initialize i18n if not already done
+if (!class_exists('i18n') || !method_exists('i18n', 'getAdminLanguage')) {
+    i18n::init();
+}
 
 $db = db();
 
@@ -14,13 +20,13 @@ while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['save_general'])) {
     try {
         $db->beginTransaction();
-        
+
         $stmt = $db->prepare("
             INSERT INTO payment_settings (setting_key, setting_value) 
             VALUES (?, ?) 
             ON DUPLICATE KEY UPDATE setting_value = VALUES(setting_value)
         ");
-        
+
         $settings_to_save = [
             'general_currency' => $_POST['currency'] ?? 'PLN',
             'general_min_deposit' => $_POST['min_deposit'] ?? '100',
@@ -34,21 +40,20 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['save_general'])) {
             'general_tax_rate' => $_POST['tax_rate'] ?? '23',
             'general_rounding' => $_POST['rounding'] ?? '0.01'
         ];
-        
+
         foreach ($settings_to_save as $key => $value) {
             $stmt->execute([$key, $value]);
         }
-        
+
         $db->commit();
         $success_message = __('payment_settings_saved', 'admin', 'Ogólne ustawienia płatności zostały zapisane!');
-        
+
         // Odśwież ustawienia
         $general_settings = [];
         $stmt = $db->query("SELECT setting_key, setting_value FROM payment_settings WHERE setting_key LIKE 'general_%'");
         while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
             $general_settings[$row['setting_key']] = $row['setting_value'];
         }
-        
     } catch (PDOException $e) {
         $db->rollback();
         $error_message = __('saving_error', 'admin', 'Błąd podczas zapisywania') . ": " . $e->getMessage();
@@ -120,14 +125,14 @@ foreach ($defaults as $key => $default_value) {
                             <option value="GBP" <?= $general_settings['general_currency'] === 'GBP' ? 'selected' : '' ?>><?= __('gbp_pound', 'admin', 'GBP - Funt brytyjski') ?></option>
                         </select>
                     </div>
-                    
+
                     <div class="mb-3">
                         <label class="form-label"><?= __('vat_rate', 'admin', 'Stawka VAT (%)') ?></label>
-                        <input type="number" name="tax_rate" class="form-control" 
-                               value="<?= htmlspecialchars($general_settings['general_tax_rate']) ?>"
-                               min="0" max="100" step="0.01">
+                        <input type="number" name="tax_rate" class="form-control"
+                            value="<?= htmlspecialchars($general_settings['general_tax_rate']) ?>"
+                            min="0" max="100" step="0.01">
                     </div>
-                    
+
                     <div class="mb-3">
                         <label class="form-label"><?= __('amount_rounding', 'admin', 'Zaokrąglanie kwot') ?></label>
                         <select name="rounding" class="form-select">
@@ -139,7 +144,7 @@ foreach ($defaults as $key => $default_value) {
                 </div>
             </div>
         </div>
-        
+
         <!-- Kaucje -->
         <div class="col-lg-6">
             <div class="card">
@@ -155,24 +160,24 @@ foreach ($defaults as $key => $default_value) {
                             <option value="none" <?= $general_settings['general_deposit_type'] === 'none' ? 'selected' : '' ?>><?= __('no_deposit', 'admin', 'Brak kaucji') ?></option>
                         </select>
                     </div>
-                    
+
                     <div class="mb-3" id="fixed-deposit">
                         <label class="form-label"><?= __('minimum_deposit', 'admin', 'Minimalna kaucja') ?> (<?= $general_settings['general_currency'] ?>)</label>
-                        <input type="number" name="min_deposit" class="form-control" 
-                               value="<?= htmlspecialchars($general_settings['general_min_deposit']) ?>"
-                               min="0" step="0.01">
+                        <input type="number" name="min_deposit" class="form-control"
+                            value="<?= htmlspecialchars($general_settings['general_min_deposit']) ?>"
+                            min="0" step="0.01">
                     </div>
-                    
+
                     <div class="mb-3" id="percentage-deposit">
                         <label class="form-label"><?= __('deposit_percentage', 'admin', 'Procent kaucji (%)') ?></label>
-                        <input type="number" name="deposit_percentage" class="form-control" 
-                               value="<?= htmlspecialchars($general_settings['general_deposit_percentage']) ?>"
-                               min="0" max="100" step="1">
+                        <input type="number" name="deposit_percentage" class="form-control"
+                            value="<?= htmlspecialchars($general_settings['general_deposit_percentage']) ?>"
+                            min="0" max="100" step="1">
                     </div>
                 </div>
             </div>
         </div>
-        
+
         <!-- Zwroty -->
         <div class="col-lg-6">
             <div class="card">
@@ -181,24 +186,24 @@ foreach ($defaults as $key => $default_value) {
                 </div>
                 <div class="card-body">
                     <div class="form-check form-switch mb-3">
-                        <input type="checkbox" name="auto_refund" class="form-check-input" 
-                               id="auto_refund" <?= $general_settings['general_auto_refund'] === '1' ? 'checked' : '' ?>>
+                        <input type="checkbox" name="auto_refund" class="form-check-input"
+                            id="auto_refund" <?= $general_settings['general_auto_refund'] === '1' ? 'checked' : '' ?>>
                         <label class="form-check-label" for="auto_refund">
                             <?= __('automatic_refunds', 'admin', 'Automatyczne zwroty') ?>
                         </label>
                     </div>
-                    
+
                     <div class="mb-3">
                         <label class="form-label"><?= __('refund_days_limit', 'admin', 'Limit dni na zwrot') ?></label>
-                        <input type="number" name="refund_days" class="form-control" 
-                               value="<?= htmlspecialchars($general_settings['general_refund_days']) ?>"
-                               min="1" max="365">
+                        <input type="number" name="refund_days" class="form-control"
+                            value="<?= htmlspecialchars($general_settings['general_refund_days']) ?>"
+                            min="1" max="365">
                         <div class="form-text"><?= __('refund_days_help', 'admin', 'Liczba dni na zwrot kaucji po zakończeniu wynajmu') ?></div>
                     </div>
                 </div>
             </div>
         </div>
-        
+
         <!-- Timeouty i powiadomienia -->
         <div class="col-lg-6">
             <div class="card">
@@ -208,23 +213,23 @@ foreach ($defaults as $key => $default_value) {
                 <div class="card-body">
                     <div class="mb-3">
                         <label class="form-label"><?= __('payment_timeout_minutes', 'admin', 'Timeout płatności (minuty)') ?></label>
-                        <input type="number" name="payment_timeout" class="form-control" 
-                               value="<?= htmlspecialchars($general_settings['general_payment_timeout']) ?>"
-                               min="5" max="120">
+                        <input type="number" name="payment_timeout" class="form-control"
+                            value="<?= htmlspecialchars($general_settings['general_payment_timeout']) ?>"
+                            min="5" max="120">
                         <div class="form-text"><?= __('payment_timeout_help', 'admin', 'Czas na dokończenie płatności') ?></div>
                     </div>
-                    
+
                     <div class="form-check form-switch mb-3">
-                        <input type="checkbox" name="receipt_email" class="form-check-input" 
-                               id="receipt_email" <?= $general_settings['general_receipt_email'] === '1' ? 'checked' : '' ?>>
+                        <input type="checkbox" name="receipt_email" class="form-check-input"
+                            id="receipt_email" <?= $general_settings['general_receipt_email'] === '1' ? 'checked' : '' ?>>
                         <label class="form-check-label" for="receipt_email">
                             <?= __('send_receipt_emails', 'admin', 'Wysyłaj potwierdzenia e-mail') ?>
                         </label>
                     </div>
-                    
+
                     <div class="form-check form-switch mb-3">
-                        <input type="checkbox" name="invoice_enabled" class="form-check-input" 
-                               id="invoice_enabled" <?= $general_settings['general_invoice_enabled'] === '1' ? 'checked' : '' ?>>
+                        <input type="checkbox" name="invoice_enabled" class="form-check-input"
+                            id="invoice_enabled" <?= $general_settings['general_invoice_enabled'] === '1' ? 'checked' : '' ?>>
                         <label class="form-check-label" for="invoice_enabled">
                             <?= __('invoice_generation', 'admin', 'Generowanie faktur') ?>
                         </label>
@@ -233,7 +238,7 @@ foreach ($defaults as $key => $default_value) {
             </div>
         </div>
     </div>
-    
+
     <div class="mt-4">
         <button type="submit" name="save_general" class="btn btn-primary">
             <i class="bi bi-check-lg"></i> <?= __('save_settings', 'admin', 'Zapisz ustawienia') ?>
@@ -245,42 +250,42 @@ foreach ($defaults as $key => $default_value) {
 </form>
 
 <script>
-function toggleDepositFields(type) {
-    const fixedDeposit = document.getElementById('fixed-deposit');
-    const percentageDeposit = document.getElementById('percentage-deposit');
-    
-    if (type === 'fixed') {
-        fixedDeposit.style.display = 'block';
-        percentageDeposit.style.display = 'none';
-    } else if (type === 'percentage') {
-        fixedDeposit.style.display = 'none';
-        percentageDeposit.style.display = 'block';
-    } else {
-        fixedDeposit.style.display = 'none';
-        percentageDeposit.style.display = 'none';
-    }
-}
+    function toggleDepositFields(type) {
+        const fixedDeposit = document.getElementById('fixed-deposit');
+        const percentageDeposit = document.getElementById('percentage-deposit');
 
-// Initialize on page load
-document.addEventListener('DOMContentLoaded', function() {
-    const depositType = document.querySelector('select[name="deposit_type"]').value;
-    toggleDepositFields(depositType);
-    
-    // Auto-fade success alerts
-    const successAlert = document.getElementById('successAlert');
-    if (successAlert) {
-        setTimeout(function() {
-            successAlert.style.opacity = '0';
-            setTimeout(function() {
-                successAlert.style.display = 'none';
-            }, 500);
-        }, 3000);
+        if (type === 'fixed') {
+            fixedDeposit.style.display = 'block';
+            percentageDeposit.style.display = 'none';
+        } else if (type === 'percentage') {
+            fixedDeposit.style.display = 'none';
+            percentageDeposit.style.display = 'block';
+        } else {
+            fixedDeposit.style.display = 'none';
+            percentageDeposit.style.display = 'none';
+        }
     }
-});
+
+    // Initialize on page load
+    document.addEventListener('DOMContentLoaded', function() {
+        const depositType = document.querySelector('select[name="deposit_type"]').value;
+        toggleDepositFields(depositType);
+
+        // Auto-fade success alerts
+        const successAlert = document.getElementById('successAlert');
+        if (successAlert) {
+            setTimeout(function() {
+                successAlert.style.opacity = '0';
+                setTimeout(function() {
+                    successAlert.style.display = 'none';
+                }, 500);
+            }, 3000);
+        }
+    });
 </script>
 
 <style>
-.auto-fade {
-    transition: opacity 0.5s ease-out;
-}
+    .auto-fade {
+        transition: opacity 0.5s ease-out;
+    }
 </style>

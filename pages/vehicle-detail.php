@@ -35,16 +35,17 @@ $badge = match ($veh['status']) {
 };
 
 /** FUNKCJE SORTOWANIA */
-function sort_link_detail(string $section, string $key, string $label, int $vehicleId): string {
+function sort_link_detail(string $section, string $key, string $label, int $vehicleId): string
+{
     $currentSection = $_GET['section'] ?? '';
     $currentSort = $_GET['sort'] ?? '';
     $currentDir = strtolower($_GET['dir'] ?? 'desc');
-    
+
     // Tylko sortuj jeśli jesteśmy w tej sekcji
     $nextDir = ($currentSection === $section && $currentSort === $key && $currentDir === 'desc') ? 'asc' : 'desc';
     $arrowUpActive = ($currentSection === $section && $currentSort === $key && $currentDir === 'asc');
     $arrowDownActive = ($currentSection === $section && $currentSort === $key && $currentDir === 'desc');
-    
+
     $BASE = defined('BASE_URL') ? rtrim(BASE_URL, '/') : '';
     $qs = http_build_query([
         'page' => 'vehicle-detail',
@@ -351,7 +352,7 @@ $faultBadge = [
             } else {
                 $orderOrder = "ORDER BY placed_at DESC, id DESC";
             }
-            
+
             $q3 = $db->prepare("SELECT * FROM orders WHERE vehicle_id = ? $orderOrder LIMIT 20");
             $q3->execute([(int)$veh['id']]);
             $orders = $q3->fetchAll(PDO::FETCH_ASSOC);

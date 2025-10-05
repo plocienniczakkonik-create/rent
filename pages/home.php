@@ -4,6 +4,10 @@
 require_once __DIR__ . '/../includes/config.php';   // jeśli masz
 require_once __DIR__ . '/../includes/db.php';
 
+// Initialize i18n
+require_once __DIR__ . '/../includes/i18n.php';
+i18n::init();
+
 // NIE wołamy tu run_search – to jest strona bez wyników
 $SEARCH = null;
 

@@ -27,7 +27,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['save_template'])) {
     $content = $_POST['content'] ?? '';
     $variables = $_POST['variables'] ?? '';
     $enabled = isset($_POST['enabled']) ? 1 : 0;
-    
+
     if (!empty($template_key) && !empty($template_name)) {
         try {
             $stmt = $db->prepare("
@@ -40,10 +40,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['save_template'])) {
                 variables = VALUES(variables),
                 enabled = VALUES(enabled)
             ");
-            
+
             $stmt->execute([$template_key, $language, $template_name, $subject, $content, $variables, $enabled]);
             $success_message = __('template_saved_success', 'admin', "Szablon został zapisany!");
-            
+
             // Odśwież templates
             $templates = [];
             $stmt = $db->prepare("SELECT * FROM email_templates WHERE language = ? ORDER BY template_key");
@@ -51,7 +51,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['save_template'])) {
             while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
                 $templates[$row['template_key']] = $row;
             }
-            
         } catch (PDOException $e) {
             $error_message = __('saving_error', 'admin', 'Błąd podczas zapisywania') . ": " . $e->getMessage();
         }
@@ -63,20 +62,20 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['save_template'])) {
 // Obsługa usuwania szablonu
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['delete_template'])) {
     $template_key = $_POST['template_key'] ?? '';
-    
+
     if (!empty($template_key)) {
         try {
             $stmt = $db->prepare("DELETE FROM email_templates WHERE template_key = ?");
             $stmt->execute([$template_key]);
             $success_message = __('template_deleted_success', 'admin', 'Szablon został usunięty!');
-            
+
             // Odśwież templates
             $templates = [];
             $stmt = $db->query("SELECT * FROM email_templates ORDER BY template_key");
             while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
                 $templates[$row['template_key']] = $row;
             }
-            
+
             // Przekieruj na pierwszy dostępny szablon
             if (count($templates) > 0) {
                 $current_template = array_key_first($templates);
@@ -90,7 +89,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['delete_template'])) {
             } else {
                 $current_template = 'booking_confirmation';
             }
-            
         } catch (PDOException $e) {
             $error_message = __('delete_error_prefix', 'admin', 'Błąd podczas usuwania') . ": " . $e->getMessage();
         }
@@ -103,7 +101,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['delete_template'])) {
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['add_new_template'])) {
     $new_template_key = trim($_POST['new_template_key'] ?? '');
     $new_template_name = trim($_POST['new_template_name'] ?? '');
-    
+
     if (!empty($new_template_key) && !empty($new_template_name)) {
         // Sprawdź czy klucz już istnieje
         if (isset($templates[$new_template_key])) {
@@ -114,24 +112,24 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['add_new_template'])) 
                     INSERT INTO email_templates (template_key, template_name, subject, content, variables, enabled) 
                     VALUES (?, ?, ?, ?, ?, 1)
                 ");
-                
+
                 $default_subject = "Nowy szablon - {$new_template_name}";
                 $default_content = "<h2>" . __('new_email_template', 'admin', 'Nowy szablon email') . "</h2>\n<p>" . __('dear_customer', 'admin', 'Szanowny/a {customer_name},') . "</p>\n<p>" . __('content_to_fill', 'admin', 'Treść do uzupełnienia...') . "</p>\n<p>" . __('best_regards', 'admin', 'Pozdrawiamy,<br>{company_name}') . "</p>";
                 $default_variables = "{customer_name}, {company_name}";
-                
+
                 $stmt->execute([$new_template_key, $new_template_name, $default_subject, $default_content, $default_variables]);
                 $success_message = str_replace('{name}', $new_template_name, __('new_template_created', 'admin', 'Nowy szablon \'{name}\' został utworzony!'));
-                
+
                 // Odśwież templates
                 $templates = [];
                 $stmt = $db->query("SELECT * FROM email_templates ORDER BY template_key");
                 while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
                     $templates[$row['template_key']] = $row;
                 }
-                
+
                 // Przełącz na nowy szablon
                 $current_template = $new_template_key;
-                
+
                 // Przekieruj na nowy URL z poprawnym edit parametrem
                 $redirect_url = settings_url($current_template);
                 echo "<script>
@@ -139,7 +137,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['add_new_template'])) 
                         window.location.href = '$redirect_url';
                     }, 2000);
                 </script>";
-                
             } catch (PDOException $e) {
                 $error_message = __('template_creation_error', 'admin', 'Błąd podczas tworzenia szablonu') . ": " . $e->getMessage();
             }
@@ -153,7 +150,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['add_new_template'])) 
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['test_template'])) {
     $template_key = $_POST['template_key'] ?? '';
     $test_email = $_POST['test_email'] ?? '';
-    
+
     if (!empty($template_key) && !empty($test_email) && isset($templates[$template_key])) {
         // Mock test - w rzeczywistości wysłałby email
         $test_message = str_replace(['{name}', '{email}'], [$templates[$template_key]['template_name'], $test_email], __('test_email_sent', 'admin', 'Test email dla szablonu \'{name}\' został wysłany na {email}'));
@@ -166,22 +163,23 @@ if (!isset($current_template)) {
 }
 
 // Funkcja do generowania linków w panelu ustawień
-function settings_url($edit_template = null) {
+function settings_url($edit_template = null)
+{
     global $BASE;
     $page = $_GET['page'] ?? 'dashboard-staff';
     $section = $_GET['section'] ?? 'settings';
     $settings_section = $_GET['settings_section'] ?? 'email';
     $settings_subsection = $_GET['settings_subsection'] ?? 'templates';
-    
+
     $url = $BASE . "/index.php?page={$page}&section={$section}&settings_section={$settings_section}&settings_subsection={$settings_subsection}";
-    
+
     if ($edit_template) {
         $url .= "&edit={$edit_template}";
     }
-    
+
     // Dodaj hash dla sekcji
     $url .= "#pane-settings";
-    
+
     return $url;
 }
 
@@ -325,13 +323,13 @@ if (!isset($templates[$current_template]) && count($templates) > 0) {
             <label class="btn btn-outline-primary btn-sm" for="lang_pl">
                 <i class="bi bi-flag"></i> <?= __('polish_template', 'admin', 'PL') ?>
             </label>
-            
+
             <input type="radio" class="btn-check" name="template_language" id="lang_en" value="en" <?= $current_language === 'en' ? 'checked' : '' ?> onchange="switchLanguage('en')">
             <label class="btn btn-outline-primary btn-sm" for="lang_en">
                 <i class="bi bi-flag"></i> <?= __('english_template', 'admin', 'EN') ?>
             </label>
         </div>
-        
+
         <button class="btn btn-success btn-sm" data-bs-toggle="modal" data-bs-target="#addTemplateModal">
             <i class="bi bi-plus-circle"></i> <?= __('add_new_template', 'admin', 'Dodaj szablon') ?>
         </button>
@@ -375,8 +373,8 @@ if (!isset($templates[$current_template]) && count($templates) > 0) {
             </div>
             <div class="list-group list-group-flush">
                 <?php foreach ($templates as $key => $template): ?>
-                    <a href="<?= settings_url($key) ?>" 
-                       class="list-group-item list-group-item-action d-flex justify-content-between align-items-center <?= $current_template === $key ? 'active' : '' ?>">
+                    <a href="<?= settings_url($key) ?>"
+                        class="list-group-item list-group-item-action d-flex justify-content-between align-items-center <?= $current_template === $key ? 'active' : '' ?>">
                         <div>
                             <div class="fw-semibold"><?= htmlspecialchars($template['template_name']) ?></div>
                             <small class="text-muted"><?= $key ?></small>
@@ -393,7 +391,7 @@ if (!isset($templates[$current_template]) && count($templates) > 0) {
             </div>
         </div>
     </div>
-    
+
     <!-- Edytor szablonu -->
     <div class="col-lg-8">
         <?php if (isset($templates[$current_template])): ?>
@@ -402,14 +400,14 @@ if (!isset($templates[$current_template]) && count($templates) > 0) {
                 <div class="card-header d-flex justify-content-between align-items-center">
                     <h6 class="mb-0"><?= __('edit_template', 'admin', 'Edytuj szablon') ?>: <?= htmlspecialchars($template['template_name']) ?></h6>
                     <div class="d-flex align-items-center gap-3">
-                        <button class="btn btn-outline-danger btn-sm" data-bs-toggle="modal" data-bs-target="#deleteTemplateModal" 
-                                onclick="setDeleteTemplate('<?= $current_template ?>', '<?= htmlspecialchars($template['template_name']) ?>')">
+                        <button class="btn btn-outline-danger btn-sm" data-bs-toggle="modal" data-bs-target="#deleteTemplateModal"
+                            onclick="setDeleteTemplate('<?= $current_template ?>', '<?= htmlspecialchars($template['template_name']) ?>')">
                             <i class="bi bi-trash"></i> <?= __('delete', 'admin', 'Usuń') ?>
                         </button>
                         <div class="form-check form-switch mb-0">
-                            <input type="checkbox" class="form-check-input" id="template-enabled" 
-                                   <?= $template['enabled'] ? 'checked' : '' ?>
-                                   onchange="toggleTemplate('<?= $current_template ?>', this.checked)">
+                            <input type="checkbox" class="form-check-input" id="template-enabled"
+                                <?= $template['enabled'] ? 'checked' : '' ?>
+                                onchange="toggleTemplate('<?= $current_template ?>', this.checked)">
                             <label class="form-check-label" for="template-enabled"><?= __('active', 'admin', 'Aktywny') ?></label>
                         </div>
                     </div>
@@ -417,40 +415,40 @@ if (!isset($templates[$current_template]) && count($templates) > 0) {
                 <div class="card-body">
                     <form method="POST">
                         <input type="hidden" name="template_key" value="<?= $current_template ?>">
-                        
+
                         <div class="mb-3">
                             <label class="form-label"><?= __('template_name', 'admin', 'Nazwa szablonu') ?></label>
-                            <input type="text" name="template_name" class="form-control" 
-                                   value="<?= htmlspecialchars($template['template_name']) ?>" required>
+                            <input type="text" name="template_name" class="form-control"
+                                value="<?= htmlspecialchars($template['template_name']) ?>" required>
                         </div>
-                        
+
                         <div class="mb-3">
                             <label class="form-label"><?= __('template_subject', 'admin', 'Temat wiadomości') ?></label>
-                            <input type="text" name="subject" class="form-control" 
-                                   value="<?= htmlspecialchars($template['subject']) ?>" required>
+                            <input type="text" name="subject" class="form-control"
+                                value="<?= htmlspecialchars($template['subject']) ?>" required>
                         </div>
-                        
+
                         <div class="mb-3">
                             <label class="form-label"><?= __('template_content', 'admin', 'Treść wiadomości') ?></label>
                             <textarea name="content" class="form-control" rows="12" required><?= htmlspecialchars($template['content']) ?></textarea>
                             <div class="form-text"><?= __('html_formatting_help', 'admin', 'Użyj HTML dla formatowania. Dostępne zmienne') ?>: <?= htmlspecialchars($template['variables']) ?></div>
                         </div>
-                        
+
                         <div class="mb-3">
                             <label class="form-label"><?= __('template_variables', 'admin', 'Dostępne zmienne') ?></label>
-                            <input type="text" name="variables" class="form-control" 
-                                   value="<?= htmlspecialchars($template['variables']) ?>">
+                            <input type="text" name="variables" class="form-control"
+                                value="<?= htmlspecialchars($template['variables']) ?>">
                             <div class="form-text"><?= __('variables_help', 'admin', 'Lista zmiennych oddzielonych przecinkami') ?></div>
                         </div>
-                        
+
                         <div class="form-check mb-3">
-                            <input type="checkbox" name="enabled" class="form-check-input" 
-                                   id="enabled" <?= $template['enabled'] ? 'checked' : '' ?>>
+                            <input type="checkbox" name="enabled" class="form-check-input"
+                                id="enabled" <?= $template['enabled'] ? 'checked' : '' ?>>
                             <label class="form-check-label" for="enabled">
                                 <?= __('template_enabled', 'admin', 'Szablon aktywny') ?>
                             </label>
                         </div>
-                        
+
                         <div class="d-flex gap-2">
                             <button type="submit" name="save_template" class="btn btn-primary">
                                 <i class="bi bi-check-lg"></i> <?= __('save_template', 'admin', 'Zapisz szablon') ?>
@@ -482,8 +480,8 @@ if (!isset($templates[$current_template]) && count($templates) > 0) {
                     <input type="hidden" name="template_key" value="<?= $current_template ?>">
                     <div class="mb-3">
                         <label class="form-label"><?= __('test_email_label', 'admin') ?></label>
-                        <input type="email" name="test_email" class="form-control" 
-                               placeholder="<?= __('test_email_placeholder', 'admin') ?>" required>
+                        <input type="email" name="test_email" class="form-control"
+                            placeholder="<?= __('test_email_placeholder', 'admin') ?>" required>
                     </div>
                     <div class="alert alert-info">
                         <small><?= __('test_email_notice', 'admin') ?></small>
@@ -562,14 +560,14 @@ if (!isset($templates[$current_template]) && count($templates) > 0) {
                     <div class="mb-3">
                         <label class="form-label"><?= __('template_key_label', 'admin', 'Klucz szablonu') ?> <span class="text-danger">*</span></label>
                         <input type="text" name="new_template_key" class="form-control" required
-                               placeholder="<?= __('template_key_placeholder', 'admin', 'np. welcome_email') ?>" pattern="[a-z0-9_]+" 
-                               title="<?= __('only_lowercase_numbers', 'admin', 'Tylko małe litery, cyfry i podkreślenia') ?>">
+                            placeholder="<?= __('template_key_placeholder', 'admin', 'np. welcome_email') ?>" pattern="[a-z0-9_]+"
+                            title="<?= __('only_lowercase_numbers', 'admin', 'Tylko małe litery, cyfry i podkreślenia') ?>">
                         <div class="form-text"><?= __('lowercase_only_help', 'admin', 'Używaj tylko małych liter, cyfr i podkreśleń (np. welcome_email)') ?></div>
                     </div>
                     <div class="mb-3">
                         <label class="form-label"><?= __('template_name_label', 'admin', 'Nazwa szablonu') ?> <span class="text-danger">*</span></label>
                         <input type="text" name="new_template_name" class="form-control" required
-                               placeholder="<?= __('template_name_placeholder', 'admin', 'np. Email powitalny') ?>">
+                            placeholder="<?= __('template_name_placeholder', 'admin', 'np. Email powitalny') ?>">
                         <div class="form-text"><?= __('friendly_name_help', 'admin', 'Przyjazna nazwa wyświetlana w interfejsie') ?></div>
                     </div>
                 </div>
@@ -614,64 +612,64 @@ if (!isset($templates[$current_template]) && count($templates) > 0) {
 </div>
 
 <script>
-// Auto-hide success alerts after 3 seconds with fade effect
-document.addEventListener('DOMContentLoaded', function() {
-    const successAlert = document.getElementById('successAlert');
-    if (successAlert) {
-        setTimeout(function() {
-            successAlert.style.opacity = '0';
+    // Auto-hide success alerts after 3 seconds with fade effect
+    document.addEventListener('DOMContentLoaded', function() {
+        const successAlert = document.getElementById('successAlert');
+        if (successAlert) {
             setTimeout(function() {
-                successAlert.style.display = 'none';
-            }, 500); // Wait for fade transition to complete
-        }, 3000); // Start fade after 3 seconds
-    }
-});
+                successAlert.style.opacity = '0';
+                setTimeout(function() {
+                    successAlert.style.display = 'none';
+                }, 500); // Wait for fade transition to complete
+            }, 3000); // Start fade after 3 seconds
+        }
+    });
 
-function toggleTemplate(templateKey, enabled) {
-    const formData = new FormData();
-    formData.append('template_key', templateKey);
-    formData.append('enabled', enabled ? '1' : '0');
-    formData.append('save_template', '1');
-    
-    // Get current form values
-    const form = document.querySelector('form');
-    if (form) {
-        const formDataFromForm = new FormData(form);
-        for (let [key, value] of formDataFromForm.entries()) {
-            if (key !== 'enabled') {
-                formData.append(key, value);
+    function toggleTemplate(templateKey, enabled) {
+        const formData = new FormData();
+        formData.append('template_key', templateKey);
+        formData.append('enabled', enabled ? '1' : '0');
+        formData.append('save_template', '1');
+
+        // Get current form values
+        const form = document.querySelector('form');
+        if (form) {
+            const formDataFromForm = new FormData(form);
+            for (let [key, value] of formDataFromForm.entries()) {
+                if (key !== 'enabled') {
+                    formData.append(key, value);
+                }
             }
         }
+
+        // Use current page URL to maintain navigation context
+        const currentUrl = new URL(window.location.href);
+
+        fetch(currentUrl.toString(), {
+            method: 'POST',
+            body: formData
+        }).then(response => {
+            if (response.ok) {
+                location.reload();
+            } else {
+                console.error('Error toggling template status');
+            }
+        }).catch(error => {
+            console.error('Error:', error);
+        });
     }
-    
-    // Use current page URL to maintain navigation context
-    const currentUrl = new URL(window.location.href);
-    
-    fetch(currentUrl.toString(), {
-        method: 'POST',
-        body: formData
-    }).then(response => {
-        if (response.ok) {
-            location.reload();
-        } else {
-            console.error('Error toggling template status');
-        }
-    }).catch(error => {
-        console.error('Error:', error);
-    });
-}
 
-function setDeleteTemplate(templateKey, templateName) {
-    document.getElementById('deleteTemplateKey').value = templateKey;
-    document.getElementById('deleteTemplateName').textContent = templateName;
-}
+    function setDeleteTemplate(templateKey, templateName) {
+        document.getElementById('deleteTemplateKey').value = templateKey;
+        document.getElementById('deleteTemplateName').textContent = templateName;
+    }
 
-function previewTemplate() {
-    const content = document.querySelector('textarea[name="content"]').value;
-    const subject = document.querySelector('input[name="subject"]').value;
-    
-    const previewWindow = window.open('', '_blank', 'width=800,height=600');
-    previewWindow.document.write(`
+    function previewTemplate() {
+        const content = document.querySelector('textarea[name="content"]').value;
+        const subject = document.querySelector('input[name="subject"]').value;
+
+        const previewWindow = window.open('', '_blank', 'width=800,height=600');
+        previewWindow.document.write(`
         <html>
         <head>
             <title><?= __('preview_subject', 'admin') ?> ${subject}</title>
@@ -686,35 +684,35 @@ function previewTemplate() {
         </body>
         </html>
     `);
-}
+    }
 
-// Language switching function
-function switchLanguage(lang) {
-    const currentUrl = new URL(window.location);
-    currentUrl.searchParams.set('lang', lang);
-    currentUrl.searchParams.delete('edit'); // Reset template selection when switching language
-    window.location.href = currentUrl.toString();
-}
+    // Language switching function
+    function switchLanguage(lang) {
+        const currentUrl = new URL(window.location);
+        currentUrl.searchParams.set('lang', lang);
+        currentUrl.searchParams.delete('edit'); // Reset template selection when switching language
+        window.location.href = currentUrl.toString();
+    }
 </script>
 
 <style>
-.list-group-item.active {
-    background-color: #0d6efd;
-    border-color: #0d6efd;
-}
+    .list-group-item.active {
+        background-color: #0d6efd;
+        border-color: #0d6efd;
+    }
 
-.list-group-item:hover:not(.active) {
-    background-color: #f8f9fa;
-}
+    .list-group-item:hover:not(.active) {
+        background-color: #f8f9fa;
+    }
 
-code {
-    background-color: #f8f9fa;
-    padding: 2px 4px;
-    border-radius: 3px;
-    font-size: 0.875em;
-}
+    code {
+        background-color: #f8f9fa;
+        padding: 2px 4px;
+        border-radius: 3px;
+        font-size: 0.875em;
+    }
 
-.auto-fade {
-    transition: opacity 0.5s ease-out;
-}
+    .auto-fade {
+        transition: opacity 0.5s ease-out;
+    }
 </style>

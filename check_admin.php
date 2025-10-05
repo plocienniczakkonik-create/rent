@@ -16,4 +16,3 @@ if ($user) {
 } else {
     echo "Użytkownik nie znaleziony\n";
 }
-?>

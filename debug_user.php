@@ -17,4 +17,3 @@ if ($current) {
 
 echo "\n=== Session info ===\n";
 echo "user_id w session: " . ($_SESSION['user_id'] ?? 'brak') . "\n";
-?>

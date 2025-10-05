@@ -1,3 +1,11 @@
+<?php
+// Initialize i18n
+require_once dirname(__DIR__) . '/includes/i18n.php';
+i18n::init();
+
+// Include theme-config for branding
+require_once dirname(__DIR__) . '/includes/theme-config.php';
+?>
 <footer class="site-footer border-top">
     <div class="container">
         <div class="row align-items-center gy-3 py-4">
@@ -9,20 +17,18 @@
                 </small>
             </div>
 
-            <!-- środek: „badge” z literą / logo -->
+            <!-- środek: „badge" z literą / logo -->
             <div class="col-12 col-md-4 text-center">
-                <a href="#top" class="brand-badge" aria-label="Strona główna">
-                    CORONA
-                </a>
+                <?= theme_render_brand('brand-badge', true) ?>
             </div>
 
             <!-- prawa: nawigacja -->
             <div class="col-12 col-md-4">
                 <ul class="footer-nav nav justify-content-center justify-content-md-end gap-3">
-                    <li class="nav-item"><a class="nav-link px-0" href="#">Regulamin</a></li>
-                    <li class="nav-item"><a class="nav-link px-0" href="#">Polityka prywatności</a></li>
-                    <li class="nav-item"><a class="nav-link px-0" href="#">FAQs</a></li>
-                    <li class="nav-item"><a class="nav-link px-0" href="#">Kontakt</a></li>
+                    <li class="nav-item"><a class="nav-link px-0" href="<?= BASE_URL ?>/index.php?page=terms"><?= i18n::__('footer_terms', 'frontend') ?></a></li>
+                    <li class="nav-item"><a class="nav-link px-0" href="<?= BASE_URL ?>/index.php?page=privacy-policy"><?= i18n::__('footer_privacy', 'frontend') ?></a></li>
+                    <li class="nav-item"><a class="nav-link px-0" href="<?= BASE_URL ?>/index.php?page=contact#faq"><?= i18n::__('footer_faq', 'frontend') ?></a></li>
+                    <li class="nav-item"><a class="nav-link px-0" href="<?= BASE_URL ?>/index.php?page=contact"><?= i18n::__('footer_contact', 'frontend') ?></a></li>
                 </ul>
             </div>
 

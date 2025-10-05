@@ -1,4 +1,5 @@
 <?php
+
 /**
  * English translations for Admin/Staff panel
  */
@@ -8,7 +9,7 @@ return [
     'dashboard' => 'Dashboard',
     'vehicles' => 'Vehicles',
     'products' => 'Products',
-        // Promotions section
+    // Promotions section
     'promotions' => 'Promotions',
     'add_promotion' => 'Add Promotion',
     'code' => 'Code',
@@ -245,14 +246,14 @@ return [
     'profile' => 'Profile',
     'view_site' => 'View Site',
     'add_product' => 'Add Product',
-    
+
     // Settings sections
     'account_profile' => 'Account Profile',
     'users_management' => 'User Management',
     'email_settings' => 'Email Settings',
     'payment_settings' => 'Payment Settings',
     'shop_settings' => 'Shop Settings',
-    
+
     // Common actions
     'save' => 'Save',
     'cancel' => 'Cancel',
@@ -280,7 +281,7 @@ return [
     'disabled' => 'Disabled',
     'yes' => 'Yes',
     'no' => 'No',
-    
+
     // Forms
     'name' => 'Name',
     'email' => 'Email',
@@ -302,7 +303,7 @@ return [
     'year' => 'Year',
     'color' => 'Color',
     'license_plate' => 'License Plate',
-    
+
     // Vehicles
     'add_vehicle' => 'Add Vehicle',
     'edit_vehicle' => 'Edit Vehicle',
@@ -317,7 +318,7 @@ return [
     'doors' => 'Doors',
     'air_conditioning' => 'Air Conditioning',
     'daily_rate' => 'Daily Rate',
-    
+
     // Users & Roles
     'users' => 'Users',
     'add_user' => 'Add User',
@@ -332,7 +333,7 @@ return [
     'last_login' => 'Last Login',
     'block_user' => 'Block User',
     'unblock_user' => 'Unblock User',
-    
+
     // Messages
     'success' => 'Success',
     'error' => 'Error',
@@ -353,7 +354,7 @@ return [
     'user_deleted_successfully' => 'User has been deleted!',
     'unknown_action' => 'Unknown action!',
     'invalid_user_id' => 'Invalid user ID!',
-    
+
     // Settings specific
     'general_settings' => 'General Settings',
     'company_name' => 'Company Name',
@@ -371,7 +372,7 @@ return [
     'payment_methods' => 'Payment Methods',
     'email_templates' => 'Email Templates',
     'smtp_settings' => 'SMTP Settings',
-    
+
     // Dashboard
     'welcome_back' => 'Welcome back',
     'total_vehicles' => 'Total Vehicles',
@@ -380,7 +381,7 @@ return [
     'monthly_revenue' => 'Monthly Revenue',
     'recent_activity' => 'Recent Activity',
     'quick_actions' => 'Quick Actions',
-    
+
     // Time periods
     'today' => 'Today',
     'yesterday' => 'Yesterday',
@@ -390,7 +391,7 @@ return [
     'last_week' => 'Last Week',
     'last_month' => 'Last Month',
     'last_year' => 'Last Year',
-    
+
     // Vehicles and fleet management
     'fleet' => 'Fleet',
     'fleet_management' => 'Fleet Management',
@@ -406,7 +407,7 @@ return [
     'unavailable_short' => 'Unavail.',
     'no_models_add_first' => 'No models. Add first in Add Product.',
     'confirm_delete_product' => 'Delete product',
-    
+
     // Orders section
     'search_placeholder' => 'Search (name/sku/email)',
     'all_statuses' => 'All statuses',
@@ -422,7 +423,7 @@ return [
     'pending' => 'Pending',
     'confirmed' => 'Confirmed',
     'cancelled' => 'Cancelled',
-    
+
     // Promotions section
     'promotions' => 'Promotions',
     'add_promotion' => 'Add Promotion',
@@ -439,7 +440,7 @@ return [
     'category' => 'Category',
     'specific_product' => 'Specific product',
     'product_sku' => 'Product (SKU)',
-    
+
     // Payment Gateways Settings
     'payment_gateways' => 'Payment Gateways',
     'gateway_configuration' => 'Payment Gateway Configuration',
@@ -453,7 +454,7 @@ return [
     'test_connection' => 'Test Connection',
     'connection_successful' => 'Connection successful',
     'connection_failed' => 'Connection failed',
-    
+
     // Stripe
     'stripe_name' => 'Stripe',
     'stripe_description' => 'Global online payment platform supporting cards, BLIK, PayU',
@@ -461,7 +462,7 @@ return [
     'stripe_secret_key' => 'Secret Key',
     'stripe_webhook_secret' => 'Webhook Secret',
     'stripe_currency' => 'Currency',
-    
+
     // PayPal
     'paypal_name' => 'PayPal',
     'paypal_description' => 'International PayPal online payment system',
@@ -470,7 +471,7 @@ return [
     'paypal_mode' => 'Mode',
     'sandbox_test' => 'Sandbox (test)',
     'live_production' => 'Live (production)',
-    
+
     // Przelewy24
     'przelewy24_name' => 'Przelewy24',
     'przelewy24_description' => 'Polish online payment system with wide bank support',
@@ -480,7 +481,7 @@ return [
     'p24_mode' => 'Mode',
     'missing_required_config' => 'Missing required configuration data',
     'configure_webhook_urls' => 'Configure the following webhook URLs in payment gateway panels:',
-    
+
     // Shop General Settings
     'shop_general_settings' => 'General Shop Settings',
     'shop_configuration' => 'Shop Configuration',
@@ -541,7 +542,7 @@ return [
     'save_all_settings' => 'Save All Settings',
     'cancel_changes' => 'Cancel Changes',
     'preview_settings' => 'Preview Settings',
-    
+
     // Email Templates Settings
     'email_templates' => 'Email Templates',
     'email_templates_management' => 'Email Templates Management',
@@ -571,7 +572,7 @@ return [
     'reminder_email' => 'Reminder Email',
     'invoice_email' => 'Invoice Email',
     'template_key_name_required' => 'Template key and name are required!',
-    
+
     // Email SMTP Settings
     'email_smtp_settings' => 'SMTP Settings',
     'smtp_configuration' => 'SMTP Configuration',
@@ -608,7 +609,7 @@ return [
     'keepalive_description' => 'Maintains connection for subsequent emails',
     'debug_label' => 'Debug',
     'debug_description' => 'Detailed SMTP error logs',
-    
+
     // Modal translations
     'test_template_send' => 'Test Template Sending',
     'test_email_label' => 'Test Email',
@@ -623,7 +624,7 @@ return [
     'template_data_deleted' => 'All template data will be permanently deleted from the database.',
     'preview_subject' => 'Preview:',
     'subject_label' => 'Subject:',
-    
+
     // Messages
     'template_deleted_success' => 'Template has been deleted!',
     'delete_error_prefix' => 'Error while deleting',
@@ -638,7 +639,7 @@ return [
     'dear_customer' => 'Dear {customer_name},',
     'content_to_fill' => 'Content to be filled...',
     'best_regards' => 'Best regards,<br>{company_name}',
-    
+
     // Button and action labels
     'save_template' => 'Save Template',
     'test_sending' => 'Test Sending',
@@ -648,7 +649,7 @@ return [
     'available_templates' => 'Available Templates',
     'available_variables' => 'Available Variables',
     'customer_section' => 'Customer',
-    'booking_section' => 'Booking', 
+    'booking_section' => 'Booking',
     'vehicle_section' => 'Vehicle',
     'company_section' => 'Company',
     'customer_name_var' => 'First and last name',
@@ -673,7 +674,7 @@ return [
     'lowercase_only_help' => 'Use only lowercase letters, numbers and underscores (e.g. welcome_email)',
     'friendly_name_help' => 'Friendly name displayed in interface',
     'refresh' => 'Refresh',
-    
+
     // Shop settings
     'show_prices_with_vat' => 'Show Prices with VAT',
     'decimal_places' => 'Decimal Places',
@@ -701,7 +702,7 @@ return [
     'shop_language' => 'Shop Language',
     'panel_language' => 'Panel Language',
     'currency_position' => 'Currency Symbol Position',
-    
+
     // Orders section
     'change' => 'Change',
     'details' => 'Details',
@@ -711,5 +712,97 @@ return [
     'next' => 'Next',
     'no_reservations' => 'No reservations.',
     'orders' => 'Orders',
+    'invalid_user_id' => 'Invalid user ID!',
+    'user_not_found' => 'User not found!',
+
+    // Product form
+    'new_product' => 'New Product',
+    'edit_product' => 'Edit Product',
+    'product_name' => 'Name',
+    'sku_unique' => 'SKU (unique)',
+    'class' => 'Class',
+    'seats_count' => 'Number of seats',
+    'car_type' => 'Car type',
+    'gearbox' => 'Gearbox',
+    'fuel_type' => 'Fuel type',
+    'price' => 'Price',
+    'unit' => 'Unit',
+    'unit_count' => 'Stock (quantity)',
+    'vehicle_photos' => 'Vehicle photos',
+    'product_description' => 'Product description',
+    'save' => 'Save',
+    'cancel' => 'Cancel',
+    'choose' => 'choose',
+    'doors_count' => 'Number of doors',
+    'transmission' => 'Transmission',
+    'fuel_type' => 'Fuel type',
+    'per_day' => 'per day',
+    'per_hour' => 'per hour',
+    'stock_quantity' => 'Stock (quantity)',
+    'status' => 'Status',
+    'active' => 'active',
+    'inactive' => 'inactive',
+    'vehicle_photo' => 'Vehicle photo',
+    'supported_formats' => 'Supported: JPG, PNG, WEBP. Max. ~3–5 MB (server dependent).',
+    'preview' => 'Preview',
+    'remove_current_image' => 'Remove current image',
+    'product_description_placeholder' => 'Short description, rental terms, equipment, etc.',
+    'delete' => 'Delete',
+    'confirm_delete_product_id' => 'Delete product #',
+
+    // Payment settings - refunds and notifications
+    'refunds_and_cancellations' => 'Refunds and Cancellations',
+    'automatic_refunds' => 'Automatic Refunds',
+    'refund_days_limit' => 'Refund Days Limit',
+    'refund_days_help' => 'Number of days to refund deposit after rental ends',
+    'timeouts_and_notifications' => 'Timeouts and Notifications',
+    'payment_timeout_minutes' => 'Payment Timeout (minutes)',
+    'payment_timeout_help' => 'Time to complete payment',
+    'send_receipt_emails' => 'Send Receipt Emails',
+    'invoice_generation' => 'Invoice Generation',
+    'save_settings' => 'Save Settings',
+
+    // Theme and branding
+    'theme_appearance' => 'Appearance & Colors',
+    'theme_colors' => 'Colors & Theme',
+    'theme_branding' => 'Branding',
+    'basic_colors' => 'Basic Colors',
+    'primary_color' => 'Primary Color',
+    'secondary_color' => 'Secondary Color',
+    'success_color' => 'Success Color',
+    'warning_color' => 'Warning Color',
+    'danger_color' => 'Danger Color',
+    'info_color' => 'Info Color',
+    'gradient_settings' => 'Gradient Settings',
+    'enable_gradient' => 'Enable gradient for primary colors',
+    'gradient_start' => 'Gradient start color',
+    'gradient_end' => 'Gradient end color',
+    'gradient_direction' => 'Gradient direction',
+    'gradient_preview' => 'Gradient preview',
+    'reset_defaults' => 'Reset to defaults',
+    'confirm_reset_defaults' => 'Are you sure you want to reset to default color settings?',
+    'theme_settings_saved' => 'Theme settings have been saved!',
+    'theme_save_error' => 'Error saving theme settings.',
+    'logo_settings' => 'Logo Settings',
+    'show_logo' => 'Show logo instead of text',
+    'show_logo_description' => 'When enabled, the logo will be displayed in the page header instead of text',
+    'logo_url' => 'Logo URL',
+    'logo_url_help' => 'Paste link to logo image. Recommended size: 200x80px or smaller.',
+    'logo_alt_text' => 'Logo alt text',
+    'logo_alt_placeholder' => 'Company name - logo',
+    'logo_alt_help' => 'Text displayed when logo fails to load and for screen readers.',
+    'logo_preview' => 'Logo preview',
+    'brand_text_settings' => 'Brand Text Settings',
+    'brand_text' => 'Brand Text',
+    'brand_text_help' => 'Text displayed in header when logo is disabled.',
+    'brand_preview' => 'Brand Preview',
+    'brand_preview_help' => 'This is how branding will look in the page header.',
+    'tips' => 'Tips',
+    'tip_logo_size' => 'Recommended logo size: 200x80px',
+    'tip_logo_format' => 'Use PNG with transparent background',
+    'tip_logo_hosting' => 'Logo can be hosted externally',
+    'tip_brand_text' => 'Brand text is always available as fallback',
+    'confirm_reset_branding' => 'Are you sure you want to reset to default branding settings?',
+    'branding_settings_saved' => 'Branding settings have been saved!',
+    'branding_save_error' => 'Error saving branding settings.',
 ];
-?>

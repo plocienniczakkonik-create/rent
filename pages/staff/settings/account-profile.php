@@ -1,5 +1,11 @@
 <?php
 // /pages/staff/settings/account-profile.php
+require_once dirname(dirname(dirname(__DIR__))) . '/includes/i18n.php';
+
+// Initialize i18n if not already done
+if (!class_exists('i18n') || !method_exists('i18n', 'getAdminLanguage')) {
+    i18n::init();
+}
 
 // Pobierz dane aktualnego użytkownika
 $db = db();
@@ -23,9 +29,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['update_profile'])) {
     $job_title = trim($_POST['job_title'] ?? '');
     $new_password = $_POST['new_password'] ?? '';
     $confirm_password = $_POST['confirm_password'] ?? '';
-    
+
     $errors = [];
-    
+
     // Walidacja
     if (empty($first_name)) {
         $errors[] = __('first_name_required', 'admin', 'Imię jest wymagane');
@@ -36,7 +42,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['update_profile'])) {
     if (empty($email) || !filter_var($email, FILTER_VALIDATE_EMAIL)) {
         $errors[] = __('provide_valid_email', 'admin', 'Podaj prawidłowy adres email');
     }
-    
+
     // Sprawdź czy email nie jest zajęty przez innego użytkownika
     if (empty($errors)) {
         $stmt = $db->prepare("SELECT COUNT(*) FROM users WHERE email = ? AND id != ?");
@@ -45,7 +51,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['update_profile'])) {
             $errors[] = __('email_already_taken', 'admin', 'Email jest już zajęty');
         }
     }
-    
+
     // Walidacja hasła
     if (!empty($new_password)) {
         if (strlen($new_password) < 6) {
@@ -55,7 +61,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['update_profile'])) {
             $errors[] = __('passwords_not_match', 'admin', 'Hasła nie są identyczne');
         }
     }
-    
+
     // Aktualizacja danych
     if (empty($errors)) {
         try {
@@ -77,14 +83,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['update_profile'])) {
                 ");
                 $stmt->execute([$first_name, $last_name, $email, $phone, $job_title, $current_user_id]);
             }
-            
+
             $success_message = __('profile_updated_successfully', 'admin', 'Profil został zaktualizowany pomyślnie!');
-            
+
             // Odśwież dane użytkownika
             $stmt = $db->prepare("SELECT * FROM users WHERE id = ?");
             $stmt->execute([$current_user_id]);
             $user = $stmt->fetch(PDO::FETCH_ASSOC);
-            
         } catch (PDOException $e) {
             $errors[] = __('update_error', 'admin', 'Błąd podczas aktualizacji') . ': ' . $e->getMessage();
         }
@@ -92,16 +97,22 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['update_profile'])) {
 }
 
 // Helper functions for badges
-function user_role_badge($role) {
-    switch($role) {
-        case 'admin': return 'bg-danger';
-        case 'staff': return 'bg-warning';
-        case 'client': return 'bg-primary';
-        default: return 'bg-secondary';
+function user_role_badge($role)
+{
+    switch ($role) {
+        case 'admin':
+            return 'bg-danger';
+        case 'staff':
+            return 'bg-warning';
+        case 'client':
+            return 'bg-primary';
+        default:
+            return 'bg-secondary';
     }
 }
 
-function user_status_badge($status) {
+function user_status_badge($status)
+{
     return $status ? 'bg-success' : 'bg-danger';
 }
 ?>
@@ -143,61 +154,61 @@ function user_status_badge($status) {
                 <form method="POST" class="row g-3">
                     <div class="col-md-6">
                         <label class="form-label"><?= __('first_name', 'admin', 'Imię') ?> <span class="text-danger">*</span></label>
-                        <input type="text" name="first_name" class="form-control" 
-                               value="<?= htmlspecialchars($user['first_name']) ?>" required>
+                        <input type="text" name="first_name" class="form-control"
+                            value="<?= htmlspecialchars($user['first_name']) ?>" required>
                     </div>
-                    
+
                     <div class="col-md-6">
                         <label class="form-label"><?= __('last_name', 'admin', 'Nazwisko') ?> <span class="text-danger">*</span></label>
-                        <input type="text" name="last_name" class="form-control" 
-                               value="<?= htmlspecialchars($user['last_name']) ?>" required>
+                        <input type="text" name="last_name" class="form-control"
+                            value="<?= htmlspecialchars($user['last_name']) ?>" required>
                     </div>
-                    
+
                     <div class="col-md-6">
                         <label class="form-label"><?= __('email_address', 'admin', 'Adres email') ?> <span class="text-danger">*</span></label>
-                        <input type="email" name="email" class="form-control" 
-                               value="<?= htmlspecialchars($user['email']) ?>" required>
+                        <input type="email" name="email" class="form-control"
+                            value="<?= htmlspecialchars($user['email']) ?>" required>
                         <div class="form-text"><?= __('email_for_communication', 'admin', 'Adres do komunikacji i powiadomień') ?></div>
                     </div>
-                    
+
                     <div class="col-md-6">
                         <label class="form-label"><?= __('phone', 'admin', 'Telefon') ?></label>
-                        <input type="tel" name="phone" class="form-control" 
-                               value="<?= htmlspecialchars($user['phone']) ?>">
+                        <input type="tel" name="phone" class="form-control"
+                            value="<?= htmlspecialchars($user['phone']) ?>">
                     </div>
-                    
+
                     <div class="col-12">
                         <label class="form-label"><?= __('job_title', 'admin', 'Stanowisko') ?></label>
-                        <input type="text" name="job_title" class="form-control" 
-                               value="<?= htmlspecialchars($user['job_title']) ?>">
+                        <input type="text" name="job_title" class="form-control"
+                            value="<?= htmlspecialchars($user['job_title']) ?>">
                     </div>
-                    
+
                     <div class="col-12">
                         <hr>
-                        <h6><i class="bi bi-shield-lock"></i> Zmiana hasła</h6>
-                        <p class="text-muted small">Pozostaw puste aby nie zmieniać hasła</p>
+                        <h6><i class="bi bi-shield-lock"></i> <?= __('change_password', 'admin', 'Zmiana hasła') ?></h6>
+                        <p class="text-muted small"><?= __('leave_empty_no_change', 'admin', 'Pozostaw puste aby nie zmieniać hasła') ?></p>
                     </div>
-                    
+
                     <div class="col-md-6">
-                        <label class="form-label">Nowe hasło</label>
-                        <input type="password" name="new_password" class="form-control" 
-                               placeholder="Minimum 6 znaków">
+                        <label class="form-label"><?= __('new_password', 'admin', 'Nowe hasło') ?></label>
+                        <input type="password" name="new_password" class="form-control"
+                            placeholder="<?= __('minimum_6_chars', 'admin', 'Minimum 6 znaków') ?>">
                     </div>
-                    
+
                     <div class="col-md-6">
-                        <label class="form-label">Potwierdź hasło</label>
-                        <input type="password" name="confirm_password" class="form-control" 
-                               placeholder="Powtórz nowe hasło">
+                        <label class="form-label"><?= __('confirm_password', 'admin', 'Potwierdź hasło') ?></label>
+                        <input type="password" name="confirm_password" class="form-control"
+                            placeholder="<?= __('repeat_new_password', 'admin', 'Powtórz nowe hasło') ?>">
                     </div>
-                    
+
                     <div class="col-12">
                         <hr>
                         <div class="d-flex gap-2">
                             <button type="submit" name="update_profile" class="btn btn-primary">
-                                <i class="bi bi-check-lg"></i> Zapisz zmiany
+                                <i class="bi bi-check-lg"></i> <?= __('save_changes', 'admin', 'Zapisz zmiany') ?>
                             </button>
                             <button type="reset" class="btn btn-outline-secondary">
-                                <i class="bi bi-arrow-clockwise"></i> Przywróć
+                                <i class="bi bi-arrow-clockwise"></i> <?= __('restore', 'admin', 'Przywróć') ?>
                             </button>
                         </div>
                     </div>
@@ -205,7 +216,7 @@ function user_status_badge($status) {
             </div>
         </div>
     </div>
-    
+
     <div class="col-lg-4">
         <div class="card">
             <div class="card-header">
@@ -221,9 +232,9 @@ function user_status_badge($status) {
                         <small class="text-muted">ID: #<?= $user['id'] ?></small>
                     </div>
                 </div>
-                
+
                 <hr>
-                
+
                 <div class="row g-2">
                     <div class="col-6">
                         <small class="text-muted"><?= __('role', 'admin', 'Rola') ?>:</small>
@@ -256,7 +267,7 @@ function user_status_badge($status) {
                         </div>
                     </div>
                 </div>
-                
+
                 <?php if ($user['job_title']): ?>
                     <hr>
                     <div>
@@ -266,7 +277,7 @@ function user_status_badge($status) {
                 <?php endif; ?>
             </div>
         </div>
-        
+
         <div class="card mt-3">
             <div class="card-header">
                 <h6 class="mb-0"><i class="bi bi-shield-check"></i> <?= __('security', 'admin', 'Bezpieczeństwo') ?></h6>
@@ -292,33 +303,33 @@ function user_status_badge($status) {
 </div>
 
 <style>
-.avatar-circle {
-    width: 48px;
-    height: 48px;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 1.25rem;
-    font-weight: 600;
-}
+    .avatar-circle {
+        width: 48px;
+        height: 48px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.25rem;
+        font-weight: 600;
+    }
 
-.auto-fade {
-    transition: opacity 0.5s ease-out;
-}
+    .auto-fade {
+        transition: opacity 0.5s ease-out;
+    }
 </style>
 
 <script>
-// Auto-hide success alerts after 3 seconds with fade effect
-document.addEventListener('DOMContentLoaded', function() {
-    const successAlert = document.getElementById('successAlert');
-    if (successAlert) {
-        setTimeout(function() {
-            successAlert.style.opacity = '0';
+    // Auto-hide success alerts after 3 seconds with fade effect
+    document.addEventListener('DOMContentLoaded', function() {
+        const successAlert = document.getElementById('successAlert');
+        if (successAlert) {
             setTimeout(function() {
-                successAlert.style.display = 'none';
-            }, 500); // Wait for fade transition to complete
-        }, 3000); // Start fade after 3 seconds
-    }
-});
+                successAlert.style.opacity = '0';
+                setTimeout(function() {
+                    successAlert.style.display = 'none';
+                }, 500); // Wait for fade transition to complete
+            }, 3000); // Start fade after 3 seconds
+        }
+    });
 </script>

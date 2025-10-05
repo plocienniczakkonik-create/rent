@@ -220,8 +220,8 @@ if (empty($errors)) {
             'return_at' => $returnAtRaw,
         ]);
         ?>
-        <a href="<?= $BASE ?>/index.php?page=reserve&<?= htmlspecialchars($qs) ?>" class="btn btn-outline-secondary">Wróć i zmień terminy</a>
-        <a href="<?= $BASE ?>/index.php" class="btn btn-link">Strona główna</a>
+        <a href="<?= $BASE ?>/index.php?page=reserve&<?= htmlspecialchars($qs) ?>" class="btn btn-theme btn-secondary">Wróć i zmień terminy</a>
+        <a href="<?= $BASE ?>/index.php" class="btn btn-theme btn-light">Strona główna</a>
     <?php else: ?>
         <div class="alert alert-success">
             <h5 class="mb-2">Rezerwacja złożona pomyślnie</h5>
@@ -238,7 +238,7 @@ if (empty($errors)) {
             </ul>
         </div>
         <div class="d-flex gap-2">
-            <a href="<?= $BASE ?>/index.php?page=reservation-details&id=<?= (int)$reservationId ?>" class="btn btn-outline-primary">Szczegóły rezerwacji</a>
+            <a href="<?= $BASE ?>/index.php?page=reservation-details&id=<?= (int)$reservationId ?>" class="btn btn-theme btn-primary">Szczegóły rezerwacji</a>
             <a href="<?= $BASE ?>/index.php" class="btn btn-primary">Zakończ</a>
         </div>
     <?php endif; ?>

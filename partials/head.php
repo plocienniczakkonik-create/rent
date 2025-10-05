@@ -3,10 +3,18 @@
 // Upewnij się, że w /includes/config.php masz:
 // define('BASE_URL', '/rental'); // lub odpowiednią ścieżkę katalogu projektu
 
+// Include systemu zarządzania motywem
+require_once dirname(__DIR__) . '/includes/theme-config.php';
+
 $BASE   = defined('BASE_URL') ? rtrim(BASE_URL, '/') : '';
 $cssUrl = $BASE . '/assets/css/main.css';
 $cssFs  = dirname(__DIR__) . '/assets/css/main.css'; // ścieżka na dysku (../assets/css/main.css)
 $cssVer = file_exists($cssFs) ? filemtime($cssFs) : time();
+
+// Theme CSS
+$themeCssUrl = $BASE . '/assets/css/theme-system.css';
+$themeCssFs  = dirname(__DIR__) . '/assets/css/theme-system.css';
+$themeCssVer = file_exists($themeCssFs) ? filemtime($themeCssFs) : time();
 ?>
 <!DOCTYPE html>
 <html lang="pl">
@@ -15,6 +23,11 @@ $cssVer = file_exists($cssFs) ? filemtime($cssFs) : time();
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Wypożyczalnia samochodów</title>
+
+    <!-- Dynamiczne CSS Variables -->
+    <style>
+        <?= ThemeConfig::generateCSSVariables() ?>
+    </style>
 
     <!-- Bootstrap CSS -->
     <link
@@ -28,6 +41,9 @@ $cssVer = file_exists($cssFs) ? filemtime($cssFs) : time();
         rel="stylesheet"
         href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css"
         crossorigin="anonymous" />
+
+    <!-- System kolorów -->
+    <link rel="stylesheet" href="<?= htmlspecialchars($themeCssUrl) ?>?v=<?= $themeCssVer ?>" />
 
     <!-- Twój skompilowany CSS z cache-busterem -->
     <link rel="stylesheet" href="<?= htmlspecialchars($cssUrl) ?>?v=<?= $cssVer ?>" />
@@ -44,5 +60,3 @@ $cssVer = file_exists($cssFs) ? filemtime($cssFs) : time();
     <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.11/index.global.min.js"></script>
 </head>
 </head>
-<!-- Bootstrap JS (wymagany do działania zakładek/tabów) -->
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>

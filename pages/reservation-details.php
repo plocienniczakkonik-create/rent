@@ -34,7 +34,7 @@ $fmt = fn($n) => number_format((float)$n, 2, ',', ' ');
 <div class="container py-4">
     <div class="d-flex justify-content-between align-items-center mb-3">
         <h2>Rezerwacja #<?= (int)$res['id'] ?></h2>
-        <a href="<?= $BASE ?>/index.php" class="btn btn-outline-secondary">Powrót</a>
+        <a href="<?= $BASE ?>/index.php" class="btn btn-theme btn-secondary">Powrót</a>
     </div>
 
     <div class="row g-4">

@@ -1,4 +1,31 @@
 <?php
+// Obsługa zmiany języka na samym początku
+if (isset($_GET['set_language']) && isset($_GET['context'])) {
+    session_start();
+
+    $language = $_GET['set_language'];
+    $context = $_GET['context'];
+    $return_url = $_GET['return'] ?? $_SERVER['HTTP_REFERER'] ?? '/rental/index.php';
+
+    // Ustaw język w sesji
+    if ($context === 'admin') {
+        $_SESSION['admin_language'] = $language;
+    } elseif ($context === 'both') {
+        $_SESSION['frontend_language'] = $language;
+        $_SESSION['admin_language'] = $language;
+    } else {
+        $_SESSION['frontend_language'] = $language;
+    }
+
+    // Przekieruj z powrotem, usuwając parametry języka
+    $return_url = preg_replace('/[?&]set_language=[^&]*/', '', $return_url);
+    $return_url = preg_replace('/[?&]context=[^&]*/', '', $return_url);
+    $return_url = preg_replace('/[?&]return=[^&]*/', '', $return_url);
+
+    header('Location: ' . $return_url);
+    exit;
+}
+
 // /index.ph// 4) Dalej standardowe include'y
 require_once __DIR__ . '/auth/auth.php';
 require_once __DIR__ . '/includes/i18n.php';
@@ -72,6 +99,11 @@ if (preg_match('/-(save|delete)$/', $page)) {
 // Dodaj widok rezerwacji pojazdu
 $routes = [
     'home'             => __DIR__ . '/pages/home.php',
+    'extras'           => __DIR__ . '/pages/extras.php',
+    'contact'          => __DIR__ . '/pages/contact.php',
+    'privacy-policy'   => __DIR__ . '/pages/privacy-policy.php',
+    'terms'            => __DIR__ . '/pages/terms.php',
+    'theme-admin'      => __DIR__ . '/pages/theme-admin.php',
     'login'            => __DIR__ . '/pages/login.php',
     'dashboard-client' => __DIR__ . '/pages/dashboard-client.php',
     'dashboard-staff'  => __DIR__ . '/pages/dashboard-staff.php',

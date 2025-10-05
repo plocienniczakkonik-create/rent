@@ -200,7 +200,7 @@ $fmt = function ($n) {
                         </tfoot>
                     </table>
                 </div>
-                
+
                 <form id="checkout-form" method="post" action="<?= $BASE ?>/index.php?page=checkout-confirm" class="mt-3">
                     <?php if (function_exists('csrf_field')) csrf_field(); ?>
                     <input type="hidden" name="sku" value="<?= htmlspecialchars($product['sku']) ?>">
@@ -211,7 +211,7 @@ $fmt = function ($n) {
                     <?php foreach ($selectedExtras as $ex): ?>
                         <input type="hidden" name="extra[]" value="<?= htmlspecialchars($ex) ?>">
                     <?php endforeach; ?>
-                    
+
                     <button type="submit" class="btn btn-success w-100">Przejdź do potwierdzenia</button>
                 </form>
             </div>

@@ -1,5 +1,11 @@
 <?php
 // /pages/staff/settings/payments-gateways.php
+require_once dirname(dirname(dirname(__DIR__))) . '/includes/i18n.php';
+
+// Initialize i18n if not already done
+if (!class_exists('i18n') || !method_exists('i18n', 'getAdminLanguage')) {
+    i18n::init();
+}
 
 $db = db();
 
@@ -53,11 +59,11 @@ while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['save_gateway'])) {
     $gateway = $_POST['gateway'] ?? '';
     $enabled = isset($_POST["{$gateway}_enabled"]) ? 1 : 0;
-    
+
     if (isset($payment_gateways[$gateway])) {
         try {
             $db->beginTransaction();
-            
+
             // Aktualizuj status aktywności bramki
             $stmt = $db->prepare("
                 INSERT INTO payment_settings (setting_key, setting_value) 
@@ -65,7 +71,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['save_gateway'])) {
                 ON DUPLICATE KEY UPDATE setting_value = VALUES(setting_value)
             ");
             $stmt->execute(["{$gateway}_enabled", $enabled]);
-            
+
             // Zapisz wszystkie pola konfiguracyjne
             foreach ($payment_gateways[$gateway]['fields'] as $field_key => $field_config) {
                 $value = $_POST[$field_key] ?? '';
@@ -73,17 +79,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['save_gateway'])) {
                     $stmt->execute([$field_key, $value]);
                 }
             }
-            
+
             $db->commit();
             $success_message = __('gateway_saved_success', 'admin', 'Ustawienia bramki zostały zapisane!');
-            
+
             // Odśwież ustawienia
             $current_settings = [];
             $stmt = $db->query("SELECT setting_key, setting_value FROM payment_settings");
             while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
                 $current_settings[$row['setting_key']] = $row['setting_value'];
             }
-            
         } catch (PDOException $e) {
             $db->rollback();
             $error_message = __('saving_error', 'admin', 'Błąd podczas zapisywania') . ": " . $e->getMessage();
@@ -100,7 +105,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['test_gateway'])) {
 }
 
 // Funkcja testowania bramki (mock)
-function test_payment_gateway($gateway, $settings) {
+function test_payment_gateway($gateway, $settings)
+{
     // Mock function - w rzeczywistości wysyłałaby requesty testowe
     $required_fields = [];
     switch ($gateway) {
@@ -114,13 +120,13 @@ function test_payment_gateway($gateway, $settings) {
             $required_fields = ['p24_merchant_id', 'p24_pos_id', 'p24_crc_key'];
             break;
     }
-    
+
     foreach ($required_fields as $field) {
         if (empty($settings[$field])) {
             return ['status' => 'error', 'message' => __('missing_required_config', 'admin', 'Brak wymaganych danych konfiguracyjnych')];
         }
     }
-    
+
     // Symulacja testu
     return ['status' => 'success', 'message' => __('connection_successful', 'admin', 'Połączenie z bramką działa poprawnie')];
 }
@@ -157,7 +163,7 @@ function test_payment_gateway($gateway, $settings) {
 
 <div class="row g-4">
     <?php foreach ($payment_gateways as $gateway_key => $gateway): ?>
-        <?php 
+        <?php
         $is_enabled = !empty($current_settings["{$gateway_key}_enabled"]);
         $has_config = false;
         foreach ($gateway['fields'] as $field_key => $field_config) {
@@ -167,7 +173,7 @@ function test_payment_gateway($gateway, $settings) {
             }
         }
         ?>
-        
+
         <div class="col-lg-6">
             <div class="card h-100 <?= $is_enabled ? 'border-success' : '' ?>">
                 <div class="card-header d-flex justify-content-between align-items-center">
@@ -179,58 +185,58 @@ function test_payment_gateway($gateway, $settings) {
                         </div>
                     </div>
                     <div class="form-check form-switch">
-                        <input type="checkbox" class="form-check-input" 
-                               id="<?= $gateway_key ?>_enabled"
-                               <?= $is_enabled ? 'checked' : '' ?>
-                               onchange="toggleGateway('<?= $gateway_key ?>', this.checked)">
+                        <input type="checkbox" class="form-check-input"
+                            id="<?= $gateway_key ?>_enabled"
+                            <?= $is_enabled ? 'checked' : '' ?>
+                            onchange="toggleGateway('<?= $gateway_key ?>', this.checked)">
                         <label class="form-check-label" for="<?= $gateway_key ?>_enabled">
                             <?= $is_enabled ? __('gateway_enabled', 'admin', 'Aktywna') : __('gateway_disabled', 'admin', 'Nieaktywna') ?>
                         </label>
                     </div>
                 </div>
-                
+
                 <div class="card-body">
                     <form method="POST" class="gateway-form" data-gateway="<?= $gateway_key ?>">
                         <input type="hidden" name="gateway" value="<?= $gateway_key ?>">
                         <input type="hidden" name="<?= $gateway_key ?>_enabled" value="<?= $is_enabled ? '1' : '0' ?>">
-                        
+
                         <?php foreach ($gateway['fields'] as $field_key => $field_config): ?>
                             <div class="mb-3">
                                 <label class="form-label"><?= $field_config['label'] ?></label>
                                 <?php if ($field_config['type'] === 'select'): ?>
-                                    <select name="<?= $field_key ?>" class="form-select" 
-                                            <?= !$is_enabled ? 'disabled' : '' ?>>
+                                    <select name="<?= $field_key ?>" class="form-select"
+                                        <?= !$is_enabled ? 'disabled' : '' ?>>
                                         <?php foreach ($field_config['options'] as $value => $label): ?>
-                                            <option value="<?= $value ?>" 
-                                                    <?= ($current_settings[$field_key] ?? '') === $value ? 'selected' : '' ?>>
+                                            <option value="<?= $value ?>"
+                                                <?= ($current_settings[$field_key] ?? '') === $value ? 'selected' : '' ?>>
                                                 <?= $label ?>
                                             </option>
                                         <?php endforeach; ?>
                                     </select>
                                 <?php else: ?>
-                                    <input type="<?= $field_config['type'] ?>" 
-                                           name="<?= $field_key ?>" 
-                                           class="form-control"
-                                           placeholder="<?= $field_config['placeholder'] ?? '' ?>"
-                                           value="<?= $field_config['type'] !== 'password' ? htmlspecialchars($current_settings[$field_key] ?? '') : '' ?>"
-                                           <?= !$is_enabled ? 'disabled' : '' ?>>
+                                    <input type="<?= $field_config['type'] ?>"
+                                        name="<?= $field_key ?>"
+                                        class="form-control"
+                                        placeholder="<?= $field_config['placeholder'] ?? '' ?>"
+                                        value="<?= $field_config['type'] !== 'password' ? htmlspecialchars($current_settings[$field_key] ?? '') : '' ?>"
+                                        <?= !$is_enabled ? 'disabled' : '' ?>>
                                 <?php endif; ?>
                             </div>
                         <?php endforeach; ?>
-                        
+
                         <div class="d-flex gap-2">
-                            <button type="submit" name="save_gateway" 
-                                    class="btn btn-<?= $gateway['color'] ?> btn-sm"
-                                    <?= !$is_enabled ? 'disabled' : '' ?>>
+                            <button type="submit" name="save_gateway"
+                                class="btn btn-<?= $gateway['color'] ?> btn-sm"
+                                <?= !$is_enabled ? 'disabled' : '' ?>>
                                 <i class="bi bi-check-lg"></i> <?= __('save', 'admin', 'Zapisz') ?>
                             </button>
-                            <button type="submit" name="test_gateway" 
-                                    class="btn btn-outline-secondary btn-sm"
-                                    <?= !$is_enabled || !$has_config ? 'disabled' : '' ?>>
+                            <button type="submit" name="test_gateway"
+                                class="btn btn-outline-secondary btn-sm"
+                                <?= !$is_enabled || !$has_config ? 'disabled' : '' ?>>
                                 <i class="bi bi-check-circle"></i> <?= __('test_connection', 'admin', 'Testuj') ?>
                             </button>
                         </div>
-                        
+
                         <?php if (isset($test_results[$gateway_key])): ?>
                             <div class="mt-2">
                                 <div class="alert alert-<?= $test_results[$gateway_key]['status'] === 'success' ? 'success' : 'danger' ?> alert-sm">
@@ -260,10 +266,10 @@ function test_payment_gateway($gateway, $settings) {
                     <div class="mb-3">
                         <label class="form-label fw-semibold"><?= $gateway['name'] ?></label>
                         <div class="input-group">
-                            <input type="text" class="form-control font-monospace" 
-                                   value="<?= $BASE ?>/webhooks/<?= $gateway_key ?>.php" readonly>
-                            <button class="btn btn-outline-secondary" type="button" 
-                                    onclick="navigator.clipboard.writeText('<?= $BASE ?>/webhooks/<?= $gateway_key ?>.php')">
+                            <input type="text" class="form-control font-monospace"
+                                value="<?= $BASE ?>/webhooks/<?= $gateway_key ?>.php" readonly>
+                            <button class="btn btn-outline-secondary" type="button"
+                                onclick="navigator.clipboard.writeText('<?= $BASE ?>/webhooks/<?= $gateway_key ?>.php')">
                                 <i class="bi bi-clipboard"></i>
                             </button>
                         </div>
@@ -275,65 +281,65 @@ function test_payment_gateway($gateway, $settings) {
 </div>
 
 <script>
-function toggleGateway(gateway, enabled) {
-    const form = document.querySelector(`[data-gateway="${gateway}"]`);
-    const inputs = form.querySelectorAll('input, select, button');
-    const hiddenInput = form.querySelector(`input[name="${gateway}_enabled"]`);
-    
-    hiddenInput.value = enabled ? '1' : '0';
-    
-    inputs.forEach(input => {
-        if (input.name !== `${gateway}_enabled`) {
-            input.disabled = !enabled;
-        }
-    });
-    
-    // Auto-save status
-    const formData = new FormData();
-    formData.append('gateway', gateway);
-    formData.append('save_gateway', '1');
-    formData.append(`${gateway}_enabled`, enabled ? '1' : '0');
-    
-    fetch(window.location.href, {
-        method: 'POST',
-        body: formData
-    }).then(() => {
-        // Optional: show success message
-    });
-}
+    function toggleGateway(gateway, enabled) {
+        const form = document.querySelector(`[data-gateway="${gateway}"]`);
+        const inputs = form.querySelectorAll('input, select, button');
+        const hiddenInput = form.querySelector(`input[name="${gateway}_enabled"]`);
+
+        hiddenInput.value = enabled ? '1' : '0';
+
+        inputs.forEach(input => {
+            if (input.name !== `${gateway}_enabled`) {
+                input.disabled = !enabled;
+            }
+        });
+
+        // Auto-save status
+        const formData = new FormData();
+        formData.append('gateway', gateway);
+        formData.append('save_gateway', '1');
+        formData.append(`${gateway}_enabled`, enabled ? '1' : '0');
+
+        fetch(window.location.href, {
+            method: 'POST',
+            body: formData
+        }).then(() => {
+            // Optional: show success message
+        });
+    }
 </script>
 
 <style>
-.alert-sm {
-    padding: 0.5rem 0.75rem;
-    font-size: 0.875rem;
-}
+    .alert-sm {
+        padding: 0.5rem 0.75rem;
+        font-size: 0.875rem;
+    }
 
-.font-monospace {
-    font-family: 'Courier New', monospace;
-    font-size: 0.875rem;
-}
+    .font-monospace {
+        font-family: 'Courier New', monospace;
+        font-size: 0.875rem;
+    }
 
-.card.border-success {
-    border-width: 2px;
-}
+    .card.border-success {
+        border-width: 2px;
+    }
 
-.auto-fade {
-    transition: opacity 0.5s ease-out;
-}
+    .auto-fade {
+        transition: opacity 0.5s ease-out;
+    }
 </style>
 
 <script>
-// Auto-fade success alerts
-document.addEventListener('DOMContentLoaded', function() {
-    const successAlert = document.getElementById('successAlert');
-    if (successAlert) {
-        setTimeout(function() {
-            successAlert.style.opacity = '0';
+    // Auto-fade success alerts
+    document.addEventListener('DOMContentLoaded', function() {
+        const successAlert = document.getElementById('successAlert');
+        if (successAlert) {
             setTimeout(function() {
-                successAlert.style.display = 'none';
-            }, 500);
-        }, 3000);
-    }
-});
+                successAlert.style.opacity = '0';
+                setTimeout(function() {
+                    successAlert.style.display = 'none';
+                }, 500);
+            }, 3000);
+        }
+    });
 </script>

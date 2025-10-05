@@ -16,9 +16,10 @@ $sections = [
         'icon' => 'bi-people',
         'subsections' => [
             'list' => __('all_users', 'admin', 'Wszyscy użytkownicy'),
-            'add' => __('add_user', 'admin', 'Dodaj użytkownika'),
+            'add' => __('add_user', 'admin', 'Dodaj użytkownika')
+        ] + (isset($_GET['user_id']) && (int)$_GET['user_id'] > 0 ? [
             'edit' => __('edit_user', 'admin', 'Edytuj użytkownika')
-        ]
+        ] : [])
     ],
     'account' => [
         'title' => __('account', 'admin', 'Konto'),
@@ -42,6 +43,14 @@ $sections = [
             'general' => __('general_settings', 'admin', 'Ustawienia ogólne')
         ]
     ],
+    'theme' => [
+        'title' => __('theme_appearance', 'admin', 'Wygląd i kolory'),
+        'icon' => 'bi-palette',
+        'subsections' => [
+            'colors' => __('theme_colors', 'admin', 'Kolory i motyw'),
+            'branding' => __('theme_branding', 'admin', 'Branding')
+        ]
+    ],
     'email' => [
         'title' => __('email', 'admin', 'Email'),
         'icon' => 'bi-envelope',
@@ -61,81 +70,82 @@ if (!isset($sections[$settings_section]['subsections'][$settings_subsection])) {
 }
 
 // Funkcja do generowania linków
-function settings_link(string $section, string $subsection, string $label, string $current_section, string $current_subsection): string {
+function settings_link(string $section, string $subsection, string $label, string $current_section, string $current_subsection): string
+{
     $BASE = defined('BASE_URL') ? rtrim(BASE_URL, '/') : '';
     $active = ($section === $current_section && $subsection === $current_subsection) ? 'active' : '';
     $href = $BASE . '/index.php?page=dashboard-staff&section=settings&settings_section=' . $section . '&settings_subsection=' . $subsection . '#pane-settings';
-    
+
     return '<a href="' . htmlspecialchars($href) . '" class="list-group-item list-group-item-action ' . $active . '">' . htmlspecialchars($label) . '</a>';
 }
 ?>
 
 <style>
-.settings-container {
-    display: flex;
-    gap: 1.5rem;
-    min-height: 600px;
-}
-
-.settings-sidebar {
-    width: 260px;
-    flex-shrink: 0;
-}
-
-.settings-content {
-    flex: 1;
-    min-width: 0;
-    overflow-x: auto;
-}
-
-.settings-section-title {
-    font-size: 0.875rem;
-    font-weight: 600;
-    color: #6c757d;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-    margin-bottom: 0.5rem;
-    padding: 0.75rem 1rem 0.25rem;
-}
-
-.settings-subsection {
-    font-size: 0.875rem;
-    padding-left: 2rem;
-}
-
-.list-group-item.active {
-    background-color: #0d6efd;
-    border-color: #0d6efd;
-    color: white;
-}
-
-.list-group-item:hover:not(.active) {
-    background-color: #f8f9fa;
-}
-
-@media (max-width: 768px) {
     .settings-container {
-        flex-direction: column;
+        display: flex;
+        gap: 1.5rem;
+        min-height: 600px;
     }
-    
+
     .settings-sidebar {
-        width: 100%;
+        width: 260px;
+        flex-shrink: 0;
     }
-    
+
     .settings-content {
+        flex: 1;
+        min-width: 0;
         overflow-x: auto;
     }
-}
 
-/* Szersze tabele w ustawieniach */
-.card-body .table-responsive {
-    margin: -1rem -1rem 0;
-    padding: 1rem;
-}
+    .settings-section-title {
+        font-size: 0.875rem;
+        font-weight: 600;
+        color: #6c757d;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        margin-bottom: 0.5rem;
+        padding: 0.75rem 1rem 0.25rem;
+    }
 
-.table-responsive .table {
-    margin-bottom: 0;
-}
+    .settings-subsection {
+        font-size: 0.875rem;
+        padding-left: 2rem;
+    }
+
+    .list-group-item.active {
+        background-color: #0d6efd;
+        border-color: #0d6efd;
+        color: white;
+    }
+
+    .list-group-item:hover:not(.active) {
+        background-color: #f8f9fa;
+    }
+
+    @media (max-width: 768px) {
+        .settings-container {
+            flex-direction: column;
+        }
+
+        .settings-sidebar {
+            width: 100%;
+        }
+
+        .settings-content {
+            overflow-x: auto;
+        }
+    }
+
+    /* Szersze tabele w ustawieniach */
+    .card-body .table-responsive {
+        margin: -1rem -1rem 0;
+        padding: 1rem;
+    }
+
+    .table-responsive .table {
+        margin-bottom: 0;
+    }
 </style>
 
 <div class="card section-settings">
@@ -179,7 +189,7 @@ function settings_link(string $section, string $subsection, string $label, strin
                             echo '<p>' . __('section', 'admin', 'Sekcja') . ' <strong>' . htmlspecialchars($sections[$settings_section]['subsections'][$settings_subsection]) . '</strong> ' . __('section_under_implementation', 'admin', 'jest obecnie w trakcie implementacji.') . '</p>';
                             echo '<p class="mb-0">' . __('planned_features', 'admin', 'Planowane funkcje') . ':</p>';
                             echo '<ul class="mb-0">';
-                            
+
                             // Opis funkcji dla każdej sekcji
                             $descriptions = [
                                 'users-list' => ['Lista wszystkich użytkowników', 'Zarządzanie rolami i uprawnieniami', 'Historia logowań', 'Blokowanie/odblokowywanie kont'],
@@ -191,7 +201,7 @@ function settings_link(string $section, string $subsection, string $label, strin
                                 'email-templates' => ['Szablon nowego zamówienia', 'Szablon anulowania', 'Szablon potwierdzenia', 'Edytor WYSIWYG'],
                                 'email-smtp' => ['Konfiguracja serwera SMTP', 'Test wysyłki emaili', 'Ustawienia SSL/TLS', 'Historia wysłanych emaili']
                             ];
-                            
+
                             $current_key = $settings_section . '-' . $settings_subsection;
                             if (isset($descriptions[$current_key])) {
                                 foreach ($descriptions[$current_key] as $desc) {

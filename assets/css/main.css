@@ -1,80 +1,64 @@
-@charset "UTF-8";
-/* global background */
 :root {
-  /* Teksty i tła */
   --color-text: #212529;
   --color-bg: rgb(234, 234, 227);
-  /* Akcenty */
   --color-accent: #ff5a19;
   --color-accent-hover: #e04e15;
-  /* Back to top */
-  --color-btt: #35a65b;
-  --color-btt-hover: #097739;
-  /* Komponenty */
+  --color-btt: #667eea;
+  --color-btt-hover: #5a67d8;
   --color-card-bg: #eaeae3;
   --color-card-border: #424343;
   --color-search-bg: #ffffff;
   --color-feature-icon-bg: #ffffff;
   --color-muted: #495057;
-  --nav-stuck-bg: rgba(154, 154, 154, 0.301); /* jasna „maska” po scrollu */
+  --nav-stuck-bg: rgba(154, 154, 154, 0.301);
   --nav-stuck-link: #111111;
   --nav-stuck-link-hover: #000000;
-  /* Ogólne */
   --color-black: #000000;
   --color-white: #ffffff;
-  /* Cienie (jak w kodzie) */
   --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.221);
   --shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
   --shadow-lg: 0 10px 30px rgba(0, 0, 0, 0.25);
   --shadow-btt: 0 10px 24px rgba(0, 0, 0, 0.18);
-  /* Promienie */
   --radius-6: 6px;
   --radius-12: 12px;
   --radius-18: 18px;
   --radius-pill: 999px;
-  /* Spacing (przykładowo) */
-  --sp-2: .5rem; /* 8px */
-  --sp-3: 1rem; /* 16px */
-  --sp-4: 1.5rem; /* 24px */
-  --sp-5: 2rem; /* 32px */
+  --sp-2: 0.5rem;
+  --sp-3: 1rem;
+  --sp-4: 1.5rem;
+  --sp-5: 2rem;
   --footer-bg: #5b5b5b;
-  --footer-text: rgba(255,255,255,.85);
-  --footer-link: rgba(255,255,255,.85);
+  --footer-text: rgba(255, 255, 255, 0.85);
+  --footer-link: rgba(255, 255, 255, 0.85);
   --footer-link-hover: #ffffff;
-  --footer-border: rgba(255,255,255,.12);
+  --footer-border: rgba(255, 255, 255, 0.12);
   --footer-badge-bg: #ffffff;
   --footer-badge-fg: #111111;
 }
-
-/* ===== HERO ===== */
 .hero {
   height: 100vh;
   background-position: center;
   background-size: cover;
   display: flex;
   align-items: center;
-  justify-content: space-around; /* start na desktopie */
-  padding-inline: clamp(16px, 6vw, 80px); /* odstęp od krawędzi */
+  justify-content: space-around;
+  padding-inline: clamp(16px, 6vw, 80px);
 }
 @media (max-width: 800px) {
   .hero {
     justify-content: center;
   }
 }
-
-/* ===== SECTION: OFERTA ===== */
 .section-offer {
   height: 100vh;
   background-position: center;
   background-size: cover;
   display: flex;
   align-items: top;
-  justify-content: space-around; /* start na desktopie */
-  padding-inline: clamp(16px, 6vw, 80px); /* odstęp od krawędzi */
+  justify-content: space-around;
+  padding-inline: clamp(16px, 6vw, 80px);
   padding-top: 5rem;
 }
-
-/* ===== GRID LAYOUT dla formularza wyszukiwania (desktop) ===== */
 @media (min-width: 992px) {
   .grid-cols {
     display: grid;
@@ -87,12 +71,10 @@
     width: 100%;
   }
 }
-/* ===== Kontener wyszukiwarki (wąski) ===== */
 .search-wrapper {
   max-width: 1100px;
   margin-inline: auto;
 }
-
 .site-footer {
   background: var(--footer-bg);
   color: var(--footer-text);
@@ -107,129 +89,94 @@
   color: var(--footer-link-hover);
   opacity: 0.9;
 }
-
-/* Sticky footer layout */
-html, body {
+html,
+body {
   height: 100%;
 }
-
 body#top {
   min-height: 100vh;
   display: flex;
   flex-direction: column;
   background: var(--color-bg);
 }
-
-/* Główna zawartość rozpycha się – footer jest na dole */
 .site-main {
   flex: 1 0 auto;
 }
-
-/* Login: wycentrowane w pionie i poziomie w obszarze MAIN (footer zawsze widoczny) */
 .site-main.login-center {
   display: flex;
   align-items: center;
   justify-content: center;
 }
-
-/* Navbar masz absolute – daj oddech na loginie, żeby się nie nakładał */
 .login-page {
   padding-top: clamp(3rem, 8vh, 6rem);
 }
-
-/* Odstęp pod navbarem absolutnym/fixed (dashboard, formularze itp.) */
 .mt-nav {
-  /* odstęp bezpieczny na różnych ekranach */
   margin-top: clamp(64px, 10vw, 96px);
 }
-
-/* Kontener centrowany w pionie i poziomie, z uwzględnieniem wysokości navbara */
 .vh-center {
   min-height: calc(100vh - var(--nav-h));
-  padding-top: var(--nav-h); /* zabezpieczenie przed nachodzeniem */
+  padding-top: var(--nav-h);
   display: flex;
-  align-items: center; /* centrowanie pionowe */
+  align-items: center;
 }
-
-/* szerokość kolumny treści wewnątrz (opcjonalnie, dla ładnej szpalty) */
 .vh-center > .content-col {
   width: 100%;
-  max-width: 1100px; /* ~col-xl-10 */
-  margin-inline: auto; /* wyśrodkuj w poziomie */
+  max-width: 1100px;
+  margin-inline: auto;
 }
-
-/* Fix białych kolumn obok gridu oferty */
 #offer .container::before,
 #offer .container::after {
   content: none !important;
   display: none !important;
 }
-
-html, body {
+html,
+body {
   min-height: 100%;
-  background: rgb(234, 234, 227);
+  background: #eaeae3;
   background: var(--color-bg);
 }
-
 .site-main {
-  background: rgb(234, 234, 227);
+  background: #eaeae3;
 }
-
-/* Upewnij się, że sekcje wewnątrz main nie nadpisują koloru */
 .site-main > section {
-  background: transparent;
+  background: rgba(0, 0, 0, 0);
 }
-
-/* Jeżeli jakieś komponenty dawały białe tło kontenerowi – wyczyść */
 .wyszukiwarkaCL > .container,
 .search-wrapper {
-  background: transparent;
+  background: rgba(0, 0, 0, 0);
 }
-
-/* ===== Navbar (prostą zmianę koloru traktujemy jako komponent) ===== */
 .navbar .nav-link {
   color: var(--color-black);
 }
-
 .navbar .nav-link:hover,
 .navbar .nav-link:focus {
   color: var(--color-black);
   opacity: 0.8;
 }
-
-/* ===== Maska w hero ===== */
 .mask {
   background: rgba(0, 0, 0, 0.6);
   color: var(--color-white);
   padding: 1.25rem 1.5rem;
-  border-radius: 0.75rem; /* 12px */
+  border-radius: 0.75rem;
   box-shadow: var(--shadow-lg);
   max-width: min(90vw, 560px);
 }
-
-/* ===== Karta produktu ===== */
 .card-product {
   background: var(--color-card-bg);
   border: 1px solid var(--color-card-border);
   border-radius: var(--radius-12);
   box-shadow: var(--shadow);
 }
-
-/* Zdjęcie bez „białego paska” i ładny crop */
 .card-product .card-img-top {
   aspect-ratio: 16/9;
   object-fit: cover;
   border-top-left-radius: var(--radius-12);
   border-top-right-radius: var(--radius-12);
 }
-
-/* Sekcja cech oddzielona subtelnie */
 .card-features {
   background: rgba(0, 0, 0, 0.02);
   border-block: 1px solid rgba(0, 0, 0, 0.08);
 }
-
-/* Placeholder pod ikony (wstaw <i> lub <img>) */
 .feature-icon {
   width: 28px;
   height: 28px;
@@ -244,8 +191,6 @@ html, body {
 .feature-icon i {
   font-size: 1rem;
 }
-.feature-icon { /* gdy użyjesz Bootstrap Icons / Font Awesome */ }
-
 .search-card {
   border-radius: var(--radius-18);
   box-shadow: 0 6px 24px rgba(0, 0, 0, 0.08);
@@ -267,8 +212,8 @@ html, body {
 .search-card .input-group > .form-select {
   border-radius: var(--radius-12);
 }
-
-.hero .search-card, .hero form {
+.hero .search-card,
+.hero form {
   width: 100% !important;
   max-width: 100% !important;
   display: flex;
@@ -277,31 +222,28 @@ html, body {
   align-items: center;
   gap: 24px;
 }
-
-.hero .form-row, .hero .row {
+.hero .form-row,
+.hero .row {
   flex-wrap: nowrap !important;
   gap: 24px !important;
 }
-
-.hero .form-control, .hero .form-select {
+.hero .form-control,
+.hero .form-select {
   min-width: 140px;
   max-width: 220px;
   padding: 0.7rem 1.1rem;
   font-size: 1.08rem;
 }
-
-.hero input[type=date], .hero input[type=datetime-local] {
+.hero input[type="date"],
+.hero input[type="datetime-local"] {
   min-width: 120px;
   max-width: 180px;
 }
-
 .hero .btn {
   padding: 0.7rem 2.2rem;
   font-size: 1.08rem;
   margin-left: 24px;
 }
-
-/* Nadpisanie stylu .search-card tylko w hero */
 .hero .search-card {
   background: none !important;
   box-shadow: none !important;
@@ -311,14 +253,11 @@ html, body {
   max-width: 100% !important;
   padding: 0 !important;
 }
-
-/* „Czipy” filtrów */
 .chip-group {
   gap: 0.6rem;
   overflow: auto;
   white-space: nowrap;
 }
-
 .chip {
   border-radius: var(--radius-pill) !important;
   background: #f3f4f6;
@@ -329,34 +268,25 @@ html, body {
 .chip .dropdown-toggle::after {
   margin-left: 0.4rem;
 }
-
-/* ===== Przyciski ===== */
-/* Globalny .btn (ostrożnie — nadpisuje Bootstrapa) */
 .search-card .btn {
-  border-color: transparent;
+  border-color: rgba(0, 0, 0, 0);
   color: var(--color-white);
-  background-color: rgba(116, 116, 116, 0.2470588235); /* półprzezroczyste szare tło */
+  background-color: rgba(116, 116, 116, 0.2470588235);
 }
-
 .btn:hover {
-  border-color: transparent;
+  border-color: rgba(0, 0, 0, 0);
   background-color: rgba(27, 27, 27, 0.5882352941);
   color: var(--color-white) !important;
 }
-
-/* Akcentowy przycisk */
 .btn-accent {
   background: var(--color-accent);
   border-color: var(--color-accent);
   color: var(--color-white);
 }
-
 .btn-accent:hover {
   background: var(--color-accent-hover);
   border-color: var(--color-accent-hover);
 }
-
-/* ===== Back to top (prawy dół) ===== */
 .back-to-top {
   position: fixed;
   right: 20px;
@@ -371,7 +301,6 @@ html, body {
   place-items: center;
   box-shadow: var(--shadow-btt);
   z-index: 99999;
-  /* ukryty na starcie */
   opacity: 0;
   visibility: hidden;
   pointer-events: none;
@@ -390,66 +319,53 @@ html, body {
 }
 @media (max-width: 576px) {
   .back-to-top {
-    bottom: 80px; /* jeżeli masz pływający chat/CTA */
+    bottom: 80px;
   }
 }
-
 .brand-badge {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  /* elastyczne w poziomie */
   height: 36px;
-  min-width: 36px; /* dalej ładnie wygląda przy 1 literze */
-  padding: 0 0.6rem; /* poszerza się dla dłuższego tekstu */
-  white-space: nowrap; /* nie łam tekstu */
-  border-radius: 999px; /* pigułka */
+  min-width: 36px;
+  padding: 0 0.6rem;
+  white-space: nowrap;
+  border-radius: 999px;
   background: var(--footer-badge-bg);
   color: var(--footer-badge-fg);
   font-weight: 800;
   text-decoration: none;
   box-shadow: var(--shadow-sm);
   line-height: 1;
-  /* lekka kontrola rozmiaru przy dłuższych słowach */
   font-size: clamp(0.8rem, 1.4vw, 0.95rem);
   letter-spacing: 0.5px;
 }
-
 .card.shadow-lg {
   box-shadow: 0 14px 40px rgba(0, 0, 0, 0.12) !important;
 }
-
-/* delikatny top-padding tylko dla loginu gdy navbar jest absolute */
 .login-page {
   padding-top: clamp(3rem, 8vh, 6rem);
 }
-
 #siteNav {
-  transition: background-color 0.25s ease, box-shadow 0.25s ease, backdrop-filter 0.25s ease;
-  /* STAN PO SCROLLU */
+  transition: background-color 0.25s ease, box-shadow 0.25s ease,
+    backdrop-filter 0.25s ease;
 }
 #siteNav.is-stuck {
   position: fixed !important;
   top: 0;
   left: 0;
   right: 0;
-  z-index: 1050; /* Wyżej niż tabele i inne elementy */
-  background-color: var(--nav-stuck-bg) !important; /* jasne, półprzezroczyste tło */
+  background-color: var(--nav-stuck-bg) !important;
   backdrop-filter: saturate(140%) blur(6px);
   box-shadow: 0 6px 24px rgba(0, 0, 0, 0.4);
-}
-#siteNav {
-  /* linki w stanie sticky – CZARNE */
 }
 #siteNav.is-stuck .nav-link {
   color: var(--nav-stuck-link) !important;
 }
-#siteNav.is-stuck .nav-link:hover, #siteNav.is-stuck .nav-link:focus {
+#siteNav.is-stuck .nav-link:hover,
+#siteNav.is-stuck .nav-link:focus {
   color: var(--nav-stuck-link-hover) !important;
   opacity: 0.85;
-}
-#siteNav {
-  /* przycisk „Zaloguj” w stanie sticky – dopasowany do jasnego tła */
 }
 #siteNav.is-stuck .btn-light {
   background: #ebebeb;
@@ -458,13 +374,9 @@ html, body {
 }
 #siteNav.is-stuck .btn-outline-light {
   color: #111;
-  border-color: #111; /* jeśli użyjesz outline */
+  border-color: #111;
 }
-
-/* assets/scss/components/_flash.scss */
-/* Flash alerts (komunikaty po Dodaj/Usuń) — wyrównanie X i bez kolizji z treścią */
 .js-flash {
-  /* zapas z prawej, żeby tekst nie wpadał pod X; korzystamy z zmiennych Bootstrapa */
   padding-right: calc(var(--bs-alert-padding-x, 1rem) + 1.5rem);
 }
 .js-flash.alert-dismissible {
@@ -475,91 +387,70 @@ html, body {
   right: var(--bs-alert-padding-x, 1rem);
   top: 50%;
   transform: translateY(-50%);
-  padding: 0.5rem; /* mniejsze, ale wygodne pole kliknięcia */
-  line-height: 1; /* stabilny „X” */
+  padding: 0.5rem;
+  line-height: 1;
 }
-
-/* Flash fade-out — miękkie zanikanie i delikatne uniesienie */
 .js-flash.fade {
   transition: opacity 0.38s ease-out, transform 0.38s ease-out;
 }
-
-/* Gdy Bootstrap usuwa .show, następuje płynne znikanie */
 .js-flash.fade:not(.show) {
   opacity: 0;
   transform: translateY(-4px);
 }
-
-/* Szacunek dla prefers-reduced-motion */
 @media (prefers-reduced-motion: reduce) {
   .js-flash.fade {
     transition: none;
   }
 }
-.table th, .table td {
+.table th,
+.table td {
   vertical-align: middle;
 }
-
 .th-id {
   width: 80px;
   white-space: nowrap;
 }
-
 .th-name {
   min-width: 240px;
   max-width: 360px;
 }
-
 .th-sku {
   width: 170px;
 }
-
 .th-total {
   width: 140px;
   text-align: right;
 }
-
 .th-actions {
   width: 160px;
   text-align: right;
 }
-
-/* ===== Vehicle Stats Table ===== */
 .vehicle-stats-card {
   padding: 1.5rem 2rem;
 }
-
 .vehicle-section-table tbody tr td:first-child {
   padding-left: 1.25rem !important;
 }
-
 .vehicle-section-table tbody tr td:last-child {
   padding-right: 1.25rem !important;
 }
-
 .vehicle-section-table thead th:first-child {
   padding-left: 1.25rem !important;
 }
-
 .vehicle-section-table thead th:last-child {
   padding-right: 1.25rem !important;
 }
-
 .vehicle-section-table.services thead th:first-child,
 .vehicle-section-table.services tbody td:first-child {
   padding-left: 1.25rem !important;
 }
-
 .vehicle-section-table.services thead th:last-child,
 .vehicle-section-table.services tbody td:last-child {
   padding-right: 1.25rem !important;
 }
-
 .card.p-3.p-md-4 {
-  background: rgba(255, 255, 255, 0.92) !important;
+  background: hsla(0, 0%, 100%, 0.92) !important;
 }
-
-/* Nowoczesny styl dla .product-card */
 .product-card {
   border-radius: 20px;
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.08);
@@ -594,7 +485,7 @@ html, body {
 .product-card .product-price {
   font-size: 1.1rem;
   font-weight: 700;
-  color: #198754;
+  color: var(--color-primary);
   margin-bottom: 0.5rem;
 }
 .product-card .product-actions {
@@ -607,20 +498,16 @@ html, body {
   border-radius: 12px;
   font-weight: 500;
 }
-
-/* Delikatny separator linii */
 .divider {
   height: 1px;
   background: rgba(0, 0, 0, 0.08);
 }
-
-/* /assets/scss/pages/_search-results.scss */
 #search-results-shell {
-  background: rgb(234, 234, 227);
+  background: #eaeae3;
 }
 #search-results-shell .search-hero {
   padding-block: 72px 24px;
-  background: rgb(234, 234, 227);
+  background: #eaeae3;
 }
 #search-results-shell .search-hero .page-title {
   text-align: center;
@@ -635,7 +522,7 @@ html, body {
 #search-results-shell .search-hero .wyszukiwarkaCL > .container {
   max-width: 100%;
   padding-inline: 0;
-  background: transparent;
+  background: rgba(0, 0, 0, 0);
 }
 #search-results-shell .search-hero .search-wrapper .card {
   border-radius: 18px;
@@ -645,13 +532,11 @@ html, body {
 }
 #search-results-shell .after-form {
   padding-top: 16px;
-  background: rgb(234, 234, 227);
+  background: #eaeae3;
 }
 #search-results-shell section#offer {
   padding-top: 0;
 }
-
-/* Pasek sortowania nad wynikami */
 .search-sortbar {
   display: flex;
   gap: 0.5rem;
@@ -662,8 +547,6 @@ html, body {
 .search-sortbar .form-select {
   min-width: 180px;
 }
-
-/* Pasek ponad kartami: tytuł lewo, filtr prawo */
 .results-head {
   display: flex;
   align-items: center;
@@ -685,13 +568,9 @@ html, body {
 .results-head .search-sortbar .form-select {
   min-width: 180px;
 }
-
-/* Drobny oddech i spójne tło sekcji z wynikami */
 #search-results-shell .after-form {
   padding-top: 8px;
 }
-
-/* Mobile: ułóż w dwie linie, filtr pod tytułem, ale wyrównany do prawej */
 @media (max-width: 576px) {
   .results-head {
     flex-wrap: wrap;
@@ -700,7 +579,6 @@ html, body {
     margin-left: auto;
   }
 }
-/* Pasek pod nagłówkiem: lewo – metryka, prawo – sort */
 .results-toolbar {
   display: flex;
   align-items: center;
@@ -715,21 +593,15 @@ html, body {
 .results-toolbar .results-right .form-select {
   min-width: 180px;
 }
-
-/* Delikatny oddech sekcji z kartami */
 #search-results-shell .after-form {
   padding-top: 8px;
 }
-
-/* ===== Panel pracownika ===== */
 .staff-main {
-  /* większy oddech od nawigacji + dół strony */
   padding-top: clamp(104px, 8vw, 144px);
   padding-bottom: 64px;
-  /* karta na treść zakładek (ładny panel zamiast gołej tab-content) */
 }
 .staff-main .tab-content {
-  background: white;
+  background: #fff;
   border: 1px solid var(--color-card-border);
   border-radius: var(--radius-12);
   box-shadow: var(--shadow);
@@ -745,21 +617,15 @@ html, body {
     padding: 28px;
   }
 }
-.staff-main {
-  /* oddech nad kartą (między pigułkami a treścią) */
-}
 .staff-main #staffTabs {
   margin-bottom: 12px;
 }
-.staff-main {
-  /* czytelniejsza tabela w karcie */
-}
 .staff-main .table {
-  margin-bottom: 0; /* żeby nie robiła „dziury” pod kartą */
+  margin-bottom: 0;
 }
 .staff-main .table th,
 .staff-main .table td {
-  padding: 0.75rem 1rem; /* większy padding w komórkach */
+  padding: 0.75rem 1rem;
   vertical-align: middle;
 }
 .staff-main .table thead th:first-child,
@@ -770,9 +636,6 @@ html, body {
 .staff-main .table tbody td:last-child {
   padding-right: 1.25rem;
 }
-.staff-main {
-  /* drobne dopieszczenia akcji/statusów */
-}
 .staff-main .badge {
   border-radius: var(--radius-pill);
   padding: 0.35rem 0.6rem;
@@ -780,7 +643,6 @@ html, body {
 .staff-main .btn-sm {
   padding: 0.35rem 0.6rem;
 }
-
 .calendar-placeholder {
   display: flex;
   align-items: center;
@@ -789,7 +651,6 @@ html, body {
   height: 100%;
   padding: 1.5rem 0.5rem;
 }
-
 .calendar-placeholder .flatpickr-calendar {
   width: 100% !important;
   min-width: 320px;
@@ -801,11 +662,10 @@ html, body {
   font-size: 1rem;
   margin: 0 auto;
 }
-
 .calendar-day-price {
   display: block;
   font-size: 0.95rem;
-  color: #198754;
+  color: var(--color-primary);
   margin-top: 18px;
   font-weight: 700;
   background: #f8fafc;
@@ -815,15 +675,13 @@ html, body {
   position: relative;
   z-index: 2;
 }
-
 .calendar-day-price.promo {
   color: #d63384;
 }
-
 .calendar-price-box {
   font-size: 2rem;
   font-weight: 800;
-  color: #198754;
+  color: var(--color-primary);
   margin-top: 1.2rem;
   width: 100%;
   padding: 0.7rem 0;
@@ -833,23 +691,15 @@ html, body {
   text-align: center;
   display: block;
 }
-
 .promo-price {
   color: #d63384;
   font-weight: 700;
-}
-
-.product-details {
-  /* Cursor pointer for interactive fields to prevent text caret */
 }
 .product-details .form-select,
 .product-details input.search-date,
 .product-details .addon-input,
 .product-details .form-check-label {
   cursor: pointer !important;
-}
-.product-details {
-  /* Reservation form min height to balance with calendar */
 }
 .product-details #product-reservation-form {
   min-height: 500px;
@@ -966,7 +816,7 @@ html, body {
   padding: 1rem 0.5rem;
   font-size: 1.5rem;
   font-weight: 700;
-  color: #198754;
+  color: var(--color-primary);
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
 }
 .product-details .price-box .price-label {
@@ -978,7 +828,7 @@ html, body {
 .product-details .price-box .price-value {
   font-size: 2.1rem;
   font-weight: 800;
-  color: #198754;
+  color: var(--color-primary);
   margin-right: 0.5rem;
 }
 .product-details .price-box .price-unit {
@@ -1062,7 +912,6 @@ html, body {
     display: flex;
     flex-direction: column;
     justify-content: stretch;
-    /* Wyrównanie wysokości kalendarza i formularza */
   }
   .product-details .row.g-4.align-items-stretch > .col-lg-5 > .row.g-3,
   .product-details .row.g-4.align-items-stretch > .col-lg-7 > .row.g-3 {
@@ -1072,61 +921,18 @@ html, body {
     gap: 2rem;
     align-items: stretch;
   }
-  .product-details .row.g-4.align-items-stretch > .col-lg-5 > .row.g-3 .calendar-placeholder,
+  .product-details
+    .row.g-4.align-items-stretch
+    > .col-lg-5
+    > .row.g-3
+    .calendar-placeholder,
   .product-details .row.g-4.align-items-stretch > .col-lg-5 > .row.g-3 .card,
-  .product-details .row.g-4.align-items-stretch > .col-lg-7 > .row.g-3 .calendar-placeholder,
+  .product-details
+    .row.g-4.align-items-stretch
+    > .col-lg-7
+    > .row.g-3
+    .calendar-placeholder,
   .product-details .row.g-4.align-items-stretch > .col-lg-7 > .row.g-3 .card {
     height: 100%;
   }
-}
-
-/* ===== SORTOWANIE TABEL ===== */
-.th-sort-link {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  text-decoration: none;
-  color: inherit;
-  width: 100%;
-  padding: 0.5rem;
-  border-radius: 4px;
-  transition: background-color 0.2s ease;
-}
-
-.th-sort-link:hover {
-  background-color: rgba(0, 0, 0, 0.05);
-  text-decoration: none;
-  color: inherit;
-}
-
-.th-sort-link .label {
-  flex: 1;
-}
-
-.th-sort-link .chevs {
-  display: flex;
-  flex-direction: column;
-  margin-left: 0.5rem;
-  line-height: 1;
-}
-
-.th-sort-link .chev {
-  font-size: 0.7rem;
-  color: #ccc;
-  transition: color 0.2s ease;
-}
-
-.th-sort-link .chev.active {
-  color: #007bff;
-  font-weight: bold;
-}
-
-.th-sort-link:hover .chev {
-  color: #666;
-}
-
-.th-sort-link:hover .chev.active {
-  color: #0056b3;
-}
-
-/*# sourceMappingURL=main.css.map */
+} /*# sourceMappingURL=main.css.map */

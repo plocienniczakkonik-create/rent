@@ -140,7 +140,7 @@ $GRID_TOOLBAR_RIGHT = $GRID_TOOLBAR_RIGHT ?? null;
                                     <span class="text-muted small"><?= price_unit_label($p['price_unit'] ?? null) ?></span>
                                 </div>
                                 <div class="product-actions">
-                                    <button type="button" class="btn btn-outline-primary" data-bs-toggle="modal" data-bs-target="#<?= $modalId ?>">Szczegóły</button>
+                                    <button type="button" class="btn btn-theme btn-secondary" data-bs-toggle="modal" data-bs-target="#<?= $modalId ?>">Szczegóły</button>
                                     <?php
                                     // Przekaż parametry wyszukiwania do rezerwacji
                                     $params = [
@@ -165,7 +165,7 @@ $GRID_TOOLBAR_RIGHT = $GRID_TOOLBAR_RIGHT ?? null;
                                     }
                                     $reserveUrl = $BASE . '/index.php?' . http_build_query($params);
                                     ?>
-                                    <a href="<?= htmlspecialchars($reserveUrl) ?>" class="btn btn-primary">Zarezerwuj</a>
+                                    <a href="<?= htmlspecialchars($reserveUrl) ?>" class="btn btn-theme btn-primary">Zarezerwuj</a>
                                 </div>
                                 <div class="d-flex align-items-center justify-content-between mt-2">
                                     <span class="text-muted small">SKU: <?= htmlspecialchars((string)$p['sku']) ?></span>
@@ -220,8 +220,8 @@ $GRID_TOOLBAR_RIGHT = $GRID_TOOLBAR_RIGHT ?? null;
                                         </div>
                                     </div>
                                     <div class="modal-footer">
-                                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Zamknij</button>
-                                        <a href="index.php?page=reserve&sku=<?= urlencode((string)$p['sku']) ?>" class="btn btn-primary">Zarezerwuj</a>
+                                        <button type="button" class="btn btn-theme btn-light" data-bs-dismiss="modal">Zamknij</button>
+                                        <a href="index.php?page=reserve&sku=<?= urlencode((string)$p['sku']) ?>" class="btn btn-theme btn-primary">Zarezerwuj</a>
                                     </div>
                                 </div>
                             </div>

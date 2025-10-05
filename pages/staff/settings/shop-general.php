@@ -15,13 +15,13 @@ while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['save_shop_settings'])) {
     try {
         $db->beginTransaction();
-        
+
         $stmt = $db->prepare("
             INSERT INTO shop_settings (setting_key, setting_value) 
             VALUES (?, ?) 
             ON DUPLICATE KEY UPDATE setting_value = VALUES(setting_value)
         ");
-        
+
         $settings_to_save = [
             // Informacje biznesowe
             'company_name' => $_POST['company_name'] ?? '',
@@ -34,15 +34,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['save_shop_settings'])
             'company_website' => $_POST['company_website'] ?? '',
             'company_nip' => $_POST['company_nip'] ?? '',
             'company_regon' => $_POST['company_regon'] ?? '',
-            
+
             // Ustawienia regionalne
             'default_currency' => $_POST['default_currency'] ?? 'PLN',
             'timezone' => $_POST['timezone'] ?? 'Europe/Warsaw',
-            'default_language' => $_POST['default_language'] ?? 'pl',
-            'admin_language' => $_POST['admin_language'] ?? 'pl',
             'date_format' => $_POST['date_format'] ?? 'd.m.Y',
             'time_format' => $_POST['time_format'] ?? 'H:i',
-            
+
             // Podatki i ceny
             'default_tax_rate' => $_POST['default_tax_rate'] ?? '23',
             'tax_included_in_prices' => isset($_POST['tax_included_in_prices']) ? '1' : '0',
@@ -51,7 +49,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['save_shop_settings'])
             'decimal_places' => $_POST['decimal_places'] ?? '2',
             'thousand_separator' => $_POST['thousand_separator'] ?? ' ',
             'decimal_separator' => $_POST['decimal_separator'] ?? ',',
-            
+
             // Godziny pracy
             'business_hours_enabled' => isset($_POST['business_hours_enabled']) ? '1' : '0',
             'business_hours_monday' => $_POST['business_hours_monday'] ?? '',
@@ -61,20 +59,20 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['save_shop_settings'])
             'business_hours_friday' => $_POST['business_hours_friday'] ?? '',
             'business_hours_saturday' => $_POST['business_hours_saturday'] ?? '',
             'business_hours_sunday' => $_POST['business_hours_sunday'] ?? '',
-            
+
             // Ustawienia rezerwacji
             'min_rental_hours' => $_POST['min_rental_hours'] ?? '24',
             'max_rental_days' => $_POST['max_rental_days'] ?? '30',
             'advance_booking_days' => $_POST['advance_booking_days'] ?? '365',
             'cancellation_hours' => $_POST['cancellation_hours'] ?? '24',
             'auto_confirmation' => isset($_POST['auto_confirmation']) ? '1' : '0',
-            
+
             // Powiadomienia
             'notification_new_booking' => isset($_POST['notification_new_booking']) ? '1' : '0',
             'notification_cancellation' => isset($_POST['notification_cancellation']) ? '1' : '0',
             'notification_payment' => isset($_POST['notification_payment']) ? '1' : '0',
             'notification_email' => $_POST['notification_email'] ?? '',
-            
+
             // SEO i marketing
             'site_title' => $_POST['site_title'] ?? '',
             'meta_description' => $_POST['meta_description'] ?? '',
@@ -82,21 +80,20 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['save_shop_settings'])
             'google_analytics_id' => $_POST['google_analytics_id'] ?? '',
             'facebook_pixel_id' => $_POST['facebook_pixel_id'] ?? ''
         ];
-        
+
         foreach ($settings_to_save as $key => $value) {
             $stmt->execute([$key, $value]);
         }
-        
+
         $db->commit();
         $success_message = __('shop_settings_saved', 'admin', 'Ustawienia sklepu zostały zapisane!');
-        
+
         // Odśwież ustawienia
         $shop_settings = [];
         $stmt = $db->query("SELECT setting_key, setting_value FROM shop_settings");
         while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
             $shop_settings[$row['setting_key']] = $row['setting_value'];
         }
-        
     } catch (PDOException $e) {
         $db->rollback();
         $error_message = __('saving_error', 'admin', 'Błąd podczas zapisywania') . ": " . $e->getMessage();
@@ -108,8 +105,6 @@ $defaults = [
     'company_country' => 'Polska',
     'default_currency' => 'PLN',
     'timezone' => 'Europe/Warsaw',
-    'default_language' => 'pl',
-    'admin_language' => 'pl',
     'date_format' => 'd.m.Y',
     'time_format' => 'H:i',
     'default_tax_rate' => '23',
@@ -132,8 +127,20 @@ foreach ($defaults as $key => $default_value) {
 
 // Dostępne kraje
 $countries = [
-    'Polska', 'Niemcy', 'Czechy', 'Słowacja', 'Litwa', 'Łotwa', 'Estonia', 
-    'Ukraina', 'Białoruś', 'Rosja', 'Francja', 'Hiszpania', 'Włochy', 'Wielka Brytania'
+    'Polska',
+    'Niemcy',
+    'Czechy',
+    'Słowacja',
+    'Litwa',
+    'Łotwa',
+    'Estonia',
+    'Ukraina',
+    'Białoruś',
+    'Rosja',
+    'Francja',
+    'Hiszpania',
+    'Włochy',
+    'Wielka Brytania'
 ];
 
 // Dostępne waluty
@@ -156,14 +163,6 @@ $timezones = [
     'UTC' => 'UTC (GMT+0)'
 ];
 
-// Języki
-$languages = [
-    'pl' => 'Polski',
-    'en' => 'English',
-    'de' => 'Deutsch',
-    'cs' => 'Čeština',
-    'uk' => 'Українська'
-];
 ?>
 
 <div class="d-flex justify-content-between align-items-center mb-3">
@@ -202,45 +201,45 @@ $languages = [
                     <div class="row g-3">
                         <div class="col-md-6">
                             <label class="form-label"><?= __('company_name', 'admin', 'Nazwa firmy') ?></label>
-                            <input type="text" name="company_name" class="form-control" 
-                                   value="<?= htmlspecialchars($shop_settings['company_name'] ?? '') ?>">
+                            <input type="text" name="company_name" class="form-control"
+                                value="<?= htmlspecialchars($shop_settings['company_name'] ?? '') ?>">
                         </div>
                         <div class="col-md-6">
                             <label class="form-label"><?= __('company_email', 'admin', 'Email firmy') ?></label>
-                            <input type="email" name="company_email" class="form-control" 
-                                   value="<?= htmlspecialchars($shop_settings['company_email'] ?? '') ?>">
+                            <input type="email" name="company_email" class="form-control"
+                                value="<?= htmlspecialchars($shop_settings['company_email'] ?? '') ?>">
                         </div>
                         <div class="col-md-6">
                             <label class="form-label"><?= __('company_phone', 'admin', 'Telefon') ?></label>
-                            <input type="text" name="company_phone" class="form-control" 
-                                   value="<?= htmlspecialchars($shop_settings['company_phone'] ?? '') ?>">
+                            <input type="text" name="company_phone" class="form-control"
+                                value="<?= htmlspecialchars($shop_settings['company_phone'] ?? '') ?>">
                         </div>
                         <div class="col-md-6">
                             <label class="form-label"><?= __('company_website', 'admin', 'Strona internetowa') ?></label>
-                            <input type="url" name="company_website" class="form-control" 
-                                   value="<?= htmlspecialchars($shop_settings['company_website'] ?? '') ?>">
+                            <input type="url" name="company_website" class="form-control"
+                                value="<?= htmlspecialchars($shop_settings['company_website'] ?? '') ?>">
                         </div>
                         <div class="col-md-12">
                             <label class="form-label"><?= __('company_address', 'admin', 'Adres') ?></label>
-                            <input type="text" name="company_address" class="form-control" 
-                                   value="<?= htmlspecialchars($shop_settings['company_address'] ?? '') ?>">
+                            <input type="text" name="company_address" class="form-control"
+                                value="<?= htmlspecialchars($shop_settings['company_address'] ?? '') ?>">
                         </div>
                         <div class="col-md-4">
                             <label class="form-label"><?= __('company_city', 'admin', 'Miasto') ?></label>
-                            <input type="text" name="company_city" class="form-control" 
-                                   value="<?= htmlspecialchars($shop_settings['company_city'] ?? '') ?>">
+                            <input type="text" name="company_city" class="form-control"
+                                value="<?= htmlspecialchars($shop_settings['company_city'] ?? '') ?>">
                         </div>
                         <div class="col-md-4">
                             <label class="form-label"><?= __('company_postal_code', 'admin', 'Kod pocztowy') ?></label>
-                            <input type="text" name="company_postal_code" class="form-control" 
-                                   value="<?= htmlspecialchars($shop_settings['company_postal_code'] ?? '') ?>">
+                            <input type="text" name="company_postal_code" class="form-control"
+                                value="<?= htmlspecialchars($shop_settings['company_postal_code'] ?? '') ?>">
                         </div>
                         <div class="col-md-4">
                             <label class="form-label"><?= __('company_country', 'admin', 'Kraj') ?></label>
                             <select name="company_country" class="form-select">
                                 <?php foreach ($countries as $country): ?>
-                                    <option value="<?= $country ?>" 
-                                            <?= ($shop_settings['company_country'] ?? '') === $country ? 'selected' : '' ?>>
+                                    <option value="<?= $country ?>"
+                                        <?= ($shop_settings['company_country'] ?? '') === $country ? 'selected' : '' ?>>
                                         <?= $country ?>
                                     </option>
                                 <?php endforeach; ?>
@@ -248,19 +247,19 @@ $languages = [
                         </div>
                         <div class="col-md-6">
                             <label class="form-label"><?= __('company_nip', 'admin', 'NIP') ?></label>
-                            <input type="text" name="company_nip" class="form-control" 
-                                   value="<?= htmlspecialchars($shop_settings['company_nip'] ?? '') ?>">
+                            <input type="text" name="company_nip" class="form-control"
+                                value="<?= htmlspecialchars($shop_settings['company_nip'] ?? '') ?>">
                         </div>
                         <div class="col-md-6">
                             <label class="form-label"><?= __('company_regon', 'admin', 'REGON') ?></label>
-                            <input type="text" name="company_regon" class="form-control" 
-                                   value="<?= htmlspecialchars($shop_settings['company_regon'] ?? '') ?>">
+                            <input type="text" name="company_regon" class="form-control"
+                                value="<?= htmlspecialchars($shop_settings['company_regon'] ?? '') ?>">
                         </div>
                     </div>
                 </div>
             </div>
         </div>
-        
+
         <!-- Ustawienia regionalne -->
         <div class="col-lg-6">
             <div class="card">
@@ -272,52 +271,26 @@ $languages = [
                         <label class="form-label"><?= __('default_currency', 'admin', 'Główna waluta') ?></label>
                         <select name="default_currency" class="form-select">
                             <?php foreach ($currencies as $code => $name): ?>
-                                <option value="<?= $code ?>" 
-                                        <?= ($shop_settings['default_currency'] ?? '') === $code ? 'selected' : '' ?>>
+                                <option value="<?= $code ?>"
+                                    <?= ($shop_settings['default_currency'] ?? '') === $code ? 'selected' : '' ?>>
                                     <?= $name ?>
                                 </option>
                             <?php endforeach; ?>
                         </select>
                     </div>
-                    
+
                     <div class="mb-3">
                         <label class="form-label"><?= __('timezone', 'admin', 'Strefa czasowa') ?></label>
                         <select name="timezone" class="form-select">
                             <?php foreach ($timezones as $tz => $name): ?>
-                                <option value="<?= $tz ?>" 
-                                        <?= ($shop_settings['timezone'] ?? '') === $tz ? 'selected' : '' ?>>
+                                <option value="<?= $tz ?>"
+                                    <?= ($shop_settings['timezone'] ?? '') === $tz ? 'selected' : '' ?>>
                                     <?= $name ?>
                                 </option>
                             <?php endforeach; ?>
                         </select>
                     </div>
-                    
-                    <div class="mb-3">
-                        <label class="form-label"><?= __('default_language', 'admin', 'Język domyślny sklepu') ?></label>
-                        <select name="default_language" class="form-select">
-                            <?php foreach ($languages as $code => $name): ?>
-                                <option value="<?= $code ?>" 
-                                        <?= ($shop_settings['default_language'] ?? '') === $code ? 'selected' : '' ?>>
-                                    <?= $name ?>
-                                </option>
-                            <?php endforeach; ?>
-                        </select>
-                        <div class="form-text"><?= __('default_language_help', 'admin', 'Domyślny język dla klientów i strony głównej') ?></div>
-                    </div>
-                    
-                    <div class="mb-3">
-                        <label class="form-label"><?= __('admin_language', 'admin', 'Język panelu administracyjnego') ?></label>
-                        <select name="admin_language" class="form-select">
-                            <?php foreach ($languages as $code => $name): ?>
-                                <option value="<?= $code ?>" 
-                                        <?= ($shop_settings['admin_language'] ?? '') === $code ? 'selected' : '' ?>>
-                                    <?= $name ?>
-                                </option>
-                            <?php endforeach; ?>
-                        </select>
-                        <div class="form-text"><?= __('admin_language_help', 'admin', 'Domyślny język dla panelu pracowników/administratorów') ?></div>
-                    </div>
-                    
+
                     <div class="row g-2">
                         <div class="col-6">
                             <label class="form-label"><?= __('date_format', 'admin', 'Format daty') ?></label>
@@ -338,7 +311,7 @@ $languages = [
                 </div>
             </div>
         </div>
-        
+
         <!-- Podatki i formatowanie cen -->
         <div class="col-lg-6">
             <div class="card">
@@ -348,27 +321,27 @@ $languages = [
                 <div class="card-body">
                     <div class="mb-3">
                         <label class="form-label"><?= __('default_tax_rate', 'admin', 'Domyślna stawka VAT (%)') ?></label>
-                        <input type="number" name="default_tax_rate" class="form-control" 
-                               value="<?= htmlspecialchars($shop_settings['default_tax_rate'] ?? '') ?>"
-                               min="0" max="100" step="0.01">
+                        <input type="number" name="default_tax_rate" class="form-control"
+                            value="<?= htmlspecialchars($shop_settings['default_tax_rate'] ?? '') ?>"
+                            min="0" max="100" step="0.01">
                     </div>
-                    
+
                     <div class="form-check form-switch mb-3">
-                        <input type="checkbox" name="tax_included_in_prices" class="form-check-input" 
-                               id="tax_included" <?= ($shop_settings['tax_included_in_prices'] ?? '') === '1' ? 'checked' : '' ?>>
+                        <input type="checkbox" name="tax_included_in_prices" class="form-check-input"
+                            id="tax_included" <?= ($shop_settings['tax_included_in_prices'] ?? '') === '1' ? 'checked' : '' ?>>
                         <label class="form-check-label" for="tax_included">
                             <?= __('tax_included_in_prices', 'admin', 'Ceny zawierają VAT') ?>
                         </label>
                     </div>
-                    
+
                     <div class="form-check form-switch mb-3">
-                        <input type="checkbox" name="show_prices_with_tax" class="form-check-input" 
-                               id="show_with_tax" <?= ($shop_settings['show_prices_with_tax'] ?? '') === '1' ? 'checked' : '' ?>>
+                        <input type="checkbox" name="show_prices_with_tax" class="form-check-input"
+                            id="show_with_tax" <?= ($shop_settings['show_prices_with_tax'] ?? '') === '1' ? 'checked' : '' ?>>
                         <label class="form-check-label" for="show_with_tax">
                             <?= __('show_prices_with_vat', 'admin', 'Wyświetlaj ceny z VAT') ?>
                         </label>
                     </div>
-                    
+
                     <div class="mb-3">
                         <label class="form-label"><?= __('currency_position', 'admin', 'Pozycja symbolu waluty') ?></label>
                         <select name="currency_symbol_position" class="form-select">
@@ -376,7 +349,7 @@ $languages = [
                             <option value="after" <?= ($shop_settings['currency_symbol_position'] ?? '') === 'after' ? 'selected' : '' ?>><?= __('currency_after_price', 'admin', 'Po cenie (100 zł)') ?></option>
                         </select>
                     </div>
-                    
+
                     <div class="row g-2">
                         <div class="col-4">
                             <label class="form-label"><?= __('decimal_places', 'admin', 'Miejsca dziesiętne') ?></label>
@@ -404,7 +377,7 @@ $languages = [
                 </div>
             </div>
         </div>
-        
+
         <!-- Ustawienia rezerwacji -->
         <div class="col-lg-6">
             <div class="card">
@@ -414,35 +387,35 @@ $languages = [
                 <div class="card-body">
                     <div class="mb-3">
                         <label class="form-label"><?= __('min_rental_hours', 'admin', 'Min. czas wynajmu (godziny)') ?></label>
-                        <input type="number" name="min_rental_hours" class="form-control" 
-                               value="<?= htmlspecialchars($shop_settings['min_rental_hours'] ?? '') ?>"
-                               min="1" max="168">
+                        <input type="number" name="min_rental_hours" class="form-control"
+                            value="<?= htmlspecialchars($shop_settings['min_rental_hours'] ?? '') ?>"
+                            min="1" max="168">
                     </div>
-                    
+
                     <div class="mb-3">
                         <label class="form-label"><?= __('max_rental_days', 'admin', 'Max. czas wynajmu (dni)') ?></label>
-                        <input type="number" name="max_rental_days" class="form-control" 
-                               value="<?= htmlspecialchars($shop_settings['max_rental_days'] ?? '') ?>"
-                               min="1" max="365">
+                        <input type="number" name="max_rental_days" class="form-control"
+                            value="<?= htmlspecialchars($shop_settings['max_rental_days'] ?? '') ?>"
+                            min="1" max="365">
                     </div>
-                    
+
                     <div class="mb-3">
                         <label class="form-label"><?= __('advance_booking_days', 'admin', 'Wyprzedzenie rezerwacji (dni)') ?></label>
-                        <input type="number" name="advance_booking_days" class="form-control" 
-                               value="<?= htmlspecialchars($shop_settings['advance_booking_days'] ?? '') ?>"
-                               min="1" max="730">
+                        <input type="number" name="advance_booking_days" class="form-control"
+                            value="<?= htmlspecialchars($shop_settings['advance_booking_days'] ?? '') ?>"
+                            min="1" max="730">
                     </div>
-                    
+
                     <div class="mb-3">
                         <label class="form-label"><?= __('cancellation_hours', 'admin', 'Anulowanie przed (godziny)') ?></label>
-                        <input type="number" name="cancellation_hours" class="form-control" 
-                               value="<?= htmlspecialchars($shop_settings['cancellation_hours'] ?? '') ?>"
-                               min="1" max="168">
+                        <input type="number" name="cancellation_hours" class="form-control"
+                            value="<?= htmlspecialchars($shop_settings['cancellation_hours'] ?? '') ?>"
+                            min="1" max="168">
                     </div>
-                    
+
                     <div class="form-check form-switch">
-                        <input type="checkbox" name="auto_confirmation" class="form-check-input" 
-                               id="auto_confirmation" <?= ($shop_settings['auto_confirmation'] ?? '') === '1' ? 'checked' : '' ?>>
+                        <input type="checkbox" name="auto_confirmation" class="form-check-input"
+                            id="auto_confirmation" <?= ($shop_settings['auto_confirmation'] ?? '') === '1' ? 'checked' : '' ?>>
                         <label class="form-check-label" for="auto_confirmation">
                             <?= __('auto_confirmation', 'admin', 'Automatyczne potwierdzanie') ?>
                         </label>
@@ -450,7 +423,7 @@ $languages = [
                 </div>
             </div>
         </div>
-        
+
         <!-- Powiadomienia -->
         <div class="col-lg-6">
             <div class="card">
@@ -460,29 +433,29 @@ $languages = [
                 <div class="card-body">
                     <div class="mb-3">
                         <label class="form-label"><?= __('notification_email', 'admin', 'Email dla powiadomień') ?></label>
-                        <input type="email" name="notification_email" class="form-control" 
-                               value="<?= htmlspecialchars($shop_settings['notification_email'] ?? '') ?>">
+                        <input type="email" name="notification_email" class="form-control"
+                            value="<?= htmlspecialchars($shop_settings['notification_email'] ?? '') ?>">
                     </div>
-                    
+
                     <div class="form-check form-switch mb-2">
-                        <input type="checkbox" name="notification_new_booking" class="form-check-input" 
-                               id="notif_booking" <?= ($shop_settings['notification_new_booking'] ?? '') === '1' ? 'checked' : '' ?>>
+                        <input type="checkbox" name="notification_new_booking" class="form-check-input"
+                            id="notif_booking" <?= ($shop_settings['notification_new_booking'] ?? '') === '1' ? 'checked' : '' ?>>
                         <label class="form-check-label" for="notif_booking">
                             <?= __('new_bookings', 'admin', 'Nowe rezerwacje') ?>
                         </label>
                     </div>
-                    
+
                     <div class="form-check form-switch mb-2">
-                        <input type="checkbox" name="notification_cancellation" class="form-check-input" 
-                               id="notif_cancel" <?= ($shop_settings['notification_cancellation'] ?? '') === '1' ? 'checked' : '' ?>>
+                        <input type="checkbox" name="notification_cancellation" class="form-check-input"
+                            id="notif_cancel" <?= ($shop_settings['notification_cancellation'] ?? '') === '1' ? 'checked' : '' ?>>
                         <label class="form-check-label" for="notif_cancel">
                             <?= __('cancellations', 'admin', 'Anulowania') ?>
                         </label>
                     </div>
-                    
+
                     <div class="form-check form-switch mb-2">
-                        <input type="checkbox" name="notification_payment" class="form-check-input" 
-                               id="notif_payment" <?= ($shop_settings['notification_payment'] ?? '') === '1' ? 'checked' : '' ?>>
+                        <input type="checkbox" name="notification_payment" class="form-check-input"
+                            id="notif_payment" <?= ($shop_settings['notification_payment'] ?? '') === '1' ? 'checked' : '' ?>>
                         <label class="form-check-label" for="notif_payment">
                             <?= __('payments', 'admin', 'Płatności') ?>
                         </label>
@@ -491,7 +464,7 @@ $languages = [
             </div>
         </div>
     </div>
-    
+
     <!-- Przyciski akcji -->
     <div class="mt-4 d-flex gap-2">
         <button type="submit" name="save_shop_settings" class="btn btn-primary">
@@ -526,12 +499,6 @@ $languages = [
                         <strong>Strefa czasowa:</strong> <?= htmlspecialchars($shop_settings['timezone'] ?? 'Europe/Warsaw') ?>
                     </div>
                     <div class="col-md-6">
-                        <strong><?= __('shop_language', 'admin', 'Język sklepu') ?>:</strong> <?= htmlspecialchars($languages[$shop_settings['default_language'] ?? 'pl'] ?? 'Polski') ?>
-                    </div>
-                    <div class="col-md-6">
-                        <strong><?= __('panel_language', 'admin', 'Język panelu') ?>:</strong> <?= htmlspecialchars($languages[$shop_settings['admin_language'] ?? 'pl'] ?? 'Polski') ?>
-                    </div>
-                    <div class="col-md-6">
                         <strong>VAT:</strong> <?= htmlspecialchars($shop_settings['default_tax_rate'] ?? '23') ?>%
                     </div>
                     <div class="col-md-6">
@@ -544,22 +511,22 @@ $languages = [
 </div>
 
 <style>
-.auto-fade {
-    transition: opacity 0.5s ease-out;
-}
+    .auto-fade {
+        transition: opacity 0.5s ease-out;
+    }
 </style>
 
 <script>
-// Auto-fade success alerts
-document.addEventListener('DOMContentLoaded', function() {
-    const successAlert = document.getElementById('successAlert');
-    if (successAlert) {
-        setTimeout(function() {
-            successAlert.style.opacity = '0';
+    // Auto-fade success alerts
+    document.addEventListener('DOMContentLoaded', function() {
+        const successAlert = document.getElementById('successAlert');
+        if (successAlert) {
             setTimeout(function() {
-                successAlert.style.display = 'none';
-            }, 500);
-        }, 3000);
-    }
-});
+                successAlert.style.opacity = '0';
+                setTimeout(function() {
+                    successAlert.style.display = 'none';
+                }, 500);
+            }, 3000);
+        }
+    });
 </script>

@@ -231,7 +231,7 @@ if ($applyPromos) {
                                 <span class="text-muted">Brak dostępnych dodatków.</span>
                             <?php endif; ?>
                         </div>
-                        <button type="submit" id="reserveBtn" class="btn btn-success btn-lg w-100 mb-3">Rezerwuj</button>
+                        <button type="submit" id="reserveBtn" class="btn btn-theme btn-primary btn-lg w-100 mb-3">Rezerwuj</button>
                         <div class="price-box text-center mb-2" id="livePriceBox">
                             <?php if ($priceFinal < $standardPriceDirect && $promoLabel !== ''): ?>
                                 <span class="price-label">Cena:</span>

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Polish translations for Admin/Staff panel
  */
@@ -8,7 +9,7 @@ return [
     'dashboard' => 'Panel główny',
     'vehicles' => 'Pojazdy',
     'products' => 'Produkty',
-       // Promotions section
+    // Promotions section
     'promotions' => 'Promocje',
     'add_promotion' => 'Dodaj promocję',
     'code' => 'Kod',
@@ -245,14 +246,14 @@ return [
     'profile' => 'Profil',
     'view_site' => 'Podgląd strony',
     'add_product' => 'Dodaj produkt',
-    
+
     // Settings sections
     'account_profile' => 'Profil konta',
     'users_management' => 'Zarządzanie użytkownikami',
     'email_settings' => 'Ustawienia email',
     'payment_settings' => 'Ustawienia płatności',
     'shop_settings' => 'Ustawienia sklepu',
-    
+
     // Common actions
     'save' => 'Zapisz',
     'cancel' => 'Anuluj',
@@ -280,7 +281,7 @@ return [
     'disabled' => 'Wyłączony',
     'yes' => 'Tak',
     'no' => 'Nie',
-    
+
     // Forms
     'name' => 'Nazwa',
     'email' => 'Email',
@@ -302,7 +303,7 @@ return [
     'year' => 'Rok',
     'color' => 'Kolor',
     'license_plate' => 'Numer rejestracyjny',
-    
+
     // Vehicles
     'add_vehicle' => 'Dodaj pojazd',
     'edit_vehicle' => 'Edytuj pojazd',
@@ -317,7 +318,7 @@ return [
     'doors' => 'Drzwi',
     'air_conditioning' => 'Klimatyzacja',
     'daily_rate' => 'Stawka dzienna',
-    
+
     // Users & Roles
     'users' => 'Użytkownicy',
     'add_user' => 'Dodaj użytkownika',
@@ -332,7 +333,7 @@ return [
     'last_login' => 'Ostatnie logowanie',
     'block_user' => 'Zablokuj użytkownika',
     'unblock_user' => 'Odblokuj użytkownika',
-    
+
     // Messages
     'success' => 'Sukces',
     'error' => 'Błąd',
@@ -353,7 +354,7 @@ return [
     'user_deleted_successfully' => 'Użytkownik został usunięty!',
     'unknown_action' => 'Nieznana akcja!',
     'invalid_user_id' => 'Nieprawidłowy ID użytkownika!',
-    
+
     // Settings specific
     'general_settings' => 'Ustawienia ogólne',
     'company_name' => 'Nazwa firmy',
@@ -371,7 +372,7 @@ return [
     'payment_methods' => 'Metody płatności',
     'email_templates' => 'Szablony email',
     'smtp_settings' => 'Ustawienia SMTP',
-    
+
     // Dashboard
     'welcome_back' => 'Witaj ponownie',
     'total_vehicles' => 'Łączna liczba pojazdów',
@@ -380,7 +381,7 @@ return [
     'monthly_revenue' => 'Miesięczny przychód',
     'recent_activity' => 'Ostatnia aktywność',
     'quick_actions' => 'Szybkie akcje',
-    
+
     // Time periods
     'today' => 'Dzisiaj',
     'yesterday' => 'Wczoraj',
@@ -390,7 +391,7 @@ return [
     'last_week' => 'Ostatni tydzień',
     'last_month' => 'Ostatni miesiąc',
     'last_year' => 'Ostatni rok',
-    
+
     // Vehicles and fleet management
     'fleet' => 'Flota',
     'fleet_management' => 'Zarządzaj flotą',
@@ -406,7 +407,7 @@ return [
     'unavailable_short' => 'Niedost.',
     'no_models_add_first' => 'Brak modeli. Dodaj pierwszy w Dodaj model.',
     'confirm_delete_product' => 'Usunąć produkt',
-    
+
     // Orders section
     'search_placeholder' => 'Szukaj (nazwa/sku/email)',
     'all_statuses' => 'Wszystkie statusy',
@@ -422,7 +423,7 @@ return [
     'pending' => 'Oczekujące',
     'confirmed' => 'Potwierdzone',
     'cancelled' => 'Anulowane',
-    
+
     // Promotions section
     'promotions' => 'Promocje',
     'add_promotion' => 'Dodaj promocję',
@@ -439,7 +440,7 @@ return [
     'category' => 'Kategoria',
     'specific_product' => 'Konkretny produkt',
     'product_sku' => 'Produkt (SKU)',
-    
+
     // Payment Gateways Settings
     'payment_gateways' => 'Bramki płatności',
     'gateway_configuration' => 'Konfiguracja bramek płatności',
@@ -453,7 +454,7 @@ return [
     'test_connection' => 'Testuj połączenie',
     'connection_successful' => 'Połączenie pomyślne',
     'connection_failed' => 'Połączenie nieudane',
-    
+
     // Stripe
     'stripe_name' => 'Stripe',
     'stripe_description' => 'Globalna platforma płatności online obsługująca karty, BLIK, PayU',
@@ -461,7 +462,7 @@ return [
     'stripe_secret_key' => 'Klucz prywatny',
     'stripe_webhook_secret' => 'Webhook Secret',
     'stripe_currency' => 'Waluta',
-    
+
     // PayPal
     'paypal_name' => 'PayPal',
     'paypal_description' => 'Międzynarodowy system płatności online PayPal',
@@ -470,7 +471,7 @@ return [
     'paypal_mode' => 'Tryb',
     'sandbox_test' => 'Sandbox (test)',
     'live_production' => 'Live (produkcja)',
-    
+
     // Przelewy24
     'przelewy24_name' => 'Przelewy24',
     'przelewy24_description' => 'Polski system płatności online z szerokim wsparciem banków',
@@ -480,7 +481,7 @@ return [
     'p24_mode' => 'Tryb',
     'missing_required_config' => 'Brak wymaganych danych konfiguracyjnych',
     'configure_webhook_urls' => 'Skonfiguruj poniższe URL-e webhook w panelach bramek płatności:',
-    
+
     // Shop General Settings
     'shop_general_settings' => 'Ogólne ustawienia sklepu',
     'shop_configuration' => 'Konfiguracja sklepu',
@@ -541,7 +542,7 @@ return [
     'save_all_settings' => 'Zapisz wszystkie ustawienia',
     'cancel_changes' => 'Anuluj zmiany',
     'preview_settings' => 'Podgląd ustawień',
-    
+
     // Email Templates Settings
     'email_templates' => 'Szablony email',
     'email_templates_management' => 'Zarządzanie szablonami email',
@@ -571,7 +572,7 @@ return [
     'reminder_email' => 'Email przypominający',
     'invoice_email' => 'Email z fakturą',
     'template_key_name_required' => 'Klucz szablonu i nazwa są wymagane!',
-    
+
     // Email SMTP Settings
     'email_smtp_settings' => 'Ustawienia SMTP',
     'smtp_configuration' => 'Konfiguracja SMTP',
@@ -608,7 +609,7 @@ return [
     'keepalive_description' => 'Utrzymuje połączenie dla kolejnych emaili',
     'debug_label' => 'Debug',
     'debug_description' => 'Szczegółowe logi błędów SMTP',
-    
+
     // Modal translations
     'test_template_send' => 'Test wysyłki szablonu',
     'test_email_label' => 'Email testowy',
@@ -623,7 +624,7 @@ return [
     'template_data_deleted' => 'Wszystkie dane szablonu zostaną permanentnie usunięte z bazy danych.',
     'preview_subject' => 'Podgląd:',
     'subject_label' => 'Temat:',
-    
+
     // Messages
     'template_deleted_success' => 'Szablon został usunięty!',
     'delete_error_prefix' => 'Błąd podczas usuwania',
@@ -638,7 +639,7 @@ return [
     'dear_customer' => 'Szanowny/a {customer_name},',
     'content_to_fill' => 'Treść do uzupełnienia...',
     'best_regards' => 'Pozdrawiamy,<br>{company_name}',
-    
+
     // Button and action labels
     'save_template' => 'Zapisz szablon',
     'test_sending' => 'Test wysyłki',
@@ -648,7 +649,7 @@ return [
     'available_templates' => 'Dostępne szablony',
     'available_variables' => 'Dostępne zmienne',
     'customer_section' => 'Klient',
-    'booking_section' => 'Rezerwacja', 
+    'booking_section' => 'Rezerwacja',
     'vehicle_section' => 'Pojazd',
     'company_section' => 'Firma',
     'customer_name_var' => 'Imię i nazwisko',
@@ -673,7 +674,7 @@ return [
     'lowercase_only_help' => 'Używaj tylko małych liter, cyfr i podkreśleń (np. welcome_email)',
     'friendly_name_help' => 'Przyjazna nazwa wyświetlana w interfejsie',
     'refresh' => 'Odśwież',
-    
+
     // Shop settings
     'show_prices_with_vat' => 'Wyświetlaj ceny z VAT',
     'decimal_places' => 'Miejsca dziesiętne',
@@ -701,7 +702,7 @@ return [
     'shop_language' => 'Język sklepu',
     'panel_language' => 'Język panelu',
     'currency_position' => 'Pozycja symbolu waluty',
-    
+
     // Orders section
     'change' => 'Zmień',
     'details' => 'Szczegóły',
@@ -711,5 +712,97 @@ return [
     'next' => 'Następna',
     'no_reservations' => 'Brak rezerwacji.',
     'orders' => 'Zamówienia',
+    'invalid_user_id' => 'Nieprawidłowy ID użytkownika!',
+    'user_not_found' => 'Nie znaleziono użytkownika!',
+
+    // Product form
+    'new_product' => 'Nowy produkt',
+    'edit_product' => 'Edytuj produkt',
+    'product_name' => 'Nazwa',
+    'sku_unique' => 'SKU (unikalny)',
+    'class' => 'Klasa',
+    'seats_count' => 'Ilość miejsc',
+    'car_type' => 'Typ samochodu',
+    'gearbox' => 'Skrzynia biegów',
+    'fuel_type' => 'Rodzaj paliwa',
+    'price' => 'Cena',
+    'unit' => 'Jednostka',
+    'unit_count' => 'Stan (liczba szt.)',
+    'vehicle_photos' => 'Zdjęcie pojazdu',
+    'product_description' => 'Opis produktu',
+    'save' => 'Zapisz',
+    'cancel' => 'Anuluj',
+    'choose' => 'wybierz',
+    'doors_count' => 'Ilość drzwi',
+    'transmission' => 'Skrzynia biegów',
+    'fuel_type' => 'Rodzaj paliwa',
+    'per_day' => 'za dzień',
+    'per_hour' => 'za godzinę',
+    'stock_quantity' => 'Stan (liczba szt.)',
+    'status' => 'Status',
+    'active' => 'aktywny',
+    'inactive' => 'nieaktywny',
+    'vehicle_photo' => 'Zdjęcie pojazdu',
+    'supported_formats' => 'Obsługiwane: JPG, PNG, WEBP. Maks. ~3–5 MB (zależnie od serwera).',
+    'preview' => 'Podgląd',
+    'remove_current_image' => 'Usuń obecne zdjęcie',
+    'product_description_placeholder' => 'Krótki opis, warunki wynajmu, wyposażenie itp.',
+    'delete' => 'Usuń',
+    'confirm_delete_product_id' => 'Usunąć produkt #',
+
+    // Payment settings - refunds and notifications
+    'refunds_and_cancellations' => 'Zwroty i anulowania',
+    'automatic_refunds' => 'Automatyczne zwroty',
+    'refund_days_limit' => 'Limit dni na zwrot',
+    'refund_days_help' => 'Liczba dni na zwrot kaucji po zakończeniu wynajmu',
+    'timeouts_and_notifications' => 'Timeouty i powiadomienia',
+    'payment_timeout_minutes' => 'Timeout płatności (minuty)',
+    'payment_timeout_help' => 'Czas na dokończenie płatności',
+    'send_receipt_emails' => 'Wysyłaj potwierdzenia e-mail',
+    'invoice_generation' => 'Generowanie faktur',
+    'save_settings' => 'Zapisz ustawienia',
+
+    // Theme and branding
+    'theme_appearance' => 'Wygląd i kolory',
+    'theme_colors' => 'Kolory i motyw',
+    'theme_branding' => 'Branding',
+    'basic_colors' => 'Kolory podstawowe',
+    'primary_color' => 'Kolor główny',
+    'secondary_color' => 'Kolor drugorzędny',
+    'success_color' => 'Kolor sukcesu',
+    'warning_color' => 'Kolor ostrzeżenia',
+    'danger_color' => 'Kolor błędu',
+    'info_color' => 'Kolor informacyjny',
+    'gradient_settings' => 'Ustawienia gradientu',
+    'enable_gradient' => 'Włącz gradient dla kolorów głównych',
+    'gradient_start' => 'Kolor początkowy gradientu',
+    'gradient_end' => 'Kolor końcowy gradientu',
+    'gradient_direction' => 'Kierunek gradientu',
+    'gradient_preview' => 'Podgląd gradientu',
+    'reset_defaults' => 'Przywróć domyślne',
+    'confirm_reset_defaults' => 'Czy na pewno chcesz przywrócić domyślne ustawienia kolorów?',
+    'theme_settings_saved' => 'Ustawienia motywu zostały zapisane!',
+    'theme_save_error' => 'Błąd podczas zapisywania ustawień motywu.',
+    'logo_settings' => 'Ustawienia logo',
+    'show_logo' => 'Wyświetlaj logo zamiast tekstu',
+    'show_logo_description' => 'Gdy włączone, w nagłówku strony będzie pokazywane logo zamiast tekstu',
+    'logo_url' => 'URL do logo',
+    'logo_url_help' => 'Wklej link do obrazka logo. Zalecany rozmiar: 200x80px lub mniejszy.',
+    'logo_alt_text' => 'Tekst alternatywny logo',
+    'logo_alt_placeholder' => 'Nazwa firmy - logo',
+    'logo_alt_help' => 'Tekst wyświetlany gdy logo się nie załaduje oraz dla czytników ekranu.',
+    'logo_preview' => 'Podgląd logo',
+    'brand_text_settings' => 'Ustawienia tekstu brandingu',
+    'brand_text' => 'Tekst brandingu',
+    'brand_text_help' => 'Tekst wyświetlany w nagłówku gdy logo jest wyłączone.',
+    'brand_preview' => 'Podgląd brandingu',
+    'brand_preview_help' => 'Tak będzie wyglądać branding w nagłówku strony.',
+    'tips' => 'Wskazówki',
+    'tip_logo_size' => 'Zalecany rozmiar logo: 200x80px',
+    'tip_logo_format' => 'Użyj PNG z przezroczystym tłem',
+    'tip_logo_hosting' => 'Logo może być hostowane zewnętrznie',
+    'tip_brand_text' => 'Tekst brandingu jest zawsze dostępny jako fallback',
+    'confirm_reset_branding' => 'Czy na pewno chcesz przywrócić domyślne ustawienia brandingu?',
+    'branding_settings_saved' => 'Ustawienia brandingu zostały zapisane!',
+    'branding_save_error' => 'Błąd podczas zapisywania ustawień brandingu.',
 ];
-?>

@@ -54,7 +54,7 @@ foreach ($settings_files as $file) {
         $output = [];
         $return_var = 0;
         exec("php -l \"$file\" 2>&1", $output, $return_var);
-        
+
         if ($return_var === 0) {
             echo "✅ $file: Składnia OK<br>";
         } else {
@@ -67,4 +67,3 @@ foreach ($settings_files as $file) {
 
 echo "<br><h3>Test kompletny!</h3>";
 echo "<p><a href='?page=dashboard-staff&section=settings'>Przejdź do panelu ustawień</a></p>";
-?>

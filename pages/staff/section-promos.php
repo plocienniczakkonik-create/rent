@@ -103,59 +103,59 @@ $maps = [
                     </tr>
                 </thead>
                 <tbody>
-        <?php 
-        // Setup maps for helper functions
-        $maps = [
-            'byId'  => $productNameById,
-            'bySku' => $productNameBySku,
-            'class' => $classLabel,
-        ];
-        
-        if (empty($promos)): ?>
-            <tr>
-                <td colspan="10" class="text-center text-muted py-4"><?= __('no_promotions', 'admin', 'Brak promocji.') ?></td>
-            </tr>
-            <?php else: foreach ($promos as $pr): ?>
-                <?php
-                $id       = (int)($pr['id'] ?? 0);
-                $name     = (string)($pr['name'] ?? '');
-                $code     = $pr['code'] ?? null;
-                $isA      = (int)($pr['is_active'] ?? 0) === 1;
-                $typ      = (string)($pr['scope_type'] ?? 'global');
-                $vals     = $pr['scope_value'] ?? null;
+                    <?php
+                    // Setup maps for helper functions
+                    $maps = [
+                        'byId'  => $productNameById,
+                        'bySku' => $productNameBySku,
+                        'class' => $classLabel,
+                    ];
 
-                $discType = isset($pr['discount_type']) ? (string)$pr['discount_type'] : 'percent';
-                $discVal  = isset($pr['discount_val'])  ? (float)$pr['discount_val']  : 0.0;
-                $disc     = promo_discount($discType, $discVal);
+                    if (empty($promos)): ?>
+                        <tr>
+                            <td colspan="10" class="text-center text-muted py-4"><?= __('no_promotions', 'admin', 'Brak promocji.') ?></td>
+                        </tr>
+                        <?php else: foreach ($promos as $pr): ?>
+                            <?php
+                            $id       = (int)($pr['id'] ?? 0);
+                            $name     = (string)($pr['name'] ?? '');
+                            $code     = $pr['code'] ?? null;
+                            $isA      = (int)($pr['is_active'] ?? 0) === 1;
+                            $typ      = (string)($pr['scope_type'] ?? 'global');
+                            $vals     = $pr['scope_value'] ?? null;
 
-                $minD     = (int)($pr['min_days'] ?? 1);
-                $period   = promo_period($pr['valid_from'] ?? null, $pr['valid_to'] ?? null);
+                            $discType = isset($pr['discount_type']) ? (string)$pr['discount_type'] : 'percent';
+                            $discVal  = isset($pr['discount_val'])  ? (float)$pr['discount_val']  : 0.0;
+                            $disc     = promo_discount($discType, $discVal);
 
-                $dotyczy  = promo_values_for_scope($typ, $vals, $maps, 3);
-                ?>
-                <tr>
-                    <td><?= $id ?></td>
-                    <td><?= htmlspecialchars($name) ?></td>
-                    <td class="font-monospace"><?= $code ? htmlspecialchars($code) : '—' ?></td>
-                    <td><?= $isA ? __('yes', 'admin', 'Tak') : __('no', 'admin', 'Nie') ?></td>
-                    <td><?= promo_scope_label($typ) ?></td>
-                    <td><?= $dotyczy ?></td>
-                    <td><?= $disc ?></td>
-                    <td><?= $minD ?></td>
-                    <td><?= $period ?></td>
-                    <td class="text-end">
-                        <div class="d-flex gap-1 justify-content-end">
-                            <a href="pages/promo-form.php?id=<?= $id ?>" class="btn btn-outline-primary btn-sm"><?= __('edit', 'admin', 'Edytuj') ?></a>
-                            <a href="pages/promo-delete.php?id=<?= $id ?>&_token=<?= htmlspecialchars(csrf_token(), ENT_QUOTES) ?>"
-                                class="btn btn-outline-danger btn-sm"
-                                onclick="return confirm('<?= __('confirm_delete_promotion', 'admin', 'Usunąć promocję') ?> #<?= $id ?>?');"><?= __('delete', 'admin', 'Usuń') ?></a>
-                        </div>
-                    </td>
-                </tr>
-        <?php endforeach;
-        endif; ?>
-    </tbody>
-    </table>
+                            $minD     = (int)($pr['min_days'] ?? 1);
+                            $period   = promo_period($pr['valid_from'] ?? null, $pr['valid_to'] ?? null);
+
+                            $dotyczy  = promo_values_for_scope($typ, $vals, $maps, 3);
+                            ?>
+                            <tr>
+                                <td><?= $id ?></td>
+                                <td><?= htmlspecialchars($name) ?></td>
+                                <td class="font-monospace"><?= $code ? htmlspecialchars($code) : '—' ?></td>
+                                <td><?= $isA ? __('yes', 'admin', 'Tak') : __('no', 'admin', 'Nie') ?></td>
+                                <td><?= promo_scope_label($typ) ?></td>
+                                <td><?= $dotyczy ?></td>
+                                <td><?= $disc ?></td>
+                                <td><?= $minD ?></td>
+                                <td><?= $period ?></td>
+                                <td class="text-end">
+                                    <div class="d-flex gap-1 justify-content-end">
+                                        <a href="pages/promo-form.php?id=<?= $id ?>" class="btn btn-outline-primary btn-sm"><?= __('edit', 'admin', 'Edytuj') ?></a>
+                                        <a href="pages/promo-delete.php?id=<?= $id ?>&_token=<?= htmlspecialchars(csrf_token(), ENT_QUOTES) ?>"
+                                            class="btn btn-outline-danger btn-sm"
+                                            onclick="return confirm('<?= __('confirm_delete_promotion', 'admin', 'Usunąć promocję') ?> #<?= $id ?>?');"><?= __('delete', 'admin', 'Usuń') ?></a>
+                                    </div>
+                                </td>
+                            </tr>
+                    <?php endforeach;
+                    endif; ?>
+                </tbody>
+            </table>
         </div>
     </div>
 </div>

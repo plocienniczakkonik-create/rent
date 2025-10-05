@@ -1,19 +1,25 @@
 <?php
 // /pages/staff/settings/users-add.php
+require_once dirname(dirname(dirname(__DIR__))) . '/includes/i18n.php';
+
+// Initialize i18n if not already done
+if (!class_exists('i18n') || !method_exists('i18n', 'getAdminLanguage')) {
+    i18n::init();
+}
 
 // Obsługa dodawania użytkownika
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['add_user'])) {
     $db = db();
-    
+
     $first_name = trim($_POST['first_name'] ?? '');
     $last_name = trim($_POST['last_name'] ?? '');
     $email = trim($_POST['email'] ?? '');
     $role = $_POST['role'] ?? 'client';
     $status = $_POST['status'] ?? 'active';
     $send_email = isset($_POST['send_welcome_email']);
-    
+
     $errors = [];
-    
+
     // Walidacja
     if (empty($email) || !filter_var($email, FILTER_VALIDATE_EMAIL)) {
         $errors[] = __('provide_valid_email', 'admin', 'Podaj prawidłowy adres email');
@@ -24,7 +30,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['add_user'])) {
     if (!in_array($status, ['active', 'inactive', 'pending'])) {
         $errors[] = __('invalid_status', 'admin', 'Nieprawidłowy status');
     }
-    
+
     // Sprawdź czy email już istnieje
     if (empty($errors)) {
         $stmt = $db->prepare("SELECT COUNT(*) FROM users WHERE email = ?");
@@ -33,29 +39,28 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['add_user'])) {
             $errors[] = __('email_already_exists', 'admin', 'Użytkownik o takim emailu już istnieje');
         }
     }
-    
+
     // Dodaj użytkownika
     if (empty($errors)) {
         $password = bin2hex(random_bytes(8)); // Generuj tymczasowe hasło
         $password_hash = password_hash($password, PASSWORD_DEFAULT);
         $is_active = ($status === 'active') ? 1 : 0;
-        
+
         try {
             $stmt = $db->prepare("
                 INSERT INTO users (first_name, last_name, email, password_hash, role, is_active) 
                 VALUES (?, ?, ?, ?, ?, ?)
             ");
             $stmt->execute([$first_name, $last_name, $email, $password_hash, $role, $is_active]);
-            
+
             $success_message = __('user_created_successfully', 'admin', 'Użytkownik został utworzony pomyślnie. Tymczasowe hasło') . ": <strong>$password</strong>";
-            
+
             if ($send_email) {
                 $success_message .= "<br>" . __('welcome_email_sent', 'admin', 'Email powitalny zostanie wysłany (funkcja w budowie).');
             }
-            
+
             // Wyczyść formularz
             $_POST = [];
-            
         } catch (PDOException $e) {
             $errors[] = __('error_creating_user', 'admin', 'Błąd podczas tworzenia użytkownika') . ': ' . $e->getMessage();
         }
@@ -68,8 +73,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['add_user'])) {
         <h5 class="mb-1"><?= __('add_new_user', 'admin', 'Dodaj nowego użytkownika') ?></h5>
         <p class="text-muted mb-0"><?= __('create_new_account', 'admin', 'Utwórz nowe konto w systemie') ?></p>
     </div>
-    <a href="<?= $BASE ?>/index.php?page=dashboard-staff&section=settings&settings_section=users&settings_subsection=list#pane-settings" 
-       class="btn btn-outline-secondary">
+    <a href="<?= $BASE ?>/index.php?page=dashboard-staff&section=settings&settings_section=users&settings_subsection=list#pane-settings"
+        class="btn btn-outline-secondary">
         <i class="bi bi-arrow-left"></i> <?= __('back_to_list', 'admin', 'Powrót do listy') ?>
     </a>
 </div>
@@ -104,28 +109,28 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['add_user'])) {
                 <form method="POST" class="row g-3">
                     <div class="col-md-6">
                         <label class="form-label"><?= __('first_name', 'admin', 'Imię') ?></label>
-                        <input type="text" name="first_name" class="form-control" 
-                               value="<?= htmlspecialchars($_POST['first_name'] ?? '') ?>" 
-                               placeholder="Jan">
+                        <input type="text" name="first_name" class="form-control"
+                            value="<?= htmlspecialchars($_POST['first_name'] ?? '') ?>"
+                            placeholder="Jan">
                         <div class="form-text"><?= __('optional', 'admin', 'opcjonalne') ?></div>
                     </div>
-                    
+
                     <div class="col-md-6">
                         <label class="form-label"><?= __('last_name', 'admin', 'Nazwisko') ?></label>
-                        <input type="text" name="last_name" class="form-control" 
-                               value="<?= htmlspecialchars($_POST['last_name'] ?? '') ?>" 
-                               placeholder="Kowalski">
+                        <input type="text" name="last_name" class="form-control"
+                            value="<?= htmlspecialchars($_POST['last_name'] ?? '') ?>"
+                            placeholder="Kowalski">
                         <div class="form-text"><?= __('optional', 'admin', 'opcjonalne') ?></div>
                     </div>
-                    
+
                     <div class="col-md-12">
                         <label class="form-label"><?= __('email_address', 'admin', 'Adres email') ?> <span class="text-danger">*</span></label>
-                        <input type="email" name="email" class="form-control" 
-                               value="<?= htmlspecialchars($_POST['email'] ?? '') ?>" 
-                               placeholder="jan@example.com" required>
+                        <input type="email" name="email" class="form-control"
+                            value="<?= htmlspecialchars($_POST['email'] ?? '') ?>"
+                            placeholder="jan@example.com" required>
                         <div class="form-text"><?= __('email_for_communication', 'admin', 'Adres email dla komunikacji') ?></div>
                     </div>
-                    
+
                     <div class="col-md-6">
                         <label class="form-label"><?= __('role', 'admin', 'Rola') ?> <span class="text-danger">*</span></label>
                         <select name="role" class="form-select" required>
@@ -140,7 +145,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['add_user'])) {
                             </option>
                         </select>
                     </div>
-                    
+
                     <div class="col-md-6">
                         <label class="form-label"><?= __('account_status', 'admin', 'Status konta') ?></label>
                         <select name="status" class="form-select">
@@ -155,27 +160,27 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['add_user'])) {
                             </option>
                         </select>
                     </div>
-                    
+
                     <div class="col-12">
                         <div class="form-check">
-                            <input type="checkbox" name="send_welcome_email" id="send_welcome_email" 
-                                   class="form-check-input" 
-                                   <?= isset($_POST['send_welcome_email']) ? 'checked' : '' ?>>
+                            <input type="checkbox" name="send_welcome_email" id="send_welcome_email"
+                                class="form-check-input"
+                                <?= isset($_POST['send_welcome_email']) ? 'checked' : '' ?>>
                             <label class="form-check-label" for="send_welcome_email">
                                 <?= __('send_welcome_email', 'admin', 'Wyślij email powitalny z danymi do logowania') ?>
                             </label>
                             <div class="form-text"><?= __('email_with_credentials', 'admin', 'Email będzie zawierał dane do logowania i tymczasowe hasło') ?></div>
                         </div>
                     </div>
-                    
+
                     <div class="col-12">
                         <hr>
                         <div class="d-flex gap-2">
                             <button type="submit" name="add_user" class="btn btn-primary">
                                 <i class="bi bi-person-plus"></i> <?= __('create_user', 'admin', 'Utwórz użytkownika') ?>
                             </button>
-                            <a href="<?= $BASE ?>/index.php?page=dashboard-staff&section=settings&settings_section=users&settings_subsection=list#pane-settings" 
-                               class="btn btn-outline-secondary">
+                            <a href="<?= $BASE ?>/index.php?page=dashboard-staff&section=settings&settings_section=users&settings_subsection=list#pane-settings"
+                                class="btn btn-outline-secondary">
                                 <?= __('cancel', 'admin', 'Anuluj') ?>
                             </a>
                         </div>
@@ -184,7 +189,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['add_user'])) {
             </div>
         </div>
     </div>
-    
+
     <div class="col-lg-4">
         <div class="card">
             <div class="card-header">
@@ -197,16 +202,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['add_user'])) {
                     <li><span class="badge bg-primary"><?= __('staff', 'admin', 'Pracownik') ?></span> - <?= __('access_admin_panel', 'admin', 'dostęp do panelu administracyjnego') ?></li>
                     <li><span class="badge bg-danger"><?= __('admin', 'admin', 'Administrator') ?></span> - <?= __('full_system_permissions', 'admin', 'pełne uprawnienia systemu') ?></li>
                 </ul>
-                
+
                 <hr>
-                
+
                 <h6><?= __('temporary_password', 'admin', 'Hasło tymczasowe') ?>:</h6>
                 <p class="small text-muted">
                     <?= __('auto_generated_password', 'admin', 'System automatycznie wygeneruje bezpieczne hasło tymczasowe. Użytkownik powinien je zmienić przy pierwszym logowaniu.') ?>
                 </p>
-                
+
                 <hr>
-                
+
                 <h6><?= __('welcome_email', 'admin', 'Email powitalny') ?>:</h6>
                 <p class="small text-muted">
                     <?= __('email_function_pending', 'admin', 'Funkcja wysyłania emaili zostanie zaimplementowana w konfiguracji SMTP.') ?>
@@ -217,22 +222,22 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['add_user'])) {
 </div>
 
 <style>
-.auto-fade {
-    transition: opacity 0.5s ease-out;
-}
+    .auto-fade {
+        transition: opacity 0.5s ease-out;
+    }
 </style>
 
 <script>
-// Auto-hide success alerts after 3 seconds with fade effect
-document.addEventListener('DOMContentLoaded', function() {
-    const successAlert = document.getElementById('successAlert');
-    if (successAlert) {
-        setTimeout(function() {
-            successAlert.style.opacity = '0';
+    // Auto-hide success alerts after 3 seconds with fade effect
+    document.addEventListener('DOMContentLoaded', function() {
+        const successAlert = document.getElementById('successAlert');
+        if (successAlert) {
             setTimeout(function() {
-                successAlert.style.display = 'none';
-            }, 500); // Wait for fade transition to complete
-        }, 3000); // Start fade after 3 seconds
-    }
-});
+                successAlert.style.opacity = '0';
+                setTimeout(function() {
+                    successAlert.style.display = 'none';
+                }, 500); // Wait for fade transition to complete
+            }, 3000); // Start fade after 3 seconds
+        }
+    });
 </script>

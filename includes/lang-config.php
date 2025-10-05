@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Language Configuration
  * Centralized language settings and available languages
@@ -12,13 +13,13 @@ $available_languages = [
         'enabled' => true
     ],
     'en' => [
-        'name' => 'English', 
+        'name' => 'English',
         'flag' => '🇺🇸',
         'enabled' => true
     ],
     'de' => [
         'name' => 'Deutsch',
-        'flag' => '🇩🇪', 
+        'flag' => '🇩🇪',
         'enabled' => false // Future implementation
     ],
     'cs' => [
@@ -43,4 +44,3 @@ $language_contexts = [
     'client',   // Client dashboard
     'frontend'  // Public website
 ];
-?>

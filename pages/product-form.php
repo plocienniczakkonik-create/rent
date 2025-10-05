@@ -8,6 +8,10 @@ require_once dirname(__DIR__) . '/partials/header.php';
 require_once dirname(__DIR__) . '/includes/db.php';
 require_once dirname(__DIR__) . '/includes/_helpers.php';
 
+// Initialize i18n
+require_once dirname(__DIR__) . '/includes/i18n.php';
+i18n::init();
+
 $BASE = defined('BASE_URL') ? rtrim(BASE_URL, '/') : '';
 
 $id = isset($_GET['id']) ? (int)$_GET['id'] : 0;
@@ -53,7 +57,8 @@ if ($id > 0) {
 /* =========================
    DYNAMICZNE SŁOWNIKI
    ========================= */
-function dict_names_active(PDO $pdo, string $typeSlug): array {
+function dict_names_active(PDO $pdo, string $typeSlug): array
+{
     $sql = "
         SELECT t.name
         FROM dict_terms t
@@ -76,7 +81,7 @@ $seatOpts   = [2, 3, 4, 5];
 $doorOpts   = [2, 4];
 $gearboxes  = ['Manualna', 'Automatyczna'];
 $fuels      = ['Benzyna', 'Diesel', 'Hybryda', 'Elektryczny'];
-$units      = ['per_day' => 'za dzień', 'per_hour' => 'za godzinę']; // na przyszłość
+$units      = ['per_day' => i18n::__('per_day'), 'per_hour' => i18n::__('per_hour')]; // na przyszłość
 
 ?>
 <!-- Wycentrowany wrapper jak w dashboardach -->
@@ -84,7 +89,7 @@ $units      = ['per_day' => 'za dzień', 'per_hour' => 'za godzinę']; // na prz
     style="min-height: calc(100vh - 72px); padding-top: 72px;">
     <div class="w-100" style="max-width: 820px; margin: 0 auto;">
 
-        <h1 class="h4 mb-3"><?= $id ? 'Edytuj produkt' : 'Nowy produkt' ?></h1>
+        <h1 class="h4 mb-3"><?= $id ? i18n::__('edit_product') : i18n::__('new_product') ?></h1>
 
         <!-- multipart do uploadu zdjęcia -->
         <form method="post"
@@ -98,12 +103,12 @@ $units      = ['per_day' => 'za dzień', 'per_hour' => 'za godzinę']; // na prz
             <!-- Nazwa + SKU -->
             <div class="row g-3">
                 <div class="col-md-8">
-                    <label class="form-label">Nazwa</label>
+                    <label class="form-label"><?= i18n::__('product_name') ?></label>
                     <input type="text" name="name" class="form-control" required
                         value="<?= htmlspecialchars($product['name']) ?>">
                 </div>
                 <div class="col-md-4">
-                    <label class="form-label">SKU (unikalny)</label>
+                    <label class="form-label"><?= i18n::__('sku_unique') ?></label>
                     <input type="text" name="sku" class="form-control" required
                         value="<?= htmlspecialchars($product['sku']) ?>">
                 </div>
@@ -112,9 +117,9 @@ $units      = ['per_day' => 'za dzień', 'per_hour' => 'za godzinę']; // na prz
             <!-- Klasyfikacja pojazdu -->
             <div class="row g-3 mt-1">
                 <div class="col-md-4">
-                    <label class="form-label">Klasa</label>
+                    <label class="form-label"><?= i18n::__('class') ?></label>
                     <select name="category" class="form-select" required>
-                        <option value="" <?= $product['category'] === '' ? 'selected' : '' ?> disabled>— wybierz —</option>
+                        <option value="" <?= $product['category'] === '' ? 'selected' : '' ?> disabled>— <?= i18n::__('choose') ?> —</option>
                         <?php foreach ($categories as $opt): ?>
                             <option value="<?= htmlspecialchars($opt) ?>"
                                 <?= $product['category'] === $opt ? 'selected' : ''; ?>><?= htmlspecialchars($opt) ?></option>
@@ -123,9 +128,9 @@ $units      = ['per_day' => 'za dzień', 'per_hour' => 'za godzinę']; // na prz
                 </div>
 
                 <div class="col-md-4">
-                    <label class="form-label">Ilość miejsc</label>
+                    <label class="form-label"><?= i18n::__('seats_count') ?></label>
                     <select name="seats" class="form-select" required>
-                        <option value="" <?= $product['seats'] === '' ? 'selected' : '' ?> disabled>— wybierz —</option>
+                        <option value="" <?= $product['seats'] === '' ? 'selected' : '' ?> disabled>— <?= i18n::__('choose') ?> —</option>
                         <?php foreach ($seatOpts as $n): ?>
                             <option value="<?= $n ?>" <?= ((string)$product['seats'] === (string)$n) ? 'selected' : ''; ?>><?= $n ?></option>
                         <?php endforeach; ?>
@@ -133,9 +138,9 @@ $units      = ['per_day' => 'za dzień', 'per_hour' => 'za godzinę']; // na prz
                 </div>
 
                 <div class="col-md-4">
-                    <label class="form-label">Ilość drzwi</label>
+                    <label class="form-label"><?= i18n::__('doors_count') ?></label>
                     <select name="doors" class="form-select" required>
-                        <option value="" <?= $product['doors'] === '' ? 'selected' : '' ?> disabled>— wybierz —</option>
+                        <option value="" <?= $product['doors'] === '' ? 'selected' : '' ?> disabled>— <?= i18n::__('choose') ?> —</option>
                         <?php foreach ($doorOpts as $n): ?>
                             <option value="<?= $n ?>" <?= ((string)$product['doors'] === (string)$n) ? 'selected' : ''; ?>><?= $n ?></option>
                         <?php endforeach; ?>
@@ -146,9 +151,9 @@ $units      = ['per_day' => 'za dzień', 'per_hour' => 'za godzinę']; // na prz
             <!-- Typ samochodu -->
             <div class="row g-3 mt-1">
                 <div class="col-md-4">
-                    <label class="form-label">Typ samochodu</label>
+                    <label class="form-label"><?= i18n::__('car_type') ?></label>
                     <select name="car_type" class="form-select" required>
-                        <option value="" <?= $product['car_type'] === '' ? 'selected' : '' ?> disabled>— wybierz —</option>
+                        <option value="" <?= $product['car_type'] === '' ? 'selected' : '' ?> disabled>— <?= i18n::__('choose') ?> —</option>
                         <?php foreach ($carTypes as $opt): ?>
                             <option value="<?= htmlspecialchars($opt) ?>"
                                 <?= ($product['car_type'] === $opt) ? 'selected' : ''; ?>>
@@ -159,9 +164,9 @@ $units      = ['per_day' => 'za dzień', 'per_hour' => 'za godzinę']; // na prz
                 </div>
 
                 <div class="col-md-4">
-                    <label class="form-label">Skrzynia biegów</label>
+                    <label class="form-label"><?= i18n::__('transmission') ?></label>
                     <select name="gearbox" class="form-select" required>
-                        <option value="" <?= $product['gearbox'] === '' ? 'selected' : '' ?> disabled>— wybierz —</option>
+                        <option value="" <?= $product['gearbox'] === '' ? 'selected' : '' ?> disabled>— <?= i18n::__('choose') ?> —</option>
                         <?php foreach ($gearboxes as $opt): ?>
                             <option value="<?= htmlspecialchars($opt) ?>"
                                 <?= $product['gearbox'] === $opt ? 'selected' : ''; ?>><?= htmlspecialchars($opt) ?></option>
@@ -170,9 +175,9 @@ $units      = ['per_day' => 'za dzień', 'per_hour' => 'za godzinę']; // na prz
                 </div>
 
                 <div class="col-md-4">
-                    <label class="form-label">Rodzaj paliwa</label>
+                    <label class="form-label"><?= i18n::__('fuel_type') ?></label>
                     <select name="fuel" class="form-select" required>
-                        <option value="" <?= $product['fuel'] === '' ? 'selected' : '' ?> disabled>— wybierz —</option>
+                        <option value="" <?= $product['fuel'] === '' ? 'selected' : '' ?> disabled>— <?= i18n::__('choose') ?> —</option>
                         <?php foreach ($fuels as $opt): ?>
                             <option value="<?= htmlspecialchars($opt) ?>"
                                 <?= $product['fuel'] === $opt ? 'selected' : ''; ?>><?= htmlspecialchars($opt) ?></option>
@@ -184,7 +189,7 @@ $units      = ['per_day' => 'za dzień', 'per_hour' => 'za godzinę']; // na prz
             <!-- Cena + jednostka + stan -->
             <div class="row g-3 mt-1">
                 <div class="col-md-5">
-                    <label class="form-label">Cena</label>
+                    <label class="form-label"><?= i18n::__('price') ?></label>
                     <div class="input-group">
                         <span class="input-group-text">PLN</span>
                         <input type="number" name="price" class="form-control" step="0.01" min="0" required
@@ -193,9 +198,9 @@ $units      = ['per_day' => 'za dzień', 'per_hour' => 'za godzinę']; // na prz
                 </div>
 
                 <div class="col-md-4">
-                    <label class="form-label">Jednostka</label>
+                    <label class="form-label"><?= i18n::__('unit') ?></label>
                     <select name="price_unit" class="form-select" required>
-                        <option value="" <?= $product['price_unit'] === '' ? 'selected' : '' ?> disabled>— wybierz —</option>
+                        <option value="" <?= $product['price_unit'] === '' ? 'selected' : '' ?> disabled>— <?= i18n::__('choose') ?> —</option>
                         <?php foreach ($units as $key => $label): ?>
                             <option value="<?= $key ?>" <?= $product['price_unit'] === $key ? 'selected' : ''; ?>><?= $label ?></option>
                         <?php endforeach; ?>
@@ -203,7 +208,7 @@ $units      = ['per_day' => 'za dzień', 'per_hour' => 'za godzinę']; // na prz
                 </div>
 
                 <div class="col-md-3">
-                    <label class="form-label">Stan (liczba szt.)</label>
+                    <label class="form-label"><?= i18n::__('stock_quantity') ?></label>
                     <input type="number" name="stock" class="form-control" step="1" min="0" required
                         value="<?= (int)$product['stock'] ?>">
                 </div>
@@ -211,25 +216,25 @@ $units      = ['per_day' => 'za dzień', 'per_hour' => 'za godzinę']; // na prz
 
             <!-- Status (zostawiamy domyślnie active; jeśli chcesz też wymuszać wybór, dodaj required i placeholder) -->
             <div class="mt-3">
-                <label class="form-label">Status</label>
+                <label class="form-label"><?= i18n::__('status') ?></label>
                 <select name="status" class="form-select">
-                    <option value="active" <?= $product['status'] === 'active' ? 'selected' : ''; ?>>active</option>
-                    <option value="inactive" <?= $product['status'] === 'inactive' ? 'selected' : ''; ?>>inactive</option>
+                    <option value="active" <?= $product['status'] === 'active' ? 'selected' : ''; ?>><?= i18n::__('active') ?></option>
+                    <option value="inactive" <?= $product['status'] === 'inactive' ? 'selected' : ''; ?>><?= i18n::__('inactive') ?></option>
                 </select>
             </div>
 
             <!-- Zdjęcie (upload) -->
             <div class="mt-3">
-                <label class="form-label">Zdjęcie pojazdu</label>
+                <label class="form-label"><?= i18n::__('vehicle_photo') ?></label>
                 <input type="file" name="image" class="form-control" accept="image/*">
-                <div class="form-text">Obsługiwane: JPG, PNG, WEBP. Maks. ~3–5 MB (zależnie od serwera).</div>
+                <div class="form-text"><?= i18n::__('supported_formats') ?></div>
 
                 <?php if (!empty($product['image_path'])): ?>
                     <div class="d-flex align-items-center gap-3 mt-2">
-                        <img src="<?= htmlspecialchars($product['image_path']) ?>" alt="Podgląd" style="height: 72px; width:auto; border-radius: 8px;">
+                        <img src="<?= htmlspecialchars($product['image_path']) ?>" alt="<?= i18n::__('preview') ?>" style="height: 72px; width:auto; border-radius: 8px;">
                         <div class="form-check">
                             <input class="form-check-input" type="checkbox" name="remove_image" value="1" id="rmimg">
-                            <label class="form-check-label" for="rmimg">Usuń obecne zdjęcie</label>
+                            <label class="form-check-label" for="rmimg"><?= i18n::__('remove_current_image') ?></label>
                         </div>
                     </div>
                 <?php endif; ?>
@@ -237,19 +242,19 @@ $units      = ['per_day' => 'za dzień', 'per_hour' => 'za godzinę']; // na prz
 
             <!-- Opis -->
             <div class="mt-3">
-                <label class="form-label">Opis produktu</label>
-                <textarea name="description" rows="5" class="form-control" placeholder="Krótki opis, warunki wynajmu, wyposażenie itp."><?= htmlspecialchars($product['description']) ?></textarea>
+                <label class="form-label"><?= i18n::__('product_description') ?></label>
+                <textarea name="description" rows="5" class="form-control" placeholder="<?= i18n::__('product_description_placeholder') ?>"><?= htmlspecialchars($product['description']) ?></textarea>
             </div>
 
             <!-- Przyciski -->
             <div class="d-flex gap-2 mt-3">
-                <button class="btn btn-primary" type="submit">Zapisz</button>
-                <a class="btn btn-outline-secondary" href="<?= $BASE ?>/index.php?page=dashboard-staff">Anuluj</a>
+                <button class="btn btn-primary" type="submit"><?= i18n::__('save') ?></button>
+                <a class="btn btn-outline-secondary" href="<?= $BASE ?>/index.php?page=dashboard-staff"><?= i18n::__('cancel') ?></a>
 
                 <?php if ($id): ?>
                     <a class="btn btn-outline-danger ms-auto"
                         href="<?= $BASE ?>/pages/product-delete.php?id=<?= (int)$product['id'] ?>&csrf=<?= htmlspecialchars(csrf_token()) ?>"
-                        onclick="return confirm('Usunąć produkt #<?= (int)$product['id'] ?>?');">Usuń</a>
+                        onclick="return confirm('<?= i18n::__('confirm_delete_product_id') ?><?= (int)$product['id'] ?>?');"><?= i18n::__('delete') ?></a>
                 <?php endif; ?>
             </div>
         </form>

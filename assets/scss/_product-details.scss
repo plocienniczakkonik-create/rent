@@ -21,7 +21,7 @@
 .calendar-day-price {
   display: block;
   font-size: 0.95rem;
-  color: #198754;
+  color: var(--color-primary);
   margin-top: 18px;
   font-weight: 700;
   background: #f8fafc;
@@ -37,7 +37,7 @@
 .calendar-price-box {
   font-size: 2rem;
   font-weight: 800;
-  color: #198754;
+  color: var(--color-primary);
   margin-top: 1.2rem;
   width: 100%;
   padding: 0.7rem 0;
@@ -172,7 +172,7 @@
     padding: 1rem 0.5rem;
     font-size: 1.5rem;
     font-weight: 700;
-    color: #198754;
+    color: var(--color-primary);
     box-shadow: 0 2px 8px rgba(0,0,0,0.04);
     .price-label {
       font-size: 1.1rem;
@@ -183,7 +183,7 @@
     .price-value {
       font-size: 2.1rem;
       font-weight: 800;
-      color: #198754;
+      color: var(--color-primary);
       margin-right: 0.5rem;
     }
     .price-unit {
