@@ -1,4 +1,3 @@
-
 <?php
 require_once dirname(__DIR__) . '/partials/head.php';
 require_once dirname(__DIR__) . '/partials/header.php';
@@ -224,7 +223,7 @@ $reports = [
                 console.log('Found trigger:', trigger);
                 if (trigger) {
                     // Dezaktywuj obecną aktywną zakładkę
-                    var activeTab = document.querySelector('.nav-link.active');
+                    var activeTab = document.querySelector('.nav-link-custom.active');
                     var activePane = document.querySelector('.tab-pane.active');
                     if (activeTab) activeTab.classList.remove('active');
                     if (activePane) {

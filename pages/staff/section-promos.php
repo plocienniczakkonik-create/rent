@@ -83,7 +83,7 @@ $maps = [
 <div class="card section-promos">
     <div class="card-header d-flex align-items-center justify-content-between" style="background: var(--gradient-primary); color: white; border-bottom: 1px solid var(--color-primary-dark);">
         <h2 class="h6 mb-0"><i class="bi bi-stars me-2"></i><?= __('promotions', 'admin', 'Promocje') ?></h2>
-    <a class="btn btn-sm btn-clean" href="pages/promo-form.php"><i class="bi bi-plus-lg me-1"></i><?= __('add_promotion', 'admin', 'Dodaj promocję') ?></a>
+        <a class="btn btn-sm btn-clean" href="pages/promo-form.php"><i class="bi bi-plus-lg me-1"></i><?= __('add_promotion', 'admin', 'Dodaj promocję') ?></a>
     </div>
     <div class="card-body p-0">
         <div class="table-responsive">
