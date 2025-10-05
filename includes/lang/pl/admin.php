@@ -750,6 +750,27 @@ return [
     'delete' => 'Usuń',
     'confirm_delete_product_id' => 'Usunąć produkt #',
 
+    // Auto-generate SKU
+    'auto_generate_sku' => 'Auto-generuj SKU',
+    'sku_auto_generated_info' => 'SKU jest automatycznie generowane z nazwy',
+
+    // Deposit settings
+    'deposit_settings' => 'Ustawienia kaucji',
+    'enable_individual_deposit' => 'Włącz indywidualną kaucję dla tego pojazdu',
+    'enable_individual_deposit_info' => 'Zaznacz, aby nadpisać globalne ustawienia kaucji dla tego pojazdu',
+    'deposit_type' => 'Typ kaucji',
+    'fixed_amount' => 'Stała kwota',
+    'percentage_of_price' => 'Procent od ceny',
+    'percentage' => 'Procent (%)',
+    'amount' => 'Kwota (PLN)',
+
+    // Product form sections
+    'basic_information' => 'Podstawowe informacje',
+    'vehicle_classification' => 'Klasyfikacja pojazdu',
+    'technical_parameters' => 'Parametry techniczne',
+    'pricing' => 'Cennik',
+    'choose_photo' => 'Wybierz zdjęcie',
+
     // Payment settings - refunds and notifications
     'refunds_and_cancellations' => 'Zwroty i anulowania',
     'automatic_refunds' => 'Automatyczne zwroty',

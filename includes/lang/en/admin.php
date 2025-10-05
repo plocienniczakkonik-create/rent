@@ -750,6 +750,27 @@ return [
     'delete' => 'Delete',
     'confirm_delete_product_id' => 'Delete product #',
 
+    // Auto-generate SKU
+    'auto_generate_sku' => 'Auto-generate SKU',
+    'sku_auto_generated_info' => 'SKU is automatically generated from name',
+
+    // Deposit settings
+    'deposit_settings' => 'Deposit Settings',
+    'enable_individual_deposit' => 'Enable individual deposit for this vehicle',
+    'enable_individual_deposit_info' => 'Check to override global deposit settings for this vehicle',
+    'deposit_type' => 'Deposit Type',
+    'fixed_amount' => 'Fixed Amount',
+    'percentage_of_price' => 'Percentage of Price',
+    'percentage' => 'Percentage (%)',
+    'amount' => 'Amount (PLN)',
+
+    // Product form sections
+    'basic_information' => 'Basic Information',
+    'vehicle_classification' => 'Vehicle Classification',
+    'technical_parameters' => 'Technical Parameters',
+    'pricing' => 'Pricing',
+    'choose_photo' => 'Choose Photo',
+
     // Payment settings - refunds and notifications
     'refunds_and_cancellations' => 'Refunds and Cancellations',
     'automatic_refunds' => 'Automatic Refunds',

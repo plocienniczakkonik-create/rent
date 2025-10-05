@@ -14,10 +14,10 @@ $id          = (int)($_POST['id'] ?? 0);
 $name        = trim((string)($_POST['name'] ?? ''));
 $sku         = trim((string)($_POST['sku'] ?? ''));
 $priceStr    = (string)($_POST['price'] ?? '0');
-$stockStr    = (string)($_POST['stock'] ?? '0');
 $status      = (($_POST['status'] ?? 'active') === 'inactive') ? 'inactive' : 'active';
 
 $category    = trim((string)($_POST['category'] ?? 'Klasa C'));
+$carType     = trim((string)($_POST['car_type'] ?? ''));
 $seatsStr    = (string)($_POST['seats'] ?? '5');
 $doorsStr    = (string)($_POST['doors'] ?? '4');
 $gearbox     = (string)($_POST['gearbox'] ?? 'Manualna');
@@ -26,11 +26,16 @@ $price_unit  = (string)($_POST['price_unit'] ?? 'per_day');
 $description = trim((string)($_POST['description'] ?? ''));
 $removeImage = !empty($_POST['remove_image']);
 
+// Kaucja
+$depositEnabled = !empty($_POST['deposit_enabled']);
+$depositType    = (string)($_POST['deposit_type'] ?? 'fixed');
+$depositAmountStr = (string)($_POST['deposit_amount'] ?? '0');
+
 // --- Normalizacja liczb ---
 $price = (float) str_replace(',', '.', $priceStr);
-$stock = (int) $stockStr;
 $seats = (int) $seatsStr;
 $doors = (int) $doorsStr;
+$depositAmount = (float) str_replace(',', '.', $depositAmountStr);
 
 // --- Białe listy wartości ---
 $allowedCategories = ['Klasa A', 'Klasa B', 'Klasa C', 'Klasa D', 'Klasa E'];
@@ -39,9 +44,10 @@ $allowedDoors      = [2, 4];
 $allowedGearbox    = ['Manualna', 'Automatyczna'];
 $allowedFuel       = ['Benzyna', 'Diesel', 'Hybryda', 'Elektryczny'];
 $allowedUnits      = ['per_day', 'per_hour'];
+$allowedDepositTypes = ['fixed', 'percentage'];
 
 // Walidacja podstawowa
-if ($name === '' || $sku === '' || $price < 0 || $stock < 0) {
+if ($name === '' || $sku === '' || $price < 0) {
     http_response_code(422);
     exit('Błędne dane formularza.');
 }
@@ -51,6 +57,8 @@ if (!in_array($doors,     $allowedDoors, true))     $doors    = 4;
 if (!in_array($gearbox,   $allowedGearbox, true))   $gearbox  = 'Manualna';
 if (!in_array($fuel,      $allowedFuel, true))      $fuel     = 'Benzyna';
 if (!in_array($price_unit, $allowedUnits, true))     $price_unit = 'per_day';
+if (!in_array($depositType, $allowedDepositTypes, true)) $depositType = 'fixed';
+if ($depositAmount < 0) $depositAmount = 0;
 if (mb_strlen($name) > 190 || mb_strlen($sku) > 64) {
     http_response_code(422);
     exit('Zbyt długie wartości pola.');
@@ -131,8 +139,9 @@ try {
         // UPDATE
         $sql = "
       UPDATE products
-         SET name = ?, sku = ?, price = ?, price_unit = ?, stock = ?, status = ?,
-             category = ?, seats = ?, doors = ?, gearbox = ?, fuel = ?, description = ?
+         SET name = ?, sku = ?, price = ?, price_unit = ?, status = ?,
+             category = ?, car_type = ?, seats = ?, doors = ?, gearbox = ?, fuel = ?, description = ?,
+             deposit_enabled = ?, deposit_type = ?, deposit_amount = ?
              " . ($uploadedImagePath !== null ? ", image_path = ?" : "") . "
        WHERE id = ?
        LIMIT 1
@@ -142,14 +151,17 @@ try {
             $sku,
             $price,
             $price_unit,
-            $stock,
             $status,
             $category,
+            $carType,
             $seats,
             $doors,
             $gearbox,
             $fuel,
-            $description
+            $description,
+            $depositEnabled ? 1 : 0,
+            $depositType,
+            $depositAmount
         ];
         if ($uploadedImagePath !== null) $params[] = $uploadedImagePath;
         $params[] = $id;
@@ -160,9 +172,10 @@ try {
         // INSERT
         $sql = "
       INSERT INTO products
-        (name, sku, price, price_unit, stock, status, category, seats, doors, gearbox, fuel, description, image_path)
+        (name, sku, price, price_unit, status, category, car_type, seats, doors, gearbox, fuel, description, image_path,
+         deposit_enabled, deposit_type, deposit_amount)
       VALUES
-        (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
     ";
         $stmt = db()->prepare($sql);
         $stmt->execute([
@@ -170,15 +183,18 @@ try {
             $sku,
             $price,
             $price_unit,
-            $stock,
             $status,
             $category,
+            $carType,
             $seats,
             $doors,
             $gearbox,
             $fuel,
             $description,
-            $uploadedImagePath
+            $uploadedImagePath,
+            $depositEnabled ? 1 : 0,
+            $depositType,
+            $depositAmount
         ]);
         $id = (int)db()->lastInsertId();
     }

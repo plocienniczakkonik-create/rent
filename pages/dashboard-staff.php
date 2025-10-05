@@ -155,7 +155,7 @@ $reports = [
                     </div>
                     <div class="d-flex gap-2">
                         <a class="btn btn-outline-secondary btn-sm" href="<?= $BASE ?>/index.php"><?= __('view_site', 'admin', 'Podgląd strony') ?></a>
-                        <a class="btn btn-primary btn-sm" href="pages/product-form.php" id="product-new">+ <?= __('add_product', 'admin', 'Dodaj produkt') ?></a>
+                        <a class="btn btn-primary btn-sm" href="index.php?page=product-form" id="product-new">+ <?= __('add_product', 'admin', 'Dodaj produkt') ?></a>
                     </div>
                 </div>
             </div>

@@ -4,6 +4,7 @@ require_once dirname(__DIR__) . '/auth/auth.php';
 $staff = require_staff();
 require_once dirname(__DIR__) . '/includes/db.php';
 require_once dirname(__DIR__) . '/includes/_helpers.php';
+require_once dirname(__DIR__) . '/includes/vehicle-location-manager.php';
 
 if (session_status() !== PHP_SESSION_ACTIVE) {
     session_start();
@@ -38,6 +39,7 @@ $status             = (string)($_POST['status'] ?? '');
 $mileage            = ($_POST['mileage'] ?? '') === '' ? null : (int)$_POST['mileage'];
 $vinRaw             = (string)($_POST['vin'] ?? '');
 $location           = trim((string)($_POST['location'] ?? ''));
+$location_id        = isset($_POST['location_id']) && $_POST['location_id'] !== '' ? (int)$_POST['location_id'] : null;
 $notes              = trim((string)($_POST['notes'] ?? ''));
 $insp_raw           = trim((string)($_POST['inspection_date'] ?? ''));
 $ins_exp_raw        = trim((string)($_POST['insurance_expiry_date'] ?? $_POST['insurance_until'] ?? ''));
@@ -195,6 +197,13 @@ try {
         ]);
 
         $id = (int)$db->lastInsertId();
+
+        // Dla nowych pojazdów - ustaw lokalizację w systemie flotowym
+        if ($location_id) {
+            $movedBy = isset($_SESSION['user_id']) ? $_SESSION['user_id'] : null;
+            VehicleLocationManager::updateLocation($id, $location_id, 'initial', 'Początkowa lokalizacja pojazdu', $movedBy);
+        }
+
         $_SESSION['flash_ok'] = 'Dodano nowy pojazd.';
     }
 

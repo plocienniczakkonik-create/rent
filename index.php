@@ -77,6 +77,10 @@ $actionRoutes = [
     'vehicle-order-delete'    => __DIR__ . '/pages/vehicle-order-delete.php',
     // rezerwacje (status)
     'reservation-status-save' => __DIR__ . '/pages/reservation-status-save.php',
+
+    // Produkty (modele pojazdów)
+    'product-save'            => __DIR__ . '/pages/product-save.php',
+    'product-delete'          => __DIR__ . '/pages/product-delete.php',
 ];
 
 // 1) Biała lista akcji
@@ -118,6 +122,9 @@ $routes = [
     'checkout'         => __DIR__ . '/pages/checkout.php',
     'checkout-confirm' => __DIR__ . '/pages/checkout-confirm.php',
     'reservation-details' => __DIR__ . '/pages/reservation-details.php',
+
+    // Produkty (modele pojazdów)
+    'product-form'     => __DIR__ . '/pages/product-form.php',
 
     // >>> DODANE (formularze serwisów i kolizji)
     'vehicle-service-form'   => __DIR__ . '/pages/vehicle-service-form.php',

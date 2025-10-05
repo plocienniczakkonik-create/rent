@@ -10,6 +10,15 @@ if (!class_exists('i18n') || !method_exists('i18n', 'getAdminLanguage')) {
 
 $db = db();
 
+// Pobierz realne lokalizacje z bazy danych
+$locations = [];
+try {
+    $stmt = $db->query("SELECT id, name, city FROM locations WHERE is_active = 1 ORDER BY name");
+    $locations = $stmt->fetchAll(PDO::FETCH_ASSOC);
+} catch (Exception $e) {
+    // W przypadku błędu, lokalizacje zostaną puste
+}
+
 // Pobierz ustawienia sklepu
 $shop_settings = [];
 $stmt = $db->query("SELECT setting_key, setting_value FROM shop_settings");
@@ -64,9 +73,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['save_shop_settings'])
 
             // System kaucji zwrotnych
             'deposits_enabled' => isset($_POST['deposits_enabled']) ? '1' : '0',
-            'default_deposit_type' => $_POST['default_deposit_type'] ?? 'percentage',
-            'default_deposit_amount' => $_POST['default_deposit_amount'] ?? '200',
-            'default_deposit_percentage' => $_POST['default_deposit_percentage'] ?? '10',
+            'global_deposit_override' => isset($_POST['global_deposit_override']) ? '1' : '0',
+            'default_deposit_type' => $_POST['default_deposit_type'] ?? 'fixed',
+            'default_deposit_value' => $_POST['default_deposit_value'] ?? '200',
             'deposits_include_in_payment' => isset($_POST['deposits_include_in_payment']) ? '1' : '0',
 
             // Ustawienia rezerwacji
@@ -373,17 +382,11 @@ $timezones = [
                             <label class="form-label"><?= __('default_fleet_location', 'admin', 'Domyślna lokalizacja') ?></label>
                             <select class="form-select" name="fleet_default_location">
                                 <option value=""><?= __('select_location', 'admin', 'Wybierz lokalizację') ?></option>
-                                <?php
-                                try {
-                                    $locations = $db->query("SELECT id, name, city FROM locations WHERE is_active = 1 ORDER BY name")->fetchAll();
-                                    foreach ($locations as $location) {
-                                        $selected = ($shop_settings['fleet_default_location'] ?? '') == $location['id'] ? 'selected' : '';
-                                        echo "<option value='{$location['id']}' $selected>{$location['name']} ({$location['city']})</option>";
-                                    }
-                                } catch (Exception $e) {
-                                    echo "<option value=''>" . __('error_loading_locations', 'admin', 'Błąd ładowania lokalizacji') . "</option>";
-                                }
-                                ?>
+                                <?php foreach ($locations as $location): ?>
+                                    <option value="<?= $location['id'] ?>" <?= ($shop_settings['fleet_default_location'] ?? '') == $location['id'] ? 'selected' : '' ?>>
+                                        <?= htmlspecialchars($location['name']) ?> (<?= htmlspecialchars($location['city']) ?>)
+                                    </option>
+                                <?php endforeach; ?>
                             </select>
                         </div>
 
@@ -503,28 +506,33 @@ $timezones = [
                             <div class="form-text"><?= __('deposit_system_description', 'admin', 'Automatyczne zarządzanie kaucjami zwrotnymi przy rezerwacjach') ?></div>
                         </div>
 
+                        <div class="col-12">
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="global_deposit_override"
+                                    name="global_deposit_override" <?= ($shop_settings['global_deposit_override'] ?? '0') == '1' ? 'checked' : '' ?>>
+                                <label class="form-check-label" for="global_deposit_override">
+                                    <strong><?= __('global_deposit_override', 'admin', 'Ustaw globalnie dla wszystkich pojazdów') ?></strong>
+                                </label>
+                            </div>
+                            <div class="form-text"><?= __('global_deposit_description', 'admin', 'Jeśli zaznaczone, ustawienia kaucji będą stosowane do wszystkich pojazdów. Indywidualne ustawienia w kartach pojazdów będą miały wyższy priorytet.') ?></div>
+                        </div>
+
                         <div class="col-md-6">
-                            <label class="form-label"><?= __('default_deposit_type', 'admin', 'Domyślny typ kaucji') ?></label>
-                            <select class="form-select" name="default_deposit_type">
-                                <option value="fixed" <?= ($shop_settings['default_deposit_type'] ?? '') === 'fixed' ? 'selected' : '' ?>><?= __('fixed_amount', 'admin', 'Stała kwota') ?></option>
-                                <option value="percentage" <?= ($shop_settings['default_deposit_type'] ?? '') === 'percentage' ? 'selected' : '' ?>><?= __('percentage_of_rental', 'admin', 'Procent od wynajmu') ?></option>
+                            <label class="form-label"><?= __('default_deposit_type', 'admin', 'Typ kaucji') ?></label>
+                            <select class="form-select" name="default_deposit_type" id="deposit_type_select">
+                                <option value="fixed" <?= ($shop_settings['default_deposit_type'] ?? '') === 'fixed' ? 'selected' : '' ?>><?= __('fixed_amount', 'admin', 'Stała kwota (PLN)') ?></option>
+                                <option value="percentage" <?= ($shop_settings['default_deposit_type'] ?? '') === 'percentage' ? 'selected' : '' ?>><?= __('percentage_of_rental', 'admin', 'Procent od wartości zamówienia (%)') ?></option>
                             </select>
                         </div>
 
-                        <div class="col-md-3">
-                            <label class="form-label"><?= __('fixed_deposit_amount', 'admin', 'Stała kwota kaucji') ?> (PLN)</label>
-                            <input type="number" class="form-control" name="default_deposit_amount"
-                                value="<?= htmlspecialchars($shop_settings['default_deposit_amount'] ?? '200') ?>"
-                                min="0" step="10">
+                        <div class="col-md-6">
+                            <label class="form-label" id="deposit_value_label">
+                                <?= ($shop_settings['default_deposit_type'] ?? '') === 'percentage' ? 'Procent kaucji (%)' : 'Kwota kaucji (PLN)' ?>
+                            </label>
+                            <input type="number" class="form-control" name="default_deposit_value" id="deposit_value_input"
+                                value="<?= htmlspecialchars($shop_settings['default_deposit_value'] ?? ($shop_settings['default_deposit_type'] === 'percentage' ? '10' : '200')) ?>"
+                                min="0" step="0.01" required>
                         </div>
-
-                        <div class="col-md-3">
-                            <label class="form-label"><?= __('percentage_deposit', 'admin', 'Procent kaucji') ?> (%)</label>
-                            <input type="number" class="form-control" name="default_deposit_percentage"
-                                value="<?= htmlspecialchars($shop_settings['default_deposit_percentage'] ?? '10') ?>"
-                                min="0" max="100" step="1">
-                        </div>
-
                         <div class="col-12">
                             <div class="form-check">
                                 <input class="form-check-input" type="checkbox" id="deposits_include_in_payment"
@@ -665,6 +673,29 @@ $timezones = [
         } else if (window.location.hash === '#location-fees' && successAlert) {
             // Jeśli pokazuje się alert sukcesu (po POST) i mamy hash location-fees, usuń go
             history.replaceState(null, null, window.location.pathname + window.location.search);
+        }
+
+        // Obsługa dynamicznej zmiany typu kaucji
+        const depositTypeSelect = document.getElementById('deposit_type_select');
+        const depositValueLabel = document.getElementById('deposit_value_label');
+        const depositValueInput = document.getElementById('deposit_value_input');
+
+        if (depositTypeSelect && depositValueLabel && depositValueInput) {
+            depositTypeSelect.addEventListener('change', function() {
+                const type = this.value;
+
+                if (type === 'percentage') {
+                    depositValueLabel.textContent = 'Procent kaucji (%)';
+                    depositValueInput.setAttribute('max', '100');
+                    depositValueInput.setAttribute('step', '1');
+                    depositValueInput.value = '10';
+                } else {
+                    depositValueLabel.textContent = 'Kwota kaucji (PLN)';
+                    depositValueInput.removeAttribute('max');
+                    depositValueInput.setAttribute('step', '10');
+                    depositValueInput.value = '200';
+                }
+            });
         }
     });
 </script>

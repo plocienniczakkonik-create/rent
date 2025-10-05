@@ -1,8 +1,12 @@
 {
-    "branding": {
-        "use_logo": false,
-        "logo_path": "\/assets\/img\/logo.png",
-        "logo_alt": "CORONA Logo",
-        "brand_text": "CORONA"
-    }
+    "primary_color": "#667eea",
+    "secondary_color": "#8a799a",
+    "success_color": "#569f7d",
+    "warning_color": "#d9af30",
+    "danger_color": "#d36973",
+    "info_color": "#0dcaf0",
+    "gradient_enabled": false,
+    "gradient_start": "#667eea",
+    "gradient_end": "#764ba2",
+    "gradient_direction": "45deg"
 }

@@ -91,70 +91,192 @@ function status_badge($s)
         </ol>
     </nav>
 
-    <div class="d-flex align-items-center justify-content-between mb-3">
-        <h1 class="h4 m-0">Egzemplarze: <?= htmlspecialchars($product['name']) ?></h1>
-        <div class="d-flex gap-2">
-            <!-- NOWY: Wstecz -->
-            <a href="<?= $BASE ?>/index.php?page=dashboard-staff#pane-vehicles" class="btn btn-outline-secondary">← Wstecz</a>
-            <!-- Dodaj pojazd -->
-            <a href="<?= $BASE ?>/index.php?page=vehicle-form&product_id=<?= (int)$product_id ?>"
-                class="btn btn-primary">+ Dodaj pojazd tego modelu</a>
+    <!-- Sekcja: Lista egzemplarzy -->
+    <div class="card border-primary shadow-sm">
+        <div class="card-header bg-primary text-white">
+            <div class="d-flex align-items-center justify-content-between">
+                <h4 class="mb-0">
+                    <i class="bi bi-car-front-fill me-2"></i>Egzemplarze: <?= htmlspecialchars($product['name']) ?>
+                </h4>
+                <div class="d-flex gap-2">
+                    <!-- Wstecz -->
+                    <a href="<?= $BASE ?>/index.php?page=dashboard-staff#pane-vehicles"
+                        class="btn btn-outline-light btn-sm">
+                        <i class="bi bi-arrow-left me-1"></i>Wstecz
+                    </a>
+                    <!-- Dodaj pojazd -->
+                    <a href="<?= $BASE ?>/index.php?page=vehicle-form&product_id=<?= (int)$product_id ?>"
+                        class="btn btn-warning btn-sm">
+                        <i class="bi bi-plus-lg me-1"></i>Dodaj pojazd tego modelu
+                    </a>
+                </div>
+            </div>
         </div>
-    </div>
 
-    <div class="card">
-        <div class="table-responsive">
-            <table class="table table-striped align-middle mb-0">
-                <thead>
-                    <tr>
-                        <th><?= sort_link_manage('reg', 'Nr rej.') ?></th>
-                        <th><?= sort_link_manage('vin', 'VIN') ?></th>
-                        <th><?= sort_link_manage('status', 'Status') ?></th>
-                        <th><?= sort_link_manage('insp', 'Przegląd') ?></th>
-                        <th><?= sort_link_manage('insur', 'Ubezpieczenie') ?></th>
-                        <th><?= sort_link_manage('mileage', 'Przebieg') ?></th>
-                        <th><?= sort_link_manage('location', 'Lokalizacja') ?></th>
-                        <th class="text-end">Akcje</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <?php if (!$rows): ?>
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-striped table-hover align-middle mb-0">
+                    <thead class="table-light">
                         <tr>
-                            <td colspan="8" class="text-center py-5 text-muted">Brak egzemplarzy tego modelu. Dodaj pierwszy.</td>
+                            <th><?= sort_link_manage('reg', 'Nr rej.') ?></th>
+                            <th><?= sort_link_manage('vin', 'VIN') ?></th>
+                            <th><?= sort_link_manage('status', 'Status') ?></th>
+                            <th><?= sort_link_manage('insp', 'Przegląd') ?></th>
+                            <th><?= sort_link_manage('insur', 'Ubezpieczenie') ?></th>
+                            <th><?= sort_link_manage('mileage', 'Przebieg') ?></th>
+                            <th><?= sort_link_manage('location', 'Lokalizacja') ?></th>
+                            <th class="text-end">Akcje</th>
                         </tr>
-                        <?php else: foreach ($rows as $r): ?>
-                            <?php $vid = (int)$r['id']; ?>
+                    </thead>
+                    <tbody>
+                        <?php if (!$rows): ?>
                             <tr>
-                                <td class="fw-semibold">
-                                    <a class="text-decoration-none"
-                                        href="<?= $BASE ?>/index.php?page=vehicle-detail&id=<?= $vid ?>">
-                                        <?= htmlspecialchars($r['registration_number']) ?>
-                                    </a>
-                                </td>
-                                <td><?= $r['vin'] ? htmlspecialchars($r['vin']) : '<span class="text-muted">—</span>' ?></td>
-                                <td><span class="badge <?= status_badge($r['status']) ?>"><?= htmlspecialchars($r['status']) ?></span></td>
-                                <td><?= $r['inspection_date'] ? htmlspecialchars($r['inspection_date']) : '<span class="text-muted">—</span>' ?></td>
-                                <td><?= $r['insurance_expiry_date'] ? htmlspecialchars($r['insurance_expiry_date']) : '<span class="text-muted">—</span>' ?></td>
-                                <td><?= $r['mileage'] !== null ? (int)$r['mileage'] . ' km' : '<span class="text-muted">—</span>' ?></td>
-                                <td><?= $r['location'] ? htmlspecialchars($r['location']) : '<span class="text-muted">—</span>' ?></td>
-                                <td class="text-end">
-                                    <a class="btn btn-sm btn-outline-secondary"
-                                        href="<?= $BASE ?>/index.php?page=vehicle-detail&id=<?= $vid ?>">Szczegóły</a>
-
-                                    <a class="btn btn-sm btn-outline-primary"
-                                        href="<?= $BASE ?>/index.php?page=vehicle-form&id=<?= $vid ?>">Edytuj</a>
-
-                                    <a class="btn btn-sm btn-outline-danger"
-                                        href="<?= $BASE ?>/index.php?page=vehicle-delete&id=<?= $vid ?>&csrf=<?= htmlspecialchars(csrf_token()) ?>"
-                                        onclick="return confirm('Usunąć egzemplarz #<?= $vid ?>? Tej operacji nie można cofnąć.');">
-                                        Usuń
-                                    </a>
+                                <td colspan="8" class="text-center py-5">
+                                    <div class="text-muted">
+                                        <i class="bi bi-inbox display-4 d-block mb-3"></i>
+                                        <h5>Brak egzemplarzy tego modelu</h5>
+                                        <p>Dodaj pierwszy pojazd tego modelu, aby rozpocząć zarządzanie flotą.</p>
+                                        <a href="<?= $BASE ?>/index.php?page=vehicle-form&product_id=<?= (int)$product_id ?>"
+                                            class="btn btn-primary">
+                                            <i class="bi bi-plus-lg me-1"></i>Dodaj pierwszy pojazd
+                                        </a>
+                                    </div>
                                 </td>
                             </tr>
-                    <?php endforeach;
-                    endif; ?>
-                </tbody>
-            </table>
+                            <?php else: foreach ($rows as $r): ?>
+                                <?php $vid = (int)$r['id']; ?>
+                                <tr>
+                                    <td class="fw-semibold">
+                                        <a class="text-decoration-none text-primary"
+                                            href="<?= $BASE ?>/index.php?page=vehicle-detail&id=<?= $vid ?>">
+                                            <i class="bi bi-car-front me-1"></i><?= htmlspecialchars($r['registration_number']) ?>
+                                        </a>
+                                    </td>
+                                    <td>
+                                        <?php if ($r['vin']): ?>
+                                            <code class="small"><?= htmlspecialchars($r['vin']) ?></code>
+                                        <?php else: ?>
+                                            <span class="text-muted">—</span>
+                                        <?php endif; ?>
+                                    </td>
+                                    <td><span class="badge <?= status_badge($r['status']) ?>"><?= htmlspecialchars($r['status']) ?></span></td>
+                                    <td>
+                                        <?php if ($r['inspection_date']): ?>
+                                            <i class="bi bi-calendar-check text-success me-1"></i><?= htmlspecialchars($r['inspection_date']) ?>
+                                        <?php else: ?>
+                                            <span class="text-muted">—</span>
+                                        <?php endif; ?>
+                                    </td>
+                                    <td>
+                                        <?php if ($r['insurance_expiry_date']): ?>
+                                            <i class="bi bi-shield-check text-info me-1"></i><?= htmlspecialchars($r['insurance_expiry_date']) ?>
+                                        <?php else: ?>
+                                            <span class="text-muted">—</span>
+                                        <?php endif; ?>
+                                    </td>
+                                    <td>
+                                        <?php if ($r['mileage'] !== null): ?>
+                                            <i class="bi bi-speedometer text-warning me-1"></i><?= number_format((int)$r['mileage']) ?> km
+                                        <?php else: ?>
+                                            <span class="text-muted">—</span>
+                                        <?php endif; ?>
+                                    </td>
+                                    <td>
+                                        <?php if ($r['location']): ?>
+                                            <i class="bi bi-geo-alt text-danger me-1"></i><?= htmlspecialchars($r['location']) ?>
+                                        <?php else: ?>
+                                            <span class="text-muted">—</span>
+                                        <?php endif; ?>
+                                    </td>
+                                    <td class="text-end">
+                                        <div class="btn-group" role="group">
+                                            <a class="btn btn-sm btn-outline-secondary"
+                                                href="<?= $BASE ?>/index.php?page=vehicle-detail&id=<?= $vid ?>"
+                                                title="Szczegóły">
+                                                <i class="bi bi-eye"></i>
+                                            </a>
+
+                                            <a class="btn btn-sm btn-outline-primary"
+                                                href="<?= $BASE ?>/index.php?page=vehicle-form&id=<?= $vid ?>"
+                                                title="Edytuj">
+                                                <i class="bi bi-pencil"></i>
+                                            </a>
+
+                                            <a class="btn btn-sm btn-outline-danger"
+                                                href="<?= $BASE ?>/index.php?page=vehicle-delete&id=<?= $vid ?>&csrf=<?= htmlspecialchars(csrf_token()) ?>"
+                                                onclick="return confirm('Usunąć egzemplarz #<?= $vid ?>? Tej operacji nie można cofnąć.');"
+                                                title="Usuń">
+                                                <i class="bi bi-trash"></i>
+                                            </a>
+                                        </div>
+                                    </td>
+                                </tr>
+                        <?php endforeach;
+                        endif; ?>
+                    </tbody>
+                </table>
+            </div>
         </div>
     </div>
 </div>
+
+<style>
+    /* Improved card styling */
+    .card {
+        transition: all 0.2s ease-in-out;
+    }
+
+    .card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15) !important;
+    }
+
+    .table-hover tbody tr:hover {
+        background-color: rgba(13, 110, 253, 0.05);
+    }
+
+    .btn-group .btn {
+        border-radius: 0.375rem !important;
+        margin: 0 1px;
+    }
+
+    .badge {
+        font-size: 0.75rem;
+        padding: 0.35em 0.65em;
+    }
+
+    /* VIN code styling */
+    code {
+        background-color: #f8f9fa;
+        color: #495057;
+        padding: 0.2rem 0.4rem;
+        border-radius: 0.25rem;
+        font-size: 0.875em;
+    }
+
+    /* Icon colors */
+    .text-primary {
+        color: #0d6efd !important;
+    }
+
+    .text-success {
+        color: #198754 !important;
+    }
+
+    .text-info {
+        color: #0dcaf0 !important;
+    }
+
+    .text-warning {
+        color: #ffc107 !important;
+    }
+
+    .text-danger {
+        color: #dc3545 !important;
+    }
+
+    /* Empty state styling */
+    .table td .display-4 {
+        opacity: 0.3;
+    }
+</style>
