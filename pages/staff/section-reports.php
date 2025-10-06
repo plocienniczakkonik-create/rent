@@ -254,7 +254,10 @@ $monthlyLabelsJson = json_encode(array_column($reports['monthly_revenue'], 'mont
                 if (data.success) {
                     currentData = data.data;
                     updateView();
-                    showNotification('Raport został zaktualizowany', 'success');
+                    // Pokazuj powiadomienie tylko jeśli nie zmieniamy języka
+                    if (!window.languageJustChanged) {
+                        showNotification('Raport został zaktualizowany', 'success');
+                    }
                 } else {
                     showNotification('Błąd ładowania danych: ' + data.error, 'error');
                 }

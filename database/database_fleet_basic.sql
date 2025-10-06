@@ -1,3 +1,44 @@
+-- 12. Powiązanie rezerwacji z egzemplarzem pojazdu
+ALTER TABLE `reservations` ADD COLUMN `vehicle_id` INT UNSIGNED COMMENT 'ID egzemplarza pojazdu';
+ALTER TABLE `reservations` ADD INDEX `idx_vehicle_id` (`vehicle_id`);
+ALTER TABLE `reservations` ADD FOREIGN KEY (`vehicle_id`) REFERENCES `vehicles`(`id`) ON DELETE SET NULL;
+-- Indeksy dla analityki i raportów
+ALTER TABLE `reservations` ADD INDEX `idx_pickup_location` (`pickup_location`), ADD INDEX `idx_status` (`status`);
+ALTER TABLE `vehicles` ADD INDEX `idx_status` (`status`);
+-- 11. Tabela serwisów i przeglądów pojazdów
+CREATE TABLE IF NOT EXISTS `vehicle_services` (
+  `id` INT AUTO_INCREMENT PRIMARY KEY,
+  `vehicle_id` INT UNSIGNED NOT NULL COMMENT 'ID pojazdu',
+  `reservation_id` INT UNSIGNED COMMENT 'ID rezerwacji',
+  `service_type` VARCHAR(64) NOT NULL COMMENT 'Typ serwisu (przegląd, naprawa, wymiana)',
+  `description` TEXT,
+  `cost` DECIMAL(10,2) DEFAULT 0.00,
+  `service_date` DATETIME DEFAULT CURRENT_TIMESTAMP,
+  `status` ENUM('scheduled','completed','in_progress') DEFAULT 'scheduled',
+  `created_at` DATETIME DEFAULT CURRENT_TIMESTAMP,
+  FOREIGN KEY (`vehicle_id`) REFERENCES `vehicles`(`id`) ON DELETE CASCADE,
+  FOREIGN KEY (`reservation_id`) REFERENCES `reservations`(`id`) ON DELETE SET NULL,
+  INDEX `idx_vehicle` (`vehicle_id`),
+  INDEX `idx_reservation` (`reservation_id`),
+  INDEX `idx_status` (`status`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+-- 10. Tabela incydentów pojazdów (kolizje, szkody)
+CREATE TABLE IF NOT EXISTS `vehicle_incidents` (
+  `id` INT AUTO_INCREMENT PRIMARY KEY,
+  `vehicle_id` INT UNSIGNED NOT NULL COMMENT 'ID pojazdu',
+  `reservation_id` INT UNSIGNED COMMENT 'ID rezerwacji',
+  `incident_type` VARCHAR(64) NOT NULL COMMENT 'Typ incydentu (kolizja, szkoda, awaria)',
+  `description` TEXT,
+  `cost` DECIMAL(10,2) DEFAULT 0.00,
+  `incident_date` DATETIME DEFAULT CURRENT_TIMESTAMP,
+  `status` ENUM('open','closed','in_review') DEFAULT 'open',
+  `created_at` DATETIME DEFAULT CURRENT_TIMESTAMP,
+  FOREIGN KEY (`vehicle_id`) REFERENCES `vehicles`(`id`) ON DELETE CASCADE,
+  FOREIGN KEY (`reservation_id`) REFERENCES `reservations`(`id`) ON DELETE SET NULL,
+  INDEX `idx_vehicle` (`vehicle_id`),
+  INDEX `idx_reservation` (`reservation_id`),
+  INDEX `idx_status` (`status`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 -- Część 1: Podstawowe tabele systemu Fleet Management
 -- (bez triggerów i procedur składowanych)
 

@@ -63,6 +63,7 @@ $navPosClass = $overlay
                             i18n::init();
                         }
                         echo i18n::renderLanguageSwitcher('both', $_SERVER['REQUEST_URI']);
+                        echo "<script>window.languageJustChanged = true; setTimeout(function(){window.languageJustChanged = false;}, 2000);</script>";
                         ?>
                     </li>
                     <li class="nav-item me-2 d-none d-lg-block">
@@ -86,6 +87,7 @@ $navPosClass = $overlay
                             i18n::init();
                         }
                         echo i18n::renderLanguageSwitcher('frontend', $_SERVER['REQUEST_URI']);
+                        echo "<script>window.languageJustChanged = true; setTimeout(function(){window.languageJustChanged = false;}, 2000);</script>";
                         ?>
                     </li>
                     <li class="nav-item ms-2">

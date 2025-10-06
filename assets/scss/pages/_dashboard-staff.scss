@@ -82,6 +82,7 @@
     i {
       color: #6b7280;
       font-size: 0.875rem;
+      transition: color 0.2s;
     }
 
     &:hover:not(.active) {
@@ -104,6 +105,7 @@
 
       i {
         color: white !important;
+        filter: drop-shadow(0 0 2px rgba(0,0,0,0.15));
       }
 
       &:hover {
@@ -114,6 +116,7 @@
         
         i {
           color: white !important;
+          filter: drop-shadow(0 0 2px rgba(0,0,0,0.15));
         }
       }
     }

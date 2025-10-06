@@ -38,6 +38,86 @@ try {
     $whereClause = 'WHERE ' . implode(' AND ', $whereConditions);
 
     switch ($reportType) {
+        case 'vehicles':
+            $stmt = db()->prepare("
+                SELECT 
+                    r.vehicle_id,
+                    v.vin,
+                    v.registration_number,
+                    p.name as model,
+                    COUNT(*) as reservations,
+                    SUM(r.total_gross) as revenue,
+                    AVG(r.rental_days) as avg_days
+                FROM reservations r
+                LEFT JOIN vehicles v ON r.vehicle_id = v.id
+                LEFT JOIN products p ON v.product_id = p.id
+                $whereClause
+                GROUP BY r.vehicle_id, v.vin, v.registration_number, p.name
+                ORDER BY reservations DESC
+                LIMIT 20
+            ");
+            $stmt->execute($params);
+            $data = $stmt->fetchAll(PDO::FETCH_ASSOC);
+            break;
+
+        case 'classes':
+            $stmt = db()->prepare("
+                SELECT 
+                    p.category as class,
+                    COUNT(*) as reservations,
+                    SUM(r.total_gross) as revenue,
+                    AVG(r.rental_days) as avg_days
+                FROM reservations r
+                LEFT JOIN vehicles v ON r.vehicle_id = v.id
+                LEFT JOIN products p ON v.product_id = p.id
+                $whereClause
+                GROUP BY p.category
+                ORDER BY reservations DESC
+                LIMIT 10
+            ");
+            $stmt->execute($params);
+            $data = $stmt->fetchAll(PDO::FETCH_ASSOC);
+            break;
+
+        case 'incidents':
+            $stmt = db()->prepare("
+                SELECT 
+                    vi.vehicle_id,
+                    v.vin,
+                    v.registration_number,
+                    vi.incident_type,
+                    COUNT(*) as incidents,
+                    SUM(vi.cost) as total_cost
+                FROM vehicle_incidents vi
+                LEFT JOIN vehicles v ON vi.vehicle_id = v.id
+                $whereClause
+                GROUP BY vi.vehicle_id, v.vin, v.registration_number, vi.incident_type
+                ORDER BY incidents DESC
+                LIMIT 20
+            ");
+            $stmt->execute($params);
+            $data = $stmt->fetchAll(PDO::FETCH_ASSOC);
+            break;
+
+        case 'services':
+            $stmt = db()->prepare("
+                SELECT 
+                    vs.vehicle_id,
+                    v.vin,
+                    v.registration_number,
+                    vs.service_type,
+                    COUNT(*) as services,
+                    SUM(vs.cost) as total_cost
+                FROM vehicle_services vs
+                LEFT JOIN vehicles v ON vs.vehicle_id = v.id
+                $whereClause
+                GROUP BY vs.vehicle_id, v.vin, v.registration_number, vs.service_type
+                ORDER BY services DESC
+                LIMIT 20
+            ");
+            $stmt->execute($params);
+            $data = $stmt->fetchAll(PDO::FETCH_ASSOC);
+            break;
         case 'revenue_daily':
             $stmt = db()->prepare("
                 SELECT 

@@ -4,7 +4,15 @@ require_once __DIR__ . '/config.php';
 function db(): PDO
 {
     static $pdo = null;
-    if ($pdo) return $pdo;
+    $needReconnect = false;
+    if ($pdo) {
+        try {
+            $pdo->query('SELECT 1');
+        } catch (PDOException $e) {
+            $needReconnect = true;
+        }
+        if (!$needReconnect) return $pdo;
+    }
 
     $dsn = 'mysql:host=' . DB_HOST . ';dbname=' . DB_NAME . ';charset=' . DB_CHARSET;
     $opts = [

@@ -21,6 +21,7 @@ try {
         }
     }
 
+
     echo "\n2. Dodawanie produktów testowych:\n";
 
     $testProducts = [
@@ -49,6 +50,35 @@ try {
             }
         } catch (Exception $e) {
             echo "   ❌ Błąd dla {$product[0]}: " . $e->getMessage() . "\n";
+        }
+    }
+
+    // Dodawanie egzemplarzy pojazdów do tabeli vehicles
+    echo "\n2a. Dodawanie egzemplarzy pojazdów:\n";
+    $locations = $pdo->query("SELECT id, name FROM locations WHERE is_active = 1")->fetchAll();
+    $productsDb = $pdo->query("SELECT id, name, sku FROM products WHERE status = 'active'")->fetchAll();
+    $vinBase = 100000;
+    foreach ($productsDb as $product) {
+        $numVehicles = rand(2, 5); // Dodaj 2-5 egzemplarzy każdego modelu
+        for ($i = 1; $i <= $numVehicles; $i++) {
+            $location = $locations[array_rand($locations)];
+            $vin = 'VIN' . ($vinBase + $product['id'] * 10 + $i);
+            $reg = strtoupper(substr($product['sku'], 0, 3)) . '-' . str_pad($i, 3, '0', STR_PAD_LEFT);
+            try {
+                $stmt = $pdo->prepare("
+                    INSERT IGNORE INTO vehicles (product_id, vin, registration_number, current_location_id, status, created_at)
+                    VALUES (?, ?, ?, ?, 'available', NOW())
+                ");
+                $stmt->execute([
+                    $product['id'],
+                    $vin,
+                    $reg,
+                    $location['id']
+                ]);
+                echo "   ✅ Egzemplarz: {$product['name']} | VIN: $vin | Rej: $reg | Lokalizacja: {$location['name']}\n";
+            } catch (Exception $e) {
+                echo "   ❌ Błąd egzemplarza {$product['name']}: " . $e->getMessage() . "\n";
+            }
         }
     }
 
@@ -90,10 +120,13 @@ try {
     if (empty($products) || empty($users)) {
         echo "   ❌ Brak produktów lub użytkowników do tworzenia rezerwacji\n";
     } else {
+        // Pobierz egzemplarze pojazdów
+        $vehicles = $pdo->query("SELECT v.id, v.product_id, v.vin FROM vehicles v")->fetchAll();
         // Generuj 50 rezerwacji z ostatnich 3 miesięcy
         for ($i = 0; $i < 50; $i++) {
             $product = $products[array_rand($products)];
             $user = $users[array_rand($users)];
+            $vehicle = $vehicles[array_rand($vehicles)];
 
             // Losowa data z ostatnich 90 dni
             $daysAgo = rand(1, 90);
@@ -124,12 +157,12 @@ try {
             try {
                 $stmt = $pdo->prepare("
                     INSERT INTO reservations (
-                        sku, product_name, 
+                        sku, product_name, vehicle_id,
                         customer_name, customer_email, customer_phone,
                         pickup_location, dropoff_location, pickup_at, return_at,
                         rental_days, total_gross,
                         status, created_at
-                    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
                 ");
 
                 $customerName = $user['first_name'] . ' ' . $user['last_name'];
@@ -139,6 +172,7 @@ try {
                 $stmt->execute([
                     $sku,
                     $product['name'],
+                    $vehicle['id'],
                     $customerName,
                     $customerEmail,
                     $customerPhone,

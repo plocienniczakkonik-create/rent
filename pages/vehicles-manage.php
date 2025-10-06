@@ -65,9 +65,14 @@ function sort_link_manage(string $key, string $label): string
         'dir'     => $nextDir,
     ]);
 
-    return '<a class="th-sort-link" href="' . htmlspecialchars($BASE . '/index.php?' . $qs) . '">'
-        . '<span class="label">' . htmlspecialchars($label) . '</span>'
-        . '<span class="chevs"><span class="chev ' . ($arrowUpActive ? 'active' : '') . '">▲</span><span class="chev ' . ($arrowDownActive ? 'active' : '') . '">▼</span></span>'
+    $activeColor = '#2563eb'; // niebieski dla aktywnego sortowania
+    $defaultColor = '#6b7280'; // szary dla nieaktywnych
+    $labelStyle = 'font-weight:600;color:#374151;text-decoration:none;font-size:1rem;';
+    $chevUpStyle = 'font-size:0.9em;margin-left:2px;color:' . ($arrowUpActive ? $activeColor : $defaultColor) . ';';
+    $chevDownStyle = 'font-size:0.9em;margin-left:2px;color:' . ($arrowDownActive ? $activeColor : $defaultColor) . ';';
+    return '<a class="th-sort-link" href="' . htmlspecialchars($BASE . '/index.php?' . $qs) . '" style="' . $labelStyle . '">' 
+        . '<span class="label">' . htmlspecialchars($label) . '</span>' 
+        . '<span class="chevs"><span class="chev" style="' . $chevUpStyle . '">▲</span><span class="chev" style="' . $chevDownStyle . '">▼</span></span>' 
         . '</a>';
 }
 
@@ -92,39 +97,39 @@ function status_badge($s)
     </nav>
 
     <!-- Sekcja: Lista egzemplarzy -->
-    <div class="card border-primary shadow-sm">
-        <div class="card-header bg-primary text-white">
+    <div class="card shadow-lg border-0 mb-5">
+        <div class="card-header py-4 px-4 border-0" style="background: var(--gradient-primary); color: white; border-radius: 1rem 1rem 0 0;">
             <div class="d-flex align-items-center justify-content-between">
-                <h4 class="mb-0">
-                    <i class="bi bi-car-front-fill me-2"></i>Egzemplarze: <?= htmlspecialchars($product['name']) ?>
-                </h4>
+                <div class="d-flex align-items-center gap-3">
+                    <span class="display-5"><i class="bi bi-car-front-fill"></i></span>
+                    <div>
+                        <h2 class="mb-0 fw-bold" style="color: white;">Egzemplarze: <?= htmlspecialchars($product['name']) ?></h2>
+                    </div>
+                </div>
                 <div class="d-flex gap-2">
-                    <!-- Wstecz -->
                     <a href="<?= $BASE ?>/index.php?page=dashboard-staff#pane-vehicles"
-                        class="btn btn-outline-light btn-sm">
+                        class="btn btn-light btn-sm fw-semibold">
                         <i class="bi bi-arrow-left me-1"></i>Wstecz
                     </a>
-                    <!-- Dodaj pojazd -->
                     <a href="<?= $BASE ?>/index.php?page=vehicle-form&product_id=<?= (int)$product_id ?>"
-                        class="btn btn-warning btn-sm">
+                        class="btn btn-warning btn-sm fw-semibold">
                         <i class="bi bi-plus-lg me-1"></i>Dodaj pojazd tego modelu
                     </a>
                 </div>
             </div>
         </div>
-
-        <div class="card-body p-0">
+        <div class="card-body p-4 bg-white rounded-bottom">
             <div class="table-responsive">
-                <table class="table table-striped table-hover align-middle mb-0">
+                <table class="table table-hover align-middle mb-0">
                     <thead class="table-light">
-                        <tr>
-                            <th><?= sort_link_manage('reg', 'Nr rej.') ?></th>
-                            <th><?= sort_link_manage('vin', 'VIN') ?></th>
-                            <th><?= sort_link_manage('status', 'Status') ?></th>
-                            <th><?= sort_link_manage('insp', 'Przegląd') ?></th>
-                            <th><?= sort_link_manage('insur', 'Ubezpieczenie') ?></th>
-                            <th><?= sort_link_manage('mileage', 'Przebieg') ?></th>
-                            <th><?= sort_link_manage('location', 'Lokalizacja') ?></th>
+                        <tr style="font-size: 1.1rem; font-weight: 600; color: #374151;">
+                            <th class="text-primary"><?= sort_link_manage('reg', 'Nr rej.') ?></th>
+                            <th class="text-primary"><?= sort_link_manage('vin', 'VIN') ?></th>
+                            <th class="text-primary"><?= sort_link_manage('status', 'Status') ?></th>
+                            <th class="text-primary"><?= sort_link_manage('insp', 'Przegląd') ?></th>
+                            <th class="text-primary"><?= sort_link_manage('insur', 'Ubezpieczenie') ?></th>
+                            <th class="text-primary"><?= sort_link_manage('mileage', 'Przebieg') ?></th>
+                            <th class="text-primary"><?= sort_link_manage('location', 'Lokalizacja') ?></th>
                             <th class="text-end">Akcje</th>
                         </tr>
                     </thead>
