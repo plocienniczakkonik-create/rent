@@ -59,15 +59,36 @@ $sections = [
             'templates' => __('email_templates', 'admin', 'Szablony emaili'),
             'smtp' => __('smtp_configuration', 'admin', 'Konfiguracja SMTP')
         ]
+    ],
+    'gdpr' => [
+        'title' => 'RODO / GDPR',
+        'icon' => 'bi-shield-lock',
+        'subsections' => [
+            'consents' => __('gdpr_consents', 'admin', 'Zgody użytkowników'),
+            'requests' => __('gdpr_requests', 'admin', 'Żądania RODO'),
+            'audit' => __('gdpr_audit', 'admin', 'Historia audytu RODO')
+        ]
     ]
 ];
 
 // Walidacja sekcji i podsekcji
+$debug_raw_section = $_GET['settings_section'] ?? '(brak)';
+$debug_raw_subsection = $_GET['settings_subsection'] ?? '(brak)';
 if (!isset($sections[$settings_section])) {
+    echo '<div style="background:#f8d7da;color:#721c24;padding:8px 16px;margin-bottom:12px;border-radius:6px;font-weight:bold;">DEBUG: Nieprawidłowa sekcja: ' . htmlspecialchars($debug_raw_section) . '</div>';
     $settings_section = 'users';
 }
+$subsections_map = array_flip($sections[$settings_section]['subsections']);
+// Akceptuj zarówno klucz jak i label
 if (!isset($sections[$settings_section]['subsections'][$settings_subsection])) {
-    $settings_subsection = array_key_first($sections[$settings_section]['subsections']);
+    if (isset($subsections_map[$settings_subsection])) {
+        $settings_subsection = $subsections_map[$settings_subsection];
+    }
+}
+if (!isset($sections[$settings_section]['subsections'][$settings_subsection])) {
+    echo '<div style="background:#f8d7da;color:#721c24;padding:8px 16px;margin-bottom:12px;border-radius:6px;font-weight:bold;">DEBUG: Nieprawidłowa podsekcja: ' . htmlspecialchars($debug_raw_subsection) . '</div>';
+    echo '<div class="alert alert-danger">Nieprawidłowa podsekcja ustawień: ' . htmlspecialchars($settings_subsection) . '</div>';
+    return;
 }
 
 // Funkcja do generowania linków
@@ -75,9 +96,14 @@ function settings_link(string $section, string $subsection, string $label, strin
 {
     $BASE = defined('BASE_URL') ? rtrim(BASE_URL, '/') : '';
     $active = ($section === $current_section && $subsection === $current_subsection) ? 'active' : '';
+    // For GDPR tabs, always force full reload with anchor
+    $force_reload = ($section === 'gdpr');
     $href = $BASE . '/index.php?page=dashboard-staff&section=settings&settings_section=' . $section . '&settings_subsection=' . $subsection . '#pane-settings';
-
-    return '<a href="' . htmlspecialchars($href) . '" class="list-group-item list-group-item-action ' . $active . '">' . htmlspecialchars($label) . '</a>';
+    if ($force_reload) {
+        return '<a href="' . htmlspecialchars($href) . '" class="list-group-item list-group-item-action ' . $active . '" style="color:#d63384;font-weight:bold;">' . htmlspecialchars($label) . '</a>';
+    } else {
+        return '<a href="' . htmlspecialchars($href) . '" class="list-group-item list-group-item-action ' . $active . '">' . htmlspecialchars($label) . '</a>';
+    }
 }
 ?>
 
@@ -223,8 +249,23 @@ function settings_link(string $section, string $subsection, string $label, strin
                     </div>
                     <div class="card-body">
                         <?php
+                        // DEBUG BANNER: pokaż aktualną sekcję i podsekcję oraz raw GET
+                        echo '<div style="background:#ffeeba;color:#856404;padding:8px 16px;margin-bottom:12px;border-radius:6px;font-weight:bold;">';
+                        echo 'DEBUG: Ładowana sekcja <span style="color:#005cbf;">' . htmlspecialchars($settings_section) . '</span>, podsekcja <span style="color:#005cbf;">' . htmlspecialchars($settings_subsection) . '</span>';
+                        echo ' | RAW GET: section=<span style="color:#d63384;">' . htmlspecialchars($debug_raw_section) . '</span>, subsection=<span style="color:#d63384;">' . htmlspecialchars($debug_raw_subsection) . '</span>';
+                        echo '</div>';
+
                         // Ładowanie odpowiedniej podsekcji
-                        $subsection_file = __DIR__ . "/settings/{$settings_section}-{$settings_subsection}.php";
+                        $gdpr_map = [
+                            'consents' => 'gdpr-consents.php',
+                            'requests' => 'gdpr-requests.php',
+                            'audit' => 'gdpr-audit.php'
+                        ];
+                        if ($settings_section === 'gdpr' && isset($gdpr_map[$settings_subsection])) {
+                            $subsection_file = __DIR__ . '/settings/' . $gdpr_map[$settings_subsection];
+                        } else {
+                            $subsection_file = __DIR__ . "/settings/{$settings_section}-{$settings_subsection}.php";
+                        }
                         if (file_exists($subsection_file)) {
                             include $subsection_file;
                         } else {

@@ -264,20 +264,20 @@ function test_payment_gateway($gateway, $settings)
             <div class="modal-body text-center">
                 <p><?= __('configure_webhook_urls', 'admin', 'Skonfiguruj poniższe URL-e webhook w panelach bramek płatności:') ?></p>
                 <div class="row justify-content-center">
-                <?php foreach ($payment_gateways as $gateway_key => $gateway): ?>
-                    <div class="mb-3 col-12 col-md-8 mx-auto">
-                        <label class="form-label fw-semibold text-primary" style="font-size:1.1rem;"><?= $gateway['name'] ?></label>
-                        <div class="input-group">
-                            <input type="text" class="form-control font-monospace"
-                                value="<?= $BASE ?>/webhooks/<?= $gateway_key ?>.php" readonly>
-                            <button class="btn btn-gradient-primary" type="button"
-                                style="background: var(--gradient-primary); color: #fff; border-radius: 8px; border: none;"
-                                onclick="navigator.clipboard.writeText('<?= $BASE ?>/webhooks/<?= $gateway_key ?>.php')">
-                                <i class="bi bi-clipboard"></i>
-                            </button>
+                    <?php foreach ($payment_gateways as $gateway_key => $gateway): ?>
+                        <div class="mb-3 col-12 col-md-8 mx-auto">
+                            <label class="form-label fw-semibold text-primary" style="font-size:1.1rem;"><?= $gateway['name'] ?></label>
+                            <div class="input-group">
+                                <input type="text" class="form-control font-monospace"
+                                    value="<?= $BASE ?>/webhooks/<?= $gateway_key ?>.php" readonly>
+                                <button class="btn btn-gradient-primary" type="button"
+                                    style="background: var(--gradient-primary); color: #fff; border-radius: 8px; border: none;"
+                                    onclick="navigator.clipboard.writeText('<?= $BASE ?>/webhooks/<?= $gateway_key ?>.php')">
+                                    <i class="bi bi-clipboard"></i>
+                                </button>
+                            </div>
                         </div>
-                    </div>
-                <?php endforeach; ?>
+                    <?php endforeach; ?>
                 </div>
             </div>
         </div>

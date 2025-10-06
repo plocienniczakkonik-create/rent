@@ -54,7 +54,7 @@ function order_badge_class(string $status): string
 <!--
   Centrowanie:
   - d-flex + align-items-center + justify-content-center na <main>
-  - min-height: 100vh - navbar (tu przyjęte 72px; zmień jeśli Twój nav ma inną wysokość)
+  - min-height: 100vh - navbar (tu przyjęte 72px; zmień jeśli Twój nav ma inną wysokości)
   - padding-top: tyle co nav, żeby nic nie nachodziło
   - wewnątrz wrapper z max-width dla ładnej szpalty
 -->
@@ -100,6 +100,15 @@ function order_badge_class(string $status): string
                         <h2 class="h6 mb-1">Ustawienia</h2>
                         <p class="small text-muted mb-3">Dane konta i hasło.</p>
                         <a href="#settings" class="btn btn-primary btn-sm" aria-disabled="true">Wkrótce</a>
+                    </div>
+                </div>
+            </div>
+            <div class="col-12 col-md-6 col-lg-3">
+                <div class="card h-100">
+                    <div class="card-body">
+                        <h2 class="h6 mb-1">Moje zgody RODO/GDPR</h2>
+                        <p class="small text-muted mb-3">Zarządzaj zgodami i żądaniami.</p>
+                        <a href="#gdpr" class="btn btn-primary btn-sm">Zarządzaj</a>
                     </div>
                 </div>
             </div>
@@ -217,6 +226,26 @@ function order_badge_class(string $status): string
                         <?php endforeach; ?>
                     </div>
                 <?php endif; ?>
+            </div>
+        </div>
+
+        <!-- Sekcja: Zgody RODO/GDPR -->
+        <div class="card mb-3" id="gdpr">
+            <div class="card-header d-flex align-items-center justify-content-between">
+                <h3 class="h6 mb-0">Moje zgody RODO/GDPR</h3>
+            </div>
+            <div class="card-body">
+                <?php include __DIR__ . '/user-consents.php'; ?>
+            </div>
+        </div>
+
+        <!-- Sekcja: Żądania RODO/GDPR -->
+        <div class="card mb-3" id="gdpr-requests">
+            <div class="card-header d-flex align-items-center justify-content-between">
+                <h3 class="h6 mb-0">Moje żądania RODO/GDPR</h3>
+            </div>
+            <div class="card-body">
+                <?php include __DIR__ . '/user-gdpr-requests.php'; ?>
             </div>
         </div>
 

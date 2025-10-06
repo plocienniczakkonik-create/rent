@@ -468,26 +468,26 @@ $reports = [
             console.log('Settings button exists:', !!document.querySelector('#tab-settings'));
             console.log('Settings pane exists:', !!document.querySelector('#pane-settings'));
 
-            // Jeśli mamy parametr section, użyj go
-            if (section && !hash) {
-                hash = '#pane-' + section;
-            }
 
-            // Jeśli mamy hash z kotwicą, nadal aktywuj odpowiednią zakładkę
-            if (section === 'settings' || hash === '#location-fees') {
+            // Aktywuj settings tab jeśli section=settings lub settings_section istnieje
+            var settingsSection = urlParams.get('settings_section');
+            if (section === 'settings' || settingsSection) {
                 hash = '#pane-settings';
-                console.log('Forcing settings tab activation');
+                console.log('Forcing settings tab activation (settings_section detected)');
+            } else if (section && !hash) {
+                hash = '#pane-' + section;
+            } else if (hash === '#location-fees') {
+                hash = '#pane-settings';
+                console.log('Forcing settings tab activation (location-fees)');
             }
 
             console.log('Target hash:', hash);
 
             if (hash) {
                 if (!activateTab(hash)) {
-                    // Jeśli nie udało się aktywować zakładki z hash, aktywuj domyślną
                     activateTab('#pane-products');
                 }
             } else {
-                // Upewnij się, że produkty są aktywne domyślnie
                 activateTab('#pane-products');
             }
 
