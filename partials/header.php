@@ -29,7 +29,13 @@ $overlay  = ($page === 'home');
 
 $navPosClass = $overlay
     ? 'position-absolute top-0 start-0 w-100 z-3'   // overlay tylko na HOME
-    : 'position-sticky top-0 bg-white shadow-sm';    // sticky na pozostałych stronach z wyższym z-index
+    : 'position-sticky top-0 bg-white shadow-sm';    // sticky na pozostałych stronach
+
+// Dodaj z-index dla dashboard pages
+$isDashboard = (isset($_GET['page']) && strpos($_GET['page'], 'dashboard') !== false);
+if ($isDashboard && !$overlay) {
+    $navPosClass .= ' dashboard-nav-fix';
+}
 ?>
 
 <nav id="siteNav" class="navbar navbar-expand-lg navbar-light bg-transparent <?= $navPosClass ?>">
@@ -109,96 +115,103 @@ $navPosClass = $overlay
 </nav>
 
 <script>
-// Cart Management System
-class CartManager {
-    constructor() {
-        this.cartKey = 'rental_cart';
-        this.init();
-    }
-
-    init() {
-        this.updateCartDisplay();
-        
-        // Nasłuchuj zmian w localStorage (dla synchronizacji między kartami)
-        window.addEventListener('storage', (e) => {
-            if (e.key === this.cartKey) {
-                this.updateCartDisplay();
-            }
-        });
-    }
-
-    getCart() {
-        try {
-            return JSON.parse(localStorage.getItem(this.cartKey) || '[]');
-        } catch {
-            return [];
+    // Cart Management System
+    class CartManager {
+        constructor() {
+            this.cartKey = 'rental_cart';
+            this.init();
         }
-    }
 
-    saveCart(cart) {
-        localStorage.setItem(this.cartKey, JSON.stringify(cart));
-        this.updateCartDisplay();
-        
-        // Wyślij custom event dla innych komponentów
-        window.dispatchEvent(new CustomEvent('cartUpdated', { detail: { cart } }));
-    }
+        init() {
+            this.updateCartDisplay();
 
-    addToCart(item) {
-        const cart = this.getCart();
-        const existingIndex = cart.findIndex(cartItem => cartItem.sku === item.sku);
-        
-        if (existingIndex >= 0) {
-            // Aktualizuj istniejący element
-            cart[existingIndex] = { ...cart[existingIndex], ...item };
-        } else {
-            // Dodaj nowy element
-            cart.push({
-                sku: item.sku,
-                name: item.name,
-                price: item.price,
-                pickup_at: item.pickup_at,
-                return_at: item.return_at,
-                pickup_location: item.pickup_location,
-                dropoff_location: item.dropoff_location,
-                extras: item.extras || [],
-                added_at: new Date().toISOString()
+            // Nasłuchuj zmian w localStorage (dla synchronizacji między kartami)
+            window.addEventListener('storage', (e) => {
+                if (e.key === this.cartKey) {
+                    this.updateCartDisplay();
+                }
             });
         }
-        
-        this.saveCart(cart);
-        this.showCartNotification('Dodano do koszyka!');
-    }
 
-    removeFromCart(sku) {
-        const cart = this.getCart().filter(item => item.sku !== sku);
-        this.saveCart(cart);
-        this.showCartNotification('Usunięto z koszyka');
-    }
-
-    clearCart() {
-        this.saveCart([]);
-    }
-
-    updateCartDisplay() {
-        const cart = this.getCart();
-        const cartCount = document.getElementById('cart-count');
-        
-        if (cartCount) {
-            if (cart.length > 0) {
-                cartCount.textContent = cart.length;
-                cartCount.style.display = 'inline-block';
-            } else {
-                cartCount.style.display = 'none';
+        getCart() {
+            try {
+                return JSON.parse(localStorage.getItem(this.cartKey) || '[]');
+            } catch {
+                return [];
             }
         }
-    }
 
-    showCartNotification(message) {
-        // Simple toast notification
-        const toast = document.createElement('div');
-        toast.className = 'toast-notification';
-        toast.textContent = message;
-        toast.style.cssText = `
+        saveCart(cart) {
+            localStorage.setItem(this.cartKey, JSON.stringify(cart));
+            this.updateCartDisplay();
+
+            // Wyślij custom event dla innych komponentów
+            window.dispatchEvent(new CustomEvent('cartUpdated', {
+                detail: {
+                    cart
+                }
+            }));
+        }
+
+        addToCart(item) {
+            const cart = this.getCart();
+            const existingIndex = cart.findIndex(cartItem => cartItem.sku === item.sku);
+
+            if (existingIndex >= 0) {
+                // Aktualizuj istniejący element
+                cart[existingIndex] = {
+                    ...cart[existingIndex],
+                    ...item
+                };
+            } else {
+                // Dodaj nowy element
+                cart.push({
+                    sku: item.sku,
+                    name: item.name,
+                    price: item.price,
+                    pickup_at: item.pickup_at,
+                    return_at: item.return_at,
+                    pickup_location: item.pickup_location,
+                    dropoff_location: item.dropoff_location,
+                    extras: item.extras || [],
+                    added_at: new Date().toISOString()
+                });
+            }
+
+            this.saveCart(cart);
+            this.showCartNotification('Dodano do koszyka!');
+        }
+
+        removeFromCart(sku) {
+            const cart = this.getCart().filter(item => item.sku !== sku);
+            this.saveCart(cart);
+            this.showCartNotification('Usunięto z koszyka');
+        }
+
+        clearCart() {
+            this.saveCart([]);
+        }
+
+        updateCartDisplay() {
+            const cart = this.getCart();
+            const cartCount = document.getElementById('cart-count');
+
+            if (cartCount) {
+                if (cart.length > 0) {
+                    cartCount.textContent = cart.length;
+                    cartCount.style.display = 'inline-block';
+                } else {
+                    cartCount.style.display = 'none';
+                }
+            }
+        }
+
+        showCartNotification(message) {
+            // Simple toast notification
+            const toast = document.createElement('div');
+            toast.className = 'toast-notification';
+            toast.textContent = message;
+            toast.style.cssText = `
             position: fixed;
             top: 20px;
             right: 20px;
@@ -209,22 +222,22 @@ class CartManager {
             z-index: 9999;
             animation: slideIn 0.3s ease-out;
         `;
-        
-        document.body.appendChild(toast);
-        
-        setTimeout(() => {
-            toast.style.animation = 'slideOut 0.3s ease-out';
-            setTimeout(() => toast.remove(), 300);
-        }, 2000);
+
+            document.body.appendChild(toast);
+
+            setTimeout(() => {
+                toast.style.animation = 'slideOut 0.3s ease-out';
+                setTimeout(() => toast.remove(), 300);
+            }, 2000);
+        }
     }
-}
 
-// Initialize cart manager
-window.cartManager = new CartManager();
+    // Initialize cart manager
+    window.cartManager = new CartManager();
 
-// CSS dla animacji toast
-const style = document.createElement('style');
-style.textContent = `
+    // CSS dla animacji toast
+    const style = document.createElement('style');
+    style.textContent = `
     @keyframes slideIn {
         from { transform: translateX(100%); opacity: 0; }
         to { transform: translateX(0); opacity: 1; }
@@ -238,6 +251,11 @@ style.textContent = `
     }
     .cart-icon:hover .bi-bag-fill {
         color: var(--bs-primary, #0d6efd) !important;
+    }
+    
+    /* Dashboard Navigation Fix */
+    .dashboard-nav-fix {
+        z-index: 1000 !important;
     }
     
     /* Cart Sidebar Styles */
@@ -355,18 +373,18 @@ style.textContent = `
         }
     }
 `;
-document.head.appendChild(style);
+    document.head.appendChild(style);
 
-// Cart Sidebar Management
-class CartSidebar {
-    constructor() {
-        this.isOpen = false;
-        this.createSidebar();
-        this.bindEvents();
-    }
-    
-    createSidebar() {
-        const sidebarHTML = `
+    // Cart Sidebar Management
+    class CartSidebar {
+        constructor() {
+            this.isOpen = false;
+            this.createSidebar();
+            this.bindEvents();
+        }
+
+        createSidebar() {
+            const sidebarHTML = `
             <!-- Cart Sidebar Overlay -->
             <div class="cart-sidebar-overlay" id="cart-sidebar-overlay"></div>
             
@@ -401,95 +419,95 @@ class CartSidebar {
                 </div>
             </div>
         `;
-        
-        document.body.insertAdjacentHTML('beforeend', sidebarHTML);
-    }
-    
-    bindEvents() {
-        const toggleBtn = document.getElementById('cart-toggle-btn');
-        const overlay = document.getElementById('cart-sidebar-overlay');
-        const closeBtn = document.getElementById('close-cart-sidebar');
-        
-        if (toggleBtn) {
-            toggleBtn.addEventListener('click', (e) => {
-                e.preventDefault();
-                this.toggle();
+
+            document.body.insertAdjacentHTML('beforeend', sidebarHTML);
+        }
+
+        bindEvents() {
+            const toggleBtn = document.getElementById('cart-toggle-btn');
+            const overlay = document.getElementById('cart-sidebar-overlay');
+            const closeBtn = document.getElementById('close-cart-sidebar');
+
+            if (toggleBtn) {
+                toggleBtn.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    this.toggle();
+                });
+            }
+
+            if (overlay) {
+                overlay.addEventListener('click', () => this.close());
+            }
+
+            if (closeBtn) {
+                closeBtn.addEventListener('click', () => this.close());
+            }
+
+            // ESC key to close
+            document.addEventListener('keydown', (e) => {
+                if (e.key === 'Escape' && this.isOpen) {
+                    this.close();
+                }
+            });
+
+            // Update sidebar when cart changes
+            window.addEventListener('cartUpdated', () => {
+                if (this.isOpen) {
+                    this.updateContent();
+                }
             });
         }
-        
-        if (overlay) {
-            overlay.addEventListener('click', () => this.close());
-        }
-        
-        if (closeBtn) {
-            closeBtn.addEventListener('click', () => this.close());
-        }
-        
-        // ESC key to close
-        document.addEventListener('keydown', (e) => {
-            if (e.key === 'Escape' && this.isOpen) {
-                this.close();
-            }
-        });
-        
-        // Update sidebar when cart changes
-        window.addEventListener('cartUpdated', () => {
+
+        toggle() {
             if (this.isOpen) {
-                this.updateContent();
+                this.close();
+            } else {
+                this.open();
             }
-        });
-    }
-    
-    toggle() {
-        if (this.isOpen) {
-            this.close();
-        } else {
-            this.open();
         }
-    }
-    
-    open() {
-        this.isOpen = true;
-        document.body.style.overflow = 'hidden';
-        document.getElementById('cart-sidebar-overlay').classList.add('show');
-        document.getElementById('cart-sidebar').classList.add('show');
-        this.updateContent();
-    }
-    
-    close() {
-        this.isOpen = false;
-        document.body.style.overflow = '';
-        document.getElementById('cart-sidebar-overlay').classList.remove('show');
-        document.getElementById('cart-sidebar').classList.remove('show');
-    }
-    
-    updateContent() {
-        const cart = window.cartManager.getCart();
-        const contentEl = document.getElementById('cart-sidebar-content');
-        const footerEl = document.getElementById('cart-sidebar-footer');
-        const totalEl = document.getElementById('cart-sidebar-total');
-        
-        if (cart.length === 0) {
-            contentEl.innerHTML = `
+
+        open() {
+            this.isOpen = true;
+            document.body.style.overflow = 'hidden';
+            document.getElementById('cart-sidebar-overlay').classList.add('show');
+            document.getElementById('cart-sidebar').classList.add('show');
+            this.updateContent();
+        }
+
+        close() {
+            this.isOpen = false;
+            document.body.style.overflow = '';
+            document.getElementById('cart-sidebar-overlay').classList.remove('show');
+            document.getElementById('cart-sidebar').classList.remove('show');
+        }
+
+        updateContent() {
+            const cart = window.cartManager.getCart();
+            const contentEl = document.getElementById('cart-sidebar-content');
+            const footerEl = document.getElementById('cart-sidebar-footer');
+            const totalEl = document.getElementById('cart-sidebar-total');
+
+            if (cart.length === 0) {
+                contentEl.innerHTML = `
                 <div class="cart-empty-state">
                     <i class="bi bi-bag-x display-6 text-muted mb-3"></i>
                     <h6 class="text-muted">Koszyk jest pusty</h6>
                     <p class="text-muted small">Dodaj pojazdy do koszyka, aby rozpocząć rezerwację.</p>
                 </div>
             `;
-            footerEl.style.display = 'none';
-            return;
-        }
-        
-        let html = '';
-        let total = 0;
-        
-        cart.forEach(item => {
-            const days = this.calculateDays(item.pickup_at, item.return_at);
-            const itemTotal = parseFloat(item.price) * days;
-            total += itemTotal;
-            
-            html += `
+                footerEl.style.display = 'none';
+                return;
+            }
+
+            let html = '';
+            let total = 0;
+
+            cart.forEach(item => {
+                const days = this.calculateDays(item.pickup_at, item.return_at);
+                const itemTotal = parseFloat(item.price) * days;
+                total += itemTotal;
+
+                html += `
                 <div class="cart-item">
                     <div class="cart-item-image">
                         <i class="bi bi-car-front text-muted"></i>
@@ -516,101 +534,101 @@ class CartSidebar {
                     </div>
                 </div>
             `;
-        });
-        
-        contentEl.innerHTML = html;
-        totalEl.textContent = this.formatPrice(total) + ' PLN';
-        footerEl.style.display = 'block';
-    }
-    
-    calculateDays(pickupAt, returnAt) {
-        const pickup = new Date(pickupAt);
-        const returnDate = new Date(returnAt);
-        const diffTime = Math.abs(returnDate - pickup);
-        return Math.max(1, Math.ceil(diffTime / (1000 * 60 * 60 * 24)));
-    }
-    
-    formatPrice(price) {
-        return new Intl.NumberFormat('pl-PL', {
-            minimumFractionDigits: 2,
-            maximumFractionDigits: 2
-        }).format(price);
-    }
-    
-    formatDate(dateStr) {
-        const date = new Date(dateStr);
-        return date.toLocaleDateString('pl-PL', { 
-            day: '2-digit', 
-            month: '2-digit',
-            hour: '2-digit',
-            minute: '2-digit'
-        });
-    }
-    
-    escapeHtml(text) {
-        const div = document.createElement('div');
-        div.textContent = text;
-        return div.innerHTML;
-    }
-}
+            });
 
-// Global functions for sidebar
-window.removeFromCartSidebar = function(sku) {
-    window.cartManager.removeFromCart(sku);
-};
+            contentEl.innerHTML = html;
+            totalEl.textContent = this.formatPrice(total) + ' PLN';
+            footerEl.style.display = 'block';
+        }
 
-window.proceedToCheckoutFromSidebar = function() {
-    const cart = window.cartManager.getCart();
-    if (cart.length === 0) {
-        alert('Koszyk jest pusty');
-        return;
-    }
-    
-    if (cart.length === 1) {
-        // Redirect to checkout for single item
-        const item = cart[0];
-        const form = document.createElement('form');
-        form.method = 'POST';
-        form.action = '<?= BASE_URL ?>/index.php?page=checkout';
-        
-        const fields = {
-            'sku': item.sku,
-            'pickup_at': item.pickup_at,
-            'return_at': item.return_at,
-            'pickup_location': item.pickup_location,
-            'dropoff_location': item.dropoff_location
-        };
-        
-        if (item.extras) {
-            item.extras.forEach(extra => {
-                const input = document.createElement('input');
-                input.type = 'hidden';
-                input.name = 'extra[]';
-                input.value = extra;
-                form.appendChild(input);
+        calculateDays(pickupAt, returnAt) {
+            const pickup = new Date(pickupAt);
+            const returnDate = new Date(returnAt);
+            const diffTime = Math.abs(returnDate - pickup);
+            return Math.max(1, Math.ceil(diffTime / (1000 * 60 * 60 * 24)));
+        }
+
+        formatPrice(price) {
+            return new Intl.NumberFormat('pl-PL', {
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 2
+            }).format(price);
+        }
+
+        formatDate(dateStr) {
+            const date = new Date(dateStr);
+            return date.toLocaleDateString('pl-PL', {
+                day: '2-digit',
+                month: '2-digit',
+                hour: '2-digit',
+                minute: '2-digit'
             });
         }
-        
-        Object.entries(fields).forEach(([name, value]) => {
-            const input = document.createElement('input');
-            input.type = 'hidden';
-            input.name = name;
-            input.value = value;
-            form.appendChild(input);
-        });
-        
-        document.body.appendChild(form);
-        form.submit();
-    } else {
-        // Multiple items - go to cart page
-        window.location.href = '<?= BASE_URL ?>/index.php?page=cart';
-    }
-};
 
-// Initialize cart sidebar
-document.addEventListener('DOMContentLoaded', function() {
-    window.cartSidebar = new CartSidebar();
-});
+        escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+    }
+
+    // Global functions for sidebar
+    window.removeFromCartSidebar = function(sku) {
+        window.cartManager.removeFromCart(sku);
+    };
+
+    window.proceedToCheckoutFromSidebar = function() {
+        const cart = window.cartManager.getCart();
+        if (cart.length === 0) {
+            alert('Koszyk jest pusty');
+            return;
+        }
+
+        if (cart.length === 1) {
+            // Redirect to checkout for single item
+            const item = cart[0];
+            const form = document.createElement('form');
+            form.method = 'POST';
+            form.action = '<?= BASE_URL ?>/index.php?page=checkout';
+
+            const fields = {
+                'sku': item.sku,
+                'pickup_at': item.pickup_at,
+                'return_at': item.return_at,
+                'pickup_location': item.pickup_location,
+                'dropoff_location': item.dropoff_location
+            };
+
+            if (item.extras) {
+                item.extras.forEach(extra => {
+                    const input = document.createElement('input');
+                    input.type = 'hidden';
+                    input.name = 'extra[]';
+                    input.value = extra;
+                    form.appendChild(input);
+                });
+            }
+
+            Object.entries(fields).forEach(([name, value]) => {
+                const input = document.createElement('input');
+                input.type = 'hidden';
+                input.name = name;
+                input.value = value;
+                form.appendChild(input);
+            });
+
+            document.body.appendChild(form);
+            form.submit();
+        } else {
+            // Multiple items - go to cart page
+            window.location.href = '<?= BASE_URL ?>/index.php?page=cart';
+        }
+    };
+
+    // Initialize cart sidebar
+    document.addEventListener('DOMContentLoaded', function() {
+        window.cartSidebar = new CartSidebar();
+    });
 </script>
 
 <!-- Cart Sidebar will be inserted here by JavaScript -->

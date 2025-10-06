@@ -215,31 +215,57 @@ $reports = [
             </div>
 
             <div class="col-12">
-                <div class="nav-container p-3 bg-white rounded-4 shadow-sm">
-                    <ul class="nav nav-pills-custom gap-2" id="staffTabs" role="tablist" style="background: transparent;">
+                <div class="nav-container p-3 bg-white rounded-4 shadow-sm"
+                    style="position: relative !important; z-index: 1200 !important; overflow: visible !important;">
+                    <ul class="nav nav-pills-custom gap-2" id="staffTabs" role="tablist"
+                        style="background: transparent; position: relative !important; z-index: 1200 !important; pointer-events: auto !important;">
                         <li class="nav-item" role="presentation">
-                            <button class="nav-link-custom active" id="tab-products" data-bs-toggle="pill" data-bs-target="#pane-products" type="button" role="tab"><i class="bi bi-box-seam"></i> <?= __('products', 'admin', 'Produkty') ?></button>
+                            <button class="nav-link-custom active" id="tab-products" data-bs-toggle="pill" data-bs-target="#pane-products" type="button" role="tab"
+                                style="pointer-events: auto !important; cursor: pointer !important; position: relative !important; z-index: 1100 !important;">
+                                <i class="bi bi-box-seam"></i> <?= __('products', 'admin', 'Produkty') ?>
+                            </button>
                         </li>
                         <li class="nav-item" role="presentation">
-                            <button class="nav-link-custom" id="tab-vehicles" data-bs-toggle="pill" data-bs-target="#pane-vehicles" type="button" role="tab"><i class="bi bi-truck"></i> <?= __('vehicles', 'admin', 'Pojazdy') ?></button>
+                            <button class="nav-link-custom" id="tab-vehicles" data-bs-toggle="pill" data-bs-target="#pane-vehicles" type="button" role="tab"
+                                style="pointer-events: auto !important; cursor: pointer !important; position: relative !important; z-index: 1100 !important;">
+                                <i class="bi bi-truck"></i> <?= __('vehicles', 'admin', 'Pojazdy') ?>
+                            </button>
                         </li>
                         <li class="nav-item" role="presentation">
-                            <button class="nav-link-custom" id="tab-orders" data-bs-toggle="pill" data-bs-target="#pane-orders" type="button" role="tab"><i class="bi bi-receipt"></i> <?= __('orders', 'admin', 'Zamówienia') ?></button>
+                            <button class="nav-link-custom" id="tab-orders" data-bs-toggle="pill" data-bs-target="#pane-orders" type="button" role="tab"
+                                style="pointer-events: auto !important; cursor: pointer !important; position: relative !important; z-index: 1100 !important;">
+                                <i class="bi bi-receipt"></i> <?= __('orders', 'admin', 'Zamówienia') ?>
+                            </button>
                         </li>
                         <li class="nav-item" role="presentation">
-                            <button class="nav-link-custom" id="tab-promos" data-bs-toggle="pill" data-bs-target="#pane-promos" type="button" role="tab"><i class="bi bi-stars"></i> <?= __('promotions', 'admin', 'Promocje') ?></button>
+                            <button class="nav-link-custom" id="tab-promos" data-bs-toggle="pill" data-bs-target="#pane-promos" type="button" role="tab"
+                                style="pointer-events: auto !important; cursor: pointer !important; position: relative !important; z-index: 1100 !important;">
+                                <i class="bi bi-stars"></i> <?= __('promotions', 'admin', 'Promocje') ?>
+                            </button>
                         </li>
                         <li class="nav-item" role="presentation">
-                            <button class="nav-link-custom" id="tab-upcoming" data-bs-toggle="pill" data-bs-target="#pane-upcoming" type="button" role="tab"><i class="bi bi-calendar-event"></i> <?= __('upcoming_dates', 'admin', 'Najbliższe terminy') ?></button>
+                            <button class="nav-link-custom" id="tab-upcoming" data-bs-toggle="pill" data-bs-target="#pane-upcoming" type="button" role="tab"
+                                style="pointer-events: auto !important; cursor: pointer !important; position: relative !important; z-index: 1100 !important;">
+                                <i class="bi bi-calendar-event"></i> <?= __('upcoming_dates', 'admin', 'Najbliższe terminy') ?>
+                            </button>
                         </li>
                         <li class="nav-item" role="presentation">
-                            <button class="nav-link-custom" id="tab-reports" data-bs-toggle="pill" data-bs-target="#pane-reports" type="button" role="tab"><i class="bi bi-bar-chart"></i> <?= __('reports', 'admin', 'Raporty') ?></button>
+                            <button class="nav-link-custom" id="tab-reports" data-bs-toggle="pill" data-bs-target="#pane-reports" type="button" role="tab"
+                                style="pointer-events: auto !important; cursor: pointer !important; position: relative !important; z-index: 1100 !important;">
+                                <i class="bi bi-bar-chart"></i> <?= __('reports', 'admin', 'Raporty') ?>
+                            </button>
                         </li>
                         <li class="nav-item" role="presentation">
-                            <button class="nav-link-custom" id="tab-dicts" data-bs-toggle="pill" data-bs-target="#pane-dicts" type="button" role="tab"><i class="bi bi-journal-bookmark"></i> <?= __('dictionaries', 'admin', 'Słowniki') ?></button>
+                            <button class="nav-link-custom" id="tab-dicts" data-bs-toggle="pill" data-bs-target="#pane-dicts" type="button" role="tab"
+                                style="pointer-events: auto !important; cursor: pointer !important; position: relative !important; z-index: 1100 !important;">
+                                <i class="bi bi-journal-bookmark"></i> <?= __('dictionaries', 'admin', 'Słowniki') ?>
+                            </button>
                         </li>
                         <li class="nav-item" role="presentation">
-                            <button class="nav-link-custom" id="tab-settings" data-bs-toggle="pill" data-bs-target="#pane-settings" type="button" role="tab"><i class="bi bi-gear"></i> <?= __('settings', 'admin', 'Ustawienia') ?></button>
+                            <button class="nav-link-custom" id="tab-settings" data-bs-toggle="pill" data-bs-target="#pane-settings" type="button" role="tab"
+                                style="pointer-events: auto !important; cursor: pointer !important; position: relative !important; z-index: 1100 !important;">
+                                <i class="bi bi-gear"></i> <?= __('settings', 'admin', 'Ustawienia') ?>
+                            </button>
                         </li>
                     </ul>
                 </div>
@@ -279,6 +305,29 @@ $reports = [
 
 <script>
     document.addEventListener('DOMContentLoaded', function() {
+        console.log('Dashboard loaded - setting up menu');
+
+        // Debug - sprawdź czy przyciski istnieją
+        const buttons = document.querySelectorAll('.nav-link-custom');
+        console.log('Found menu buttons:', buttons.length);
+
+        // Dodaj event listenery dla debug
+        buttons.forEach(function(button, index) {
+            console.log('Button', index, button.id, 'exists');
+
+            // Dodaj click listener z debug
+            button.addEventListener('click', function(e) {
+                console.log('Button clicked:', button.id, e);
+                // Upewnij się że kliknięcie nie jest blokowane
+                e.stopPropagation();
+            });
+
+            // Wymusz style dla pewności
+            button.style.setProperty('pointer-events', 'auto', 'important');
+            button.style.setProperty('cursor', 'pointer', 'important');
+            button.style.setProperty('z-index', '1000', 'important');
+        });
+
         // Funkcja do dezaktywacji wszystkich zakładek
         function clearAllActiveStates() {
             // Usuń klasy active z wszystkich przycisków nawigacji
@@ -294,41 +343,130 @@ $reports = [
 
         // Funkcja do aktywacji konkretnej zakładki
         function activateTab(targetHash) {
+            console.log('=== ACTIVATE TAB DEBUG ===');
+            console.log('Target hash:', targetHash);
+
             clearAllActiveStates();
 
             var trigger = document.querySelector('button[data-bs-target="' + targetHash + '"]');
             var targetPane = document.querySelector(targetHash);
 
+            console.log('Trigger found:', trigger);
+            console.log('Target pane found:', targetPane);
+
             if (trigger && targetPane) {
                 trigger.classList.add('active');
                 targetPane.classList.add('active', 'show');
+
+                // Upewnij się, że buttony są nadal klikalne
+                document.querySelectorAll('.nav-link-custom').forEach(function(btn) {
+                    btn.style.pointerEvents = 'auto';
+                    btn.style.zIndex = '1100';
+                    btn.style.position = 'relative';
+                });
+
+                console.log('Tab activated successfully');
                 return true;
             }
+            console.log('Failed to activate tab');
             return false;
         }
 
         // Obsługa kliknięć w zakładki
         document.querySelectorAll('.nav-link-custom').forEach(function(tab) {
             tab.addEventListener('click', function(e) {
-                e.preventDefault();
+                console.log('=== TAB CLICK DEBUG ===');
+                console.log('Tab clicked:', this.id, this.getAttribute('data-bs-target'));
+                console.log('Current URL:', window.location.href);
+                console.log('Current hash:', window.location.hash);
+                console.log('Event target:', e.target);
+                console.log('Button element:', this);
+                console.log('=== END DEBUG ===');
+
+                // NIE blokuj domyślnego działania Bootstrap
+                // e.preventDefault(); // <- to blokuje Bootstrap!
                 var target = this.getAttribute('data-bs-target');
                 if (target) {
+                    console.log('Activating tab:', target);
                     activateTab(target);
                 }
             });
         });
 
+        // Inicjalizacja Bootstrap Tab - wymuszenie
+        setTimeout(function() {
+            console.log('Initializing Bootstrap tabs...');
+
+            // Sprawdź czy Bootstrap jest dostępny
+            if (typeof bootstrap !== 'undefined') {
+                console.log('Bootstrap available, initializing tabs');
+
+                // Inicjalizuj każdy przycisk jako Bootstrap tab
+                document.querySelectorAll('.nav-link-custom').forEach(function(button) {
+                    try {
+                        // Usuń poprzednią instancję jeśli istnieje
+                        const existingTab = bootstrap.Tab.getInstance(button);
+                        if (existingTab) {
+                            existingTab.dispose();
+                        }
+
+                        // Stwórz nową instancję Bootstrap Tab
+                        new bootstrap.Tab(button);
+                        console.log('Tab initialized for:', button.id);
+                    } catch (e) {
+                        console.error('Error initializing tab:', button.id, e);
+                    }
+                });
+            } else {
+                console.error('Bootstrap not available!');
+            }
+        }, 100);
+
+        // Funkcja sprawdzająca kliknięcia buttonów periodycznie
+        function ensureButtonsClickable() {
+            document.querySelectorAll('.nav-link-custom').forEach(function(btn) {
+                btn.style.pointerEvents = 'auto';
+                btn.style.zIndex = '1100';
+                btn.style.position = 'relative';
+                btn.style.cursor = 'pointer';
+            });
+
+            // Usuń pozostałe modal backdrops
+            const backdrops = document.querySelectorAll('.modal-backdrop');
+            backdrops.forEach(backdrop => {
+                backdrop.remove();
+            });
+
+            // Usuń modal-open z body jeśli nie ma aktywnych modali
+            const activeModals = document.querySelectorAll('.modal.show');
+            if (activeModals.length === 0) {
+                document.body.classList.remove('modal-open');
+                document.body.style.overflow = '';
+                document.body.style.paddingRight = '';
+            }
+        }
+
+        // Sprawdzaj co 2 sekundy czy buttony są klikalne
+        setInterval(ensureButtonsClickable, 2000);
+
         // Małe opóźnienie dla Bootstrap
         setTimeout(function() {
+            console.log('=== URL PROCESSING DEBUG ===');
+
             // Obsługa hash URL - tylko przy załadowaniu strony
             var hash = window.location.hash;
             var urlParams = new URLSearchParams(window.location.search);
             var section = urlParams.get('section');
 
+            console.log('Full URL:', window.location.href);
             console.log('URL params:', {
                 section: section,
                 hash: hash
             });
+
+            // Sprawdź czy elementy istnieją
+            console.log('Settings button exists:', !!document.querySelector('#tab-settings'));
+            console.log('Settings pane exists:', !!document.querySelector('#pane-settings'));
 
             // Jeśli mamy parametr section, użyj go
             if (section && !hash) {
@@ -338,6 +476,7 @@ $reports = [
             // Jeśli mamy hash z kotwicą, nadal aktywuj odpowiednią zakładkę
             if (section === 'settings' || hash === '#location-fees') {
                 hash = '#pane-settings';
+                console.log('Forcing settings tab activation');
             }
 
             console.log('Target hash:', hash);

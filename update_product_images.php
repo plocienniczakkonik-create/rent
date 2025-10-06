@@ -21,17 +21,17 @@ $imageMapping = [
 
 $db = db();
 
-foreach($imageMapping as $productName => $imagePath) {
+foreach ($imageMapping as $productName => $imagePath) {
     try {
         $stmt = $db->prepare("UPDATE products SET image_path = ? WHERE name = ?");
         $result = $stmt->execute([$imagePath, $productName]);
-        
-        if($result && $stmt->rowCount() > 0) {
+
+        if ($result && $stmt->rowCount() > 0) {
             echo "✓ Updated '$productName' -> '$imagePath'\n";
         } else {
             echo "- No product found with name '$productName'\n";
         }
-    } catch(PDOException $e) {
+    } catch (PDOException $e) {
         echo "✗ Error updating '$productName': " . $e->getMessage() . "\n";
     }
 }
@@ -40,13 +40,13 @@ echo "\nCurrent products after update:\n";
 echo "==============================\n";
 
 $stmt = $db->query('SELECT id, name, image_path FROM products ORDER BY id LIMIT 12');
-while($row = $stmt->fetch()) {
-    echo sprintf("ID: %d | Name: %s | Image: %s\n", 
-        $row['id'], 
-        $row['name'], 
+while ($row = $stmt->fetch()) {
+    echo sprintf(
+        "ID: %d | Name: %s | Image: %s\n",
+        $row['id'],
+        $row['name'],
         $row['image_path'] ?? 'NULL'
     );
 }
 
 echo "\nUpdate completed!\n";
-?>

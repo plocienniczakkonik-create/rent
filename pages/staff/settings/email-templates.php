@@ -1,6 +1,9 @@
 <?php
 // /pages/staff/settings/email-templates.php
 
+// DEBUG: Sprawdź czy ta strona się w ogóle ładuje
+echo '<script>console.log("EMAIL-TEMPLATES.PHP LOADED SUCCESSFULLY!");</script>';
+
 $db = db();
 i18n::init();
 
@@ -26,7 +29,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['save_template'])) {
     $subject = $_POST['subject'] ?? '';
     $content = $_POST['content'] ?? '';
     $variables = $_POST['variables'] ?? '';
-    $enabled = isset($_POST['enabled']) ? 1 : 0;
+    $enabled = (isset($_POST['enabled']) && $_POST['enabled'] === '1') ? 1 : 0;
+
+    // Debug log
+    error_log("Toggle template debug - template_key: $template_key, enabled_raw: " . ($_POST['enabled'] ?? 'not_set') . ", enabled_final: $enabled");
 
     if (!empty($template_key) && !empty($template_name)) {
         try {
@@ -76,16 +82,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['delete_template'])) {
                 $templates[$row['template_key']] = $row;
             }
 
-            // Przekieruj na pierwszy dostępny szablon
+            // Soft refresh to template list
             if (count($templates) > 0) {
                 $current_template = array_key_first($templates);
-                // Przekieruj na nowy URL z poprawnym edit parametrem
+                // Simply redirect without modal disruption 
                 $redirect_url = settings_url($current_template);
-                echo "<script>
-                    setTimeout(function() {
-                        window.location.href = '$redirect_url';
-                    }, 2000);
-                </script>";
+                echo "<script>window.location.href = '{$redirect_url}';</script>";
             } else {
                 $current_template = 'booking_confirmation';
             }
@@ -320,24 +322,66 @@ if (!isset($templates[$current_template]) && count($templates) > 0) {
         <!-- Language Selector -->
         <div class="btn-group" role="group">
             <input type="radio" class="btn-check" name="template_language" id="lang_pl" value="pl" <?= $current_language === 'pl' ? 'checked' : '' ?> onchange="switchLanguage('pl')">
-            <label class="btn btn-outline-primary btn-sm" for="lang_pl">
-                <i class="bi bi-flag"></i> <?= __('polish_template', 'admin', 'PL') ?>
+            <label class="btn btn-sm" for="lang_pl"
+                style="background: <?= $current_language === 'pl' ? 'linear-gradient(135deg, #7b8cff 0%, #a855f7 100%)' : '#f8f9fa' ?>; 
+                       border: 1px solid <?= $current_language === 'pl' ? '#7b8cff' : '#e9ecef' ?>; 
+                       color: <?= $current_language === 'pl' ? 'white' : '#6c757d' ?>; 
+                       font-weight: <?= $current_language === 'pl' ? '600' : '500' ?>; 
+                       transition: all 0.2s ease;"
+                onmouseover="if (!this.querySelector('input').checked) { this.style.background='#e9ecef'; this.style.borderColor='#dee2e6'; this.style.color='#495057'; }"
+                onmouseout="if (!this.querySelector('input').checked) { this.style.background='#f8f9fa'; this.style.borderColor='#e9ecef'; this.style.color='#6c757d'; }">
+                <i class="bi bi-flag"></i> Szablon polski
             </label>
 
             <input type="radio" class="btn-check" name="template_language" id="lang_en" value="en" <?= $current_language === 'en' ? 'checked' : '' ?> onchange="switchLanguage('en')">
-            <label class="btn btn-outline-primary btn-sm" for="lang_en">
-                <i class="bi bi-flag"></i> <?= __('english_template', 'admin', 'EN') ?>
+            <label class="btn btn-sm" for="lang_en"
+                style="background: <?= $current_language === 'en' ? 'linear-gradient(135deg, #7b8cff 0%, #a855f7 100%)' : '#f8f9fa' ?>; 
+                       border: 1px solid <?= $current_language === 'en' ? '#7b8cff' : '#e9ecef' ?>; 
+                       color: <?= $current_language === 'en' ? 'white' : '#6c757d' ?>; 
+                       font-weight: <?= $current_language === 'en' ? '600' : '500' ?>; 
+                       transition: all 0.2s ease;"
+                onmouseover="if (!this.querySelector('input').checked) { this.style.background='#e9ecef'; this.style.borderColor='#dee2e6'; this.style.color='#495057'; }"
+                onmouseout="if (!this.querySelector('input').checked) { this.style.background='#f8f9fa'; this.style.borderColor='#e9ecef'; this.style.color='#6c757d'; }">
+                <i class="bi bi-flag"></i> Szablon angielski
             </label>
         </div>
 
-        <button class="btn btn-success btn-sm" data-bs-toggle="modal" data-bs-target="#addTemplateModal">
-            <i class="bi bi-plus-circle"></i> <?= __('add_new_template', 'admin', 'Dodaj szablon') ?>
+        <button class="btn btn-sm" data-bs-toggle="modal" data-bs-target="#addTemplateModal"
+            style="background: linear-gradient(135deg, #10b981 0%, #059669 100%); 
+                   border: none; 
+                   color: white; 
+                   font-weight: 600; 
+                   padding: 8px 16px; 
+                   border-radius: 8px; 
+                   box-shadow: 0 2px 8px rgba(16, 185, 129, 0.15); 
+                   transition: all 0.2s ease;"
+            onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 4px 16px rgba(16, 185, 129, 0.25)';"
+            onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 2px 8px rgba(16, 185, 129, 0.15)';">
+            <i class="bi bi-plus-circle"></i> Dodaj szablon
         </button>
-        <button class="btn btn-outline-info btn-sm" data-bs-toggle="modal" data-bs-target="#variablesModal">
-            <i class="bi bi-info-circle"></i> <?= __('template_variables', 'admin', 'Zmienne') ?>
+        <button class="btn btn-sm" data-bs-toggle="modal" data-bs-target="#variablesModal"
+            style="background: #f8f9fa; 
+                   border: 1px solid #e9ecef; 
+                   color: #6c757d; 
+                   font-weight: 500; 
+                   padding: 8px 16px; 
+                   border-radius: 8px; 
+                   transition: all 0.2s ease;"
+            onmouseover="this.style.background='#e9ecef'; this.style.borderColor='#dee2e6'; this.style.color='#495057';"
+            onmouseout="this.style.background='#f8f9fa'; this.style.borderColor='#e9ecef'; this.style.color='#6c757d';">
+            <i class="bi bi-info-circle"></i> Zmienne
         </button>
-        <button class="btn btn-outline-secondary btn-sm" onclick="location.reload()">
-            <i class="bi bi-arrow-clockwise"></i> <?= __('refresh', 'admin', 'Odśwież') ?>
+        <button class="btn btn-sm" onclick="refreshTemplateList()"
+            style="background: #f8f9fa; 
+                   border: 1px solid #e9ecef; 
+                   color: #6c757d; 
+                   font-weight: 500; 
+                   padding: 8px 16px; 
+                   border-radius: 8px; 
+                   transition: all 0.2s ease;"
+            onmouseover="this.style.background='#e9ecef'; this.style.borderColor='#dee2e6'; this.style.color='#495057';"
+            onmouseout="this.style.background='#f8f9fa'; this.style.borderColor='#e9ecef'; this.style.color='#6c757d';">
+            <i class="bi bi-arrow-clockwise"></i> Odśwież
         </button>
     </div>
 </div>
@@ -371,10 +415,11 @@ if (!isset($templates[$current_template]) && count($templates) > 0) {
             <div class="card-header">
                 <h6 class="mb-0"><?= __('available_templates', 'admin', 'Dostępne szablony') ?></h6>
             </div>
-            <div class="list-group list-group-flush">
+            <div id="email-template-list" class="list-group list-group-flush" style="background: white;">
                 <?php foreach ($templates as $key => $template): ?>
                     <a href="<?= settings_url($key) ?>"
-                        class="list-group-item list-group-item-action d-flex justify-content-between align-items-center <?= $current_template === $key ? 'active' : '' ?>">
+                        class="list-group-item list-group-item-action d-flex justify-content-between align-items-center <?= $current_template === $key ? 'active' : '' ?>"
+                        style="<?= $current_template === $key ? 'background: #fff !important; color: #23233a !important; border-left: 6px solid #7b8cff !important; font-weight: 700 !important; border-top: none !important; border-bottom: none !important; border-right: none !important;' : '' ?>">
                         <div>
                             <div class="fw-semibold"><?= htmlspecialchars($template['template_name']) ?></div>
                             <small class="text-muted"><?= $key ?></small>
@@ -400,21 +445,33 @@ if (!isset($templates[$current_template]) && count($templates) > 0) {
                 <div class="card-header d-flex justify-content-between align-items-center">
                     <h6 class="mb-0"><?= __('edit_template', 'admin', 'Edytuj szablon') ?>: <?= htmlspecialchars($template['template_name']) ?></h6>
                     <div class="d-flex align-items-center gap-3">
-                        <button class="btn btn-outline-danger btn-sm" data-bs-toggle="modal" data-bs-target="#deleteTemplateModal"
-                            onclick="setDeleteTemplate('<?= $current_template ?>', '<?= htmlspecialchars($template['template_name']) ?>')">
-                            <i class="bi bi-trash"></i> <?= __('delete', 'admin', 'Usuń') ?>
+                        <button class="btn btn-sm" data-bs-toggle="modal" data-bs-target="#deleteTemplateModal"
+                            onclick="setDeleteTemplate('<?= $current_template ?>', '<?= htmlspecialchars($template['template_name']) ?>')"
+                            style="background: #f8f9fa; 
+                                   border: 1px solid #dc3545; 
+                                   color: #dc3545; 
+                                   font-weight: 500; 
+                                   padding: 6px 12px; 
+                                   border-radius: 6px; 
+                                   transition: all 0.2s ease;"
+                            onmouseover="this.style.background='#dc3545'; this.style.borderColor='#dc3545'; this.style.color='white';"
+                            onmouseout="this.style.background='#f8f9fa'; this.style.borderColor='#dc3545'; this.style.color='#dc3545';">
+                            <i class="bi bi-trash"></i> Usuń
                         </button>
                         <div class="form-check form-switch mb-0">
                             <input type="checkbox" class="form-check-input" id="template-enabled"
                                 <?= $template['enabled'] ? 'checked' : '' ?>
-                                onchange="toggleTemplate('<?= $current_template ?>', this.checked)">
-                            <label class="form-check-label" for="template-enabled"><?= __('active', 'admin', 'Aktywny') ?></label>
+                                onchange="toggleSwitchLabel(this)">
+                            <label class="form-check-label" for="template-enabled" id="switch-label">
+                                <?= $template['enabled'] ? __('active', 'admin', 'aktywny') : __('inactive', 'admin', 'nieaktywny') ?>
+                            </label>
                         </div>
                     </div>
                 </div>
                 <div class="card-body">
                     <form method="POST">
                         <input type="hidden" name="template_key" value="<?= $current_template ?>">
+                        <input type="hidden" name="enabled" id="enabled-hidden" value="<?= $template['enabled'] ? '1' : '0' ?>">
 
                         <div class="mb-3">
                             <label class="form-label"><?= __('template_name', 'admin', 'Nazwa szablonu') ?></label>
@@ -441,23 +498,43 @@ if (!isset($templates[$current_template]) && count($templates) > 0) {
                             <div class="form-text"><?= __('variables_help', 'admin', 'Lista zmiennych oddzielonych przecinkami') ?></div>
                         </div>
 
-                        <div class="form-check mb-3">
-                            <input type="checkbox" name="enabled" class="form-check-input"
-                                id="enabled" <?= $template['enabled'] ? 'checked' : '' ?>>
-                            <label class="form-check-label" for="enabled">
-                                <?= __('template_enabled', 'admin', 'Szablon aktywny') ?>
-                            </label>
-                        </div>
-
                         <div class="d-flex gap-2">
-                            <button type="submit" name="save_template" class="btn btn-primary">
-                                <i class="bi bi-check-lg"></i> <?= __('save_template', 'admin', 'Zapisz szablon') ?>
+                            <button type="submit" name="save_template" class="btn"
+                                style="background: linear-gradient(135deg, #7b8cff 0%, #a855f7 100%); 
+                                       border: none; 
+                                       color: white; 
+                                       font-weight: 600; 
+                                       padding: 12px 24px; 
+                                       border-radius: 8px; 
+                                       box-shadow: 0 2px 8px rgba(123, 140, 255, 0.15); 
+                                       transition: all 0.2s ease;"
+                                onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 4px 16px rgba(123, 140, 255, 0.25)';"
+                                onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 2px 8px rgba(123, 140, 255, 0.15)';">
+                                <i class="bi bi-check-lg"></i> Zapisz szablon
                             </button>
-                            <button type="button" class="btn btn-outline-info" data-bs-toggle="modal" data-bs-target="#testModal">
-                                <i class="bi bi-envelope"></i> <?= __('test_sending', 'admin', 'Test wysyłki') ?>
+                            <button type="button" class="btn" data-bs-toggle="modal" data-bs-target="#testModal"
+                                style="background: #f8f9fa; 
+                                       border: 1px solid #e9ecef; 
+                                       color: #6c757d; 
+                                       font-weight: 500; 
+                                       padding: 12px 20px; 
+                                       border-radius: 8px; 
+                                       transition: all 0.2s ease;"
+                                onmouseover="this.style.background='#e9ecef'; this.style.borderColor='#dee2e6'; this.style.color='#495057';"
+                                onmouseout="this.style.background='#f8f9fa'; this.style.borderColor='#e9ecef'; this.style.color='#6c757d';">
+                                <i class="bi bi-envelope"></i> Test wysyłki
                             </button>
-                            <button type="button" class="btn btn-outline-secondary" onclick="previewTemplate()">
-                                <i class="bi bi-eye"></i> <?= __('preview', 'admin', 'Podgląd') ?>
+                            <button type="button" class="btn" onclick="previewTemplate()"
+                                style="background: #f8f9fa; 
+                                       border: 1px solid #e9ecef; 
+                                       color: #6c757d; 
+                                       font-weight: 500; 
+                                       padding: 12px 20px; 
+                                       border-radius: 8px; 
+                                       transition: all 0.2s ease;"
+                                onmouseover="this.style.background='#e9ecef'; this.style.borderColor='#dee2e6'; this.style.color='#495057';"
+                                onmouseout="this.style.background='#f8f9fa'; this.style.borderColor='#e9ecef'; this.style.color='#6c757d';">
+                                <i class="bi bi-eye"></i> Podgląd
                             </button>
                         </div>
                     </form>
@@ -625,6 +702,72 @@ if (!isset($templates[$current_template]) && count($templates) > 0) {
         }
     });
 
+    function toggleSwitchLabel(checkbox) {
+        const label = document.getElementById('switch-label');
+        const hiddenInput = document.getElementById('enabled-hidden');
+
+        if (checkbox.checked) {
+            label.textContent = '<?= __("active", "admin", "aktywny") ?>';
+            hiddenInput.value = '1';
+        } else {
+            label.textContent = '<?= __("inactive", "admin", "nieaktywny") ?>';
+            hiddenInput.value = '0';
+        }
+
+        // Get current template key
+        const templateKey = document.querySelector('input[name="template_key"]').value;
+
+        // Save change via AJAX without page reload
+        const formData = new FormData();
+        formData.append('template_key', templateKey);
+        formData.append('enabled', checkbox.checked ? '1' : '0');
+        formData.append('save_template', '1');
+
+        // Get current form values
+        const form = document.querySelector('form');
+        if (form) {
+            const formDataFromForm = new FormData(form);
+            for (let [key, value] of formDataFromForm.entries()) {
+                if (key !== 'enabled') {
+                    formData.append(key, value);
+                }
+            }
+        }
+
+        // Use current page URL to maintain navigation context
+        const currentUrl = new URL(window.location.href);
+
+        fetch(currentUrl.toString(), {
+            method: 'POST',
+            body: formData
+        }).then(response => {
+            if (response.ok) {
+                // Update the badge in the template list without reload
+                const templateListItem = document.querySelector(`a[href*="edit=${templateKey}"] .badge`);
+                if (templateListItem) {
+                    if (checkbox.checked) {
+                        templateListItem.className = 'badge bg-success';
+                        templateListItem.textContent = '<?= __("active", "admin", "Aktywny") ?>';
+                    } else {
+                        templateListItem.className = 'badge bg-secondary';
+                        templateListItem.textContent = '<?= __("inactive", "admin", "Nieaktywny") ?>';
+                    }
+                }
+                console.log('Template status updated successfully');
+            } else {
+                console.error('Error toggling template status');
+                // Revert checkbox on error
+                checkbox.checked = !checkbox.checked;
+                toggleSwitchLabel(checkbox);
+            }
+        }).catch(error => {
+            console.error('Error:', error);
+            // Revert checkbox on error
+            checkbox.checked = !checkbox.checked;
+            toggleSwitchLabel(checkbox);
+        });
+    }
+
     function toggleTemplate(templateKey, enabled) {
         const formData = new FormData();
         formData.append('template_key', templateKey);
@@ -650,7 +793,18 @@ if (!isset($templates[$current_template]) && count($templates) > 0) {
             body: formData
         }).then(response => {
             if (response.ok) {
-                location.reload();
+                // Zamiast location.reload(), aktualizuj tylko badge
+                const templateListItem = document.querySelector(`a[href*="edit=${templateKey}"] .badge`);
+                if (templateListItem) {
+                    if (enabled) {
+                        templateListItem.className = 'badge bg-success';
+                        templateListItem.textContent = '<?= __("active", "admin", "Aktywny") ?>';
+                    } else {
+                        templateListItem.className = 'badge bg-secondary';
+                        templateListItem.textContent = '<?= __("inactive", "admin", "Nieaktywny") ?>';
+                    }
+                }
+                console.log('Template status updated successfully');
             } else {
                 console.error('Error toggling template status');
             }
@@ -693,6 +847,46 @@ if (!isset($templates[$current_template]) && count($templates) > 0) {
         currentUrl.searchParams.delete('edit'); // Reset template selection when switching language
         window.location.href = currentUrl.toString();
     }
+
+    // Soft refresh template list without full page reload
+    function refreshTemplateList() {
+        // Usuń parametr edit z URL żeby wrócić do listy
+        const currentUrl = new URL(window.location);
+        currentUrl.searchParams.delete('edit');
+
+        // Użyj pushState żeby nie robić full reload
+        window.history.pushState({}, '', currentUrl.toString());
+
+        console.log('Template list refreshed softly');
+    }
+
+    // Fix dla Bootstrap modal backdrop - usuń wszystkie backdropy
+    function removeModalBackdrop() {
+        const backdrops = document.querySelectorAll('.modal-backdrop');
+        backdrops.forEach(backdrop => {
+            backdrop.remove();
+        });
+
+        // Usuń modal-open z body
+        document.body.classList.remove('modal-open');
+        document.body.style.overflow = '';
+        document.body.style.paddingRight = '';
+    }
+
+    // Uruchom cleanup co 2 sekundy
+    setInterval(removeModalBackdrop, 2000);
+
+    // Po załadowaniu DOM
+    document.addEventListener('DOMContentLoaded', function() {
+        removeModalBackdrop();
+
+        // Dodaj event listener do wszystkich modali żeby czyścić backdrop po zamknięciu
+        document.querySelectorAll('.modal').forEach(modal => {
+            modal.addEventListener('hidden.bs.modal', function() {
+                setTimeout(removeModalBackdrop, 100);
+            });
+        });
+    });
 </script>
 
 <style>

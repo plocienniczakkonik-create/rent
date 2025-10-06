@@ -80,37 +80,37 @@ try {
 </div>
 
 <script>
-document.addEventListener('DOMContentLoaded', function() {
-    const productsData = <?= json_encode($productsBySku) ?>;
-    
-    function renderCart() {
-        const cart = window.cartManager.getCart();
-        const emptyCart = document.getElementById('empty-cart');
-        const cartItems = document.getElementById('cart-items');
-        const cartSummary = document.getElementById('cart-summary');
-        
-        if (cart.length === 0) {
-            emptyCart.style.display = 'block';
-            cartItems.style.display = 'none';
-            cartSummary.style.display = 'none';
-            return;
-        }
-        
-        emptyCart.style.display = 'none';
-        cartItems.style.display = 'block';
-        cartSummary.style.display = 'block';
-        
-        let html = '';
-        let totalEstimate = 0;
-        
-        cart.forEach((item, index) => {
-            const product = productsData[item.sku];
-            const price = product ? parseFloat(product.price) : parseFloat(item.price);
-            const days = calculateDays(item.pickup_at, item.return_at);
-            const itemTotal = price * days;
-            totalEstimate += itemTotal;
-            
-            html += `
+    document.addEventListener('DOMContentLoaded', function() {
+        const productsData = <?= json_encode($productsBySku) ?>;
+
+        function renderCart() {
+            const cart = window.cartManager.getCart();
+            const emptyCart = document.getElementById('empty-cart');
+            const cartItems = document.getElementById('cart-items');
+            const cartSummary = document.getElementById('cart-summary');
+
+            if (cart.length === 0) {
+                emptyCart.style.display = 'block';
+                cartItems.style.display = 'none';
+                cartSummary.style.display = 'none';
+                return;
+            }
+
+            emptyCart.style.display = 'none';
+            cartItems.style.display = 'block';
+            cartSummary.style.display = 'block';
+
+            let html = '';
+            let totalEstimate = 0;
+
+            cart.forEach((item, index) => {
+                const product = productsData[item.sku];
+                const price = product ? parseFloat(product.price) : parseFloat(item.price);
+                const days = calculateDays(item.pickup_at, item.return_at);
+                const itemTotal = price * days;
+                totalEstimate += itemTotal;
+
+                html += `
                 <div class="card mb-3">
                     <div class="card-body">
                         <div class="row align-items-center">
@@ -149,110 +149,111 @@ document.addEventListener('DOMContentLoaded', function() {
                     </div>
                 </div>
             `;
-        });
-        
-        cartItems.innerHTML = html;
-        document.getElementById('cart-items-count').textContent = cart.length;
-        document.getElementById('cart-total').textContent = formatPrice(totalEstimate) + ' PLN';
-    }
-    
-    function calculateDays(pickupAt, returnAt) {
-        const pickup = new Date(pickupAt);
-        const returnDate = new Date(returnAt);
-        const diffTime = Math.abs(returnDate - pickup);
-        return Math.max(1, Math.ceil(diffTime / (1000 * 60 * 60 * 24)));
-    }
-    
-    function formatPrice(price) {
-        return new Intl.NumberFormat('pl-PL', {
-            minimumFractionDigits: 2,
-            maximumFractionDigits: 2
-        }).format(price);
-    }
-    
-    function escapeHtml(text) {
-        const div = document.createElement('div');
-        div.textContent = text;
-        return div.innerHTML;
-    }
-    
-    // Global functions for buttons
-    window.removeFromCart = function(sku) {
-        window.cartManager.removeFromCart(sku);
-        renderCart();
-    };
-    
-    window.clearCart = function() {
-        if (confirm('<?= __('confirm_clear_cart', 'frontend', 'Czy na pewno chcesz wyczyścić koszyk?') ?>')) {
-            window.cartManager.clearCart();
+            });
+
+            cartItems.innerHTML = html;
+            document.getElementById('cart-items-count').textContent = cart.length;
+            document.getElementById('cart-total').textContent = formatPrice(totalEstimate) + ' PLN';
+        }
+
+        function calculateDays(pickupAt, returnAt) {
+            const pickup = new Date(pickupAt);
+            const returnDate = new Date(returnAt);
+            const diffTime = Math.abs(returnDate - pickup);
+            return Math.max(1, Math.ceil(diffTime / (1000 * 60 * 60 * 24)));
+        }
+
+        function formatPrice(price) {
+            return new Intl.NumberFormat('pl-PL', {
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 2
+            }).format(price);
+        }
+
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        // Global functions for buttons
+        window.removeFromCart = function(sku) {
+            window.cartManager.removeFromCart(sku);
             renderCart();
-        }
-    };
-    
-    window.proceedToCheckout = function() {
-        const cart = window.cartManager.getCart();
-        if (cart.length === 0) {
-            alert('<?= __('cart_empty_checkout', 'frontend', 'Koszyk jest pusty') ?>');
-            return;
-        }
-        
-        // Dla pojedynczego elementu - przejdź bezpośrednio do checkout
-        if (cart.length === 1) {
-            const item = cart[0];
-            const form = document.createElement('form');
-            form.method = 'POST';
-            form.action = '<?= $BASE ?>/index.php?page=checkout';
-            
-            const fields = {
-                'sku': item.sku,
-                'pickup_at': item.pickup_at,
-                'return_at': item.return_at,
-                'pickup_location': item.pickup_location,
-                'dropoff_location': item.dropoff_location
-            };
-            
-            if (item.extras) {
-                item.extras.forEach(extra => {
+        };
+
+        window.clearCart = function() {
+            if (confirm('<?= __('confirm_clear_cart', 'frontend', 'Czy na pewno chcesz wyczyścić koszyk?') ?>')) {
+                window.cartManager.clearCart();
+                renderCart();
+            }
+        };
+
+        window.proceedToCheckout = function() {
+            const cart = window.cartManager.getCart();
+            if (cart.length === 0) {
+                alert('<?= __('cart_empty_checkout', 'frontend', 'Koszyk jest pusty') ?>');
+                return;
+            }
+
+            // Dla pojedynczego elementu - przejdź bezpośrednio do checkout
+            if (cart.length === 1) {
+                const item = cart[0];
+                const form = document.createElement('form');
+                form.method = 'POST';
+                form.action = '<?= $BASE ?>/index.php?page=checkout';
+
+                const fields = {
+                    'sku': item.sku,
+                    'pickup_at': item.pickup_at,
+                    'return_at': item.return_at,
+                    'pickup_location': item.pickup_location,
+                    'dropoff_location': item.dropoff_location
+                };
+
+                if (item.extras) {
+                    item.extras.forEach(extra => {
+                        const input = document.createElement('input');
+                        input.type = 'hidden';
+                        input.name = 'extra[]';
+                        input.value = extra;
+                        form.appendChild(input);
+                    });
+                }
+
+                Object.entries(fields).forEach(([name, value]) => {
                     const input = document.createElement('input');
                     input.type = 'hidden';
-                    input.name = 'extra[]';
-                    input.value = extra;
+                    input.name = name;
+                    input.value = value;
                     form.appendChild(input);
                 });
+
+                document.body.appendChild(form);
+                form.submit();
+            } else {
+                // Dla wielu elementów - info o ograniczeniu
+                alert('<?= __('multiple_items_info', 'frontend', 'Obecnie system obsługuje rezerwację jednego pojazdu na raz. Proszę usunąć inne pozycje z koszyka.') ?>');
             }
-            
-            Object.entries(fields).forEach(([name, value]) => {
-                const input = document.createElement('input');
-                input.type = 'hidden';
-                input.name = name;
-                input.value = value;
-                form.appendChild(input);
-            });
-            
-            document.body.appendChild(form);
-            form.submit();
-        } else {
-            // Dla wielu elementów - info o ograniczeniu
-            alert('<?= __('multiple_items_info', 'frontend', 'Obecnie system obsługuje rezerwację jednego pojazdu na raz. Proszę usunąć inne pozycje z koszyka.') ?>');
-        }
-    };
-    
-    // Nasłuchuj zmian koszyka
-    window.addEventListener('cartUpdated', renderCart);
-    
-    // Initial render
-    renderCart();
-});
+        };
+
+        // Nasłuchuj zmian koszyka
+        window.addEventListener('cartUpdated', renderCart);
+
+        // Initial render
+        renderCart();
+    });
 </script>
 
 <style>
-.cart-icon .bi-bag-fill {
-    font-size: 1.2rem;
-}
-.cart-count {
-    font-size: 0.7rem;
-    line-height: 1;
-    min-width: 18px;
-    height: 18px;
-}
+    .cart-icon .bi-bag-fill {
+        font-size: 1.2rem;
+    }
+
+    .cart-count {
+        font-size: 0.7rem;
+        line-height: 1;
+        min-width: 18px;
+        height: 18px;
+    }
 </style>

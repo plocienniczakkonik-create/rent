@@ -242,7 +242,7 @@ $fmt = function ($n) {
                             <div class="col-md-6">
                                 <div class="mb-2">
                                     <label class="form-label"><?= __('tax_number', 'frontend', 'NIP') ?> <span class="text-danger">*</span></label>
-                                    <input type="text" class="form-control" name="invoice_tax_number" form="checkout-form" 
+                                    <input type="text" class="form-control" name="invoice_tax_number" form="checkout-form"
                                         placeholder="000-000-00-00" pattern="[0-9-]{10,13}">
                                 </div>
                             </div>
@@ -421,33 +421,33 @@ $fmt = function ($n) {
 </div>
 
 <script>
-document.addEventListener('DOMContentLoaded', function() {
-    const requestInvoiceCheckbox = document.getElementById('request_invoice');
-    const invoiceFields = document.getElementById('invoice-fields');
-    const invoiceInputs = invoiceFields.querySelectorAll('input[name^="invoice_"], select[name^="invoice_"]');
+    document.addEventListener('DOMContentLoaded', function() {
+        const requestInvoiceCheckbox = document.getElementById('request_invoice');
+        const invoiceFields = document.getElementById('invoice-fields');
+        const invoiceInputs = invoiceFields.querySelectorAll('input[name^="invoice_"], select[name^="invoice_"]');
 
-    function toggleInvoiceFields() {
-        if (requestInvoiceCheckbox.checked) {
-            invoiceFields.style.display = 'block';
-            // Dodaj required do pól faktury
-            invoiceInputs.forEach(input => {
-                if (input.name !== 'invoice_country') { // country ma już selected option
-                    input.required = true;
-                }
-            });
-        } else {
-            invoiceFields.style.display = 'none';
-            // Usuń required z pól faktury
-            invoiceInputs.forEach(input => {
-                input.required = false;
-                input.value = ''; // Wyczyść wartości
-            });
+        function toggleInvoiceFields() {
+            if (requestInvoiceCheckbox.checked) {
+                invoiceFields.style.display = 'block';
+                // Dodaj required do pól faktury
+                invoiceInputs.forEach(input => {
+                    if (input.name !== 'invoice_country') { // country ma już selected option
+                        input.required = true;
+                    }
+                });
+            } else {
+                invoiceFields.style.display = 'none';
+                // Usuń required z pól faktury
+                invoiceInputs.forEach(input => {
+                    input.required = false;
+                    input.value = ''; // Wyczyść wartości
+                });
+            }
         }
-    }
 
-    requestInvoiceCheckbox.addEventListener('change', toggleInvoiceFields);
-    
-    // Inicjalne ustawienie
-    toggleInvoiceFields();
-});
+        requestInvoiceCheckbox.addEventListener('change', toggleInvoiceFields);
+
+        // Inicjalne ustawienie
+        toggleInvoiceFields();
+    });
 </script>

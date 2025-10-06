@@ -91,12 +91,28 @@ function settings_link(string $section, string $subsection, string $label, strin
     .settings-sidebar {
         width: 260px;
         flex-shrink: 0;
+        position: relative;
+        z-index: 10;
+    }
+
+    .settings-sidebar .list-group {
+        position: relative;
+        z-index: 11;
+    }
+
+    .settings-sidebar .list-group-item {
+        pointer-events: auto !important;
+        cursor: pointer !important;
+        position: relative;
+        z-index: 12;
     }
 
     .settings-content {
         flex: 1;
         min-width: 0;
         overflow-x: auto;
+        position: relative;
+        z-index: 5;
     }
 
     .settings-section-title {
@@ -117,11 +133,26 @@ function settings_link(string $section, string $subsection, string $label, strin
     .list-group-item.active {
         background-color: #0d6efd;
         border-color: #0d6efd;
+        border-top: 0px;
+        border-right: 0px;
         color: white;
+        pointer-events: auto !important;
     }
 
     .list-group-item:hover:not(.active) {
         background-color: #f8f9fa;
+        pointer-events: auto !important;
+    }
+
+    .list-group-item a,
+    .settings-sidebar a,
+    .settings-sidebar .list-group-item {
+        pointer-events: auto !important;
+        cursor: pointer !important;
+        text-decoration: none !important;
+        display: block !important;
+        position: relative !important;
+        z-index: 15 !important;
     }
 
     @media (max-width: 768px) {

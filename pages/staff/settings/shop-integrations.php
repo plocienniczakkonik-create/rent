@@ -26,7 +26,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
             'sync_reservations' => isset($_POST['sync_reservations']) ? 1 : 0,
             'auto_create_invoices' => isset($_POST['auto_create_invoices']) ? 1 : 0,
         ];
-        
+
         // Zapisz ustawienia do bazy danych
         foreach ($settings as $key => $value) {
             $stmt = $pdo->prepare("
@@ -38,7 +38,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
             ");
             $stmt->execute([$key, $value]);
         }
-        
+
         $success = true;
     } catch (Exception $e) {
         $error = 'Błąd zapisu: ' . $e->getMessage();
@@ -57,12 +57,14 @@ try {
     // Brak ustawień lub błąd - użyj domyślnych wartości
 }
 
-function getSetting($key, $default = '') {
+function getSetting($key, $default = '')
+{
     global $current_settings;
     return $current_settings[$key] ?? $default;
 }
 
-function isSettingEnabled($key) {
+function isSettingEnabled($key)
+{
     return (bool) getSetting($key, 0);
 }
 ?>
@@ -95,7 +97,7 @@ function isSettingEnabled($key) {
 
 <form method="POST" action="">
     <input type="hidden" name="action" value="save_integrations">
-    
+
     <div class="row">
         <!-- Integracje fakturowe -->
         <div class="col-md-6">
@@ -105,13 +107,13 @@ function isSettingEnabled($key) {
                 </div>
                 <div class="card-body">
                     <div class="form-check mb-3">
-                        <input class="form-check-input" type="checkbox" value="1" id="invoice_integration_enabled" 
-                               name="invoice_integration_enabled" <?= isSettingEnabled('invoice_integration_enabled') ? 'checked' : '' ?>>
+                        <input class="form-check-input" type="checkbox" value="1" id="invoice_integration_enabled"
+                            name="invoice_integration_enabled" <?= isSettingEnabled('invoice_integration_enabled') ? 'checked' : '' ?>>
                         <label class="form-check-label fw-bold" for="invoice_integration_enabled">
                             Włącz integrację z systemem fakturującym
                         </label>
                     </div>
-                    
+
                     <div id="invoice-settings" style="display: <?= isSettingEnabled('invoice_integration_enabled') ? 'block' : 'none' ?>;">
                         <div class="mb-3">
                             <label for="invoice_api_provider" class="form-label">Dostawca API</label>
@@ -124,24 +126,24 @@ function isSettingEnabled($key) {
                                 <option value="custom" <?= getSetting('invoice_api_provider') === 'custom' ? 'selected' : '' ?>>Własny system</option>
                             </select>
                         </div>
-                        
+
                         <div class="mb-3">
                             <label for="invoice_api_key" class="form-label">Klucz API</label>
-                            <input type="password" class="form-control" id="invoice_api_key" 
-                                   name="invoice_api_key" value="<?= htmlspecialchars(getSetting('invoice_api_key')) ?>"
-                                   placeholder="Wprowadź klucz API">
+                            <input type="password" class="form-control" id="invoice_api_key"
+                                name="invoice_api_key" value="<?= htmlspecialchars(getSetting('invoice_api_key')) ?>"
+                                placeholder="Wprowadź klucz API">
                         </div>
-                        
+
                         <div class="mb-3">
                             <label for="invoice_api_url" class="form-label">URL API (dla własnego systemu)</label>
-                            <input type="url" class="form-control" id="invoice_api_url" 
-                                   name="invoice_api_url" value="<?= htmlspecialchars(getSetting('invoice_api_url')) ?>"
-                                   placeholder="https://api.twojsystem.pl/v1/">
+                            <input type="url" class="form-control" id="invoice_api_url"
+                                name="invoice_api_url" value="<?= htmlspecialchars(getSetting('invoice_api_url')) ?>"
+                                placeholder="https://api.twojsystem.pl/v1/">
                         </div>
-                        
+
                         <div class="form-check">
-                            <input class="form-check-input" type="checkbox" value="1" id="auto_create_invoices" 
-                                   name="auto_create_invoices" <?= isSettingEnabled('auto_create_invoices') ? 'checked' : '' ?>>
+                            <input class="form-check-input" type="checkbox" value="1" id="auto_create_invoices"
+                                name="auto_create_invoices" <?= isSettingEnabled('auto_create_invoices') ? 'checked' : '' ?>>
                             <label class="form-check-label" for="auto_create_invoices">
                                 Automatycznie twórz faktury po zakończeniu rezerwacji
                             </label>
@@ -150,7 +152,7 @@ function isSettingEnabled($key) {
                 </div>
             </div>
         </div>
-        
+
         <!-- Integracje ERP -->
         <div class="col-md-6">
             <div class="card mb-4">
@@ -159,13 +161,13 @@ function isSettingEnabled($key) {
                 </div>
                 <div class="card-body">
                     <div class="form-check mb-3">
-                        <input class="form-check-input" type="checkbox" value="1" id="erp_integration_enabled" 
-                               name="erp_integration_enabled" <?= isSettingEnabled('erp_integration_enabled') ? 'checked' : '' ?>>
+                        <input class="form-check-input" type="checkbox" value="1" id="erp_integration_enabled"
+                            name="erp_integration_enabled" <?= isSettingEnabled('erp_integration_enabled') ? 'checked' : '' ?>>
                         <label class="form-check-label fw-bold" for="erp_integration_enabled">
                             Włącz integrację z systemem ERP
                         </label>
                     </div>
-                    
+
                     <div id="erp-settings" style="display: <?= isSettingEnabled('erp_integration_enabled') ? 'block' : 'none' ?>;">
                         <div class="mb-3">
                             <label for="erp_system_type" class="form-label">Typ systemu ERP</label>
@@ -178,26 +180,26 @@ function isSettingEnabled($key) {
                                 <option value="custom" <?= getSetting('erp_system_type') === 'custom' ? 'selected' : '' ?>>Własny system</option>
                             </select>
                         </div>
-                        
+
                         <div class="mb-3">
                             <label for="erp_api_endpoint" class="form-label">Endpoint API</label>
-                            <input type="url" class="form-control" id="erp_api_endpoint" 
-                                   name="erp_api_endpoint" value="<?= htmlspecialchars(getSetting('erp_api_endpoint')) ?>"
-                                   placeholder="https://erp.firma.pl/api/v1/">
+                            <input type="url" class="form-control" id="erp_api_endpoint"
+                                name="erp_api_endpoint" value="<?= htmlspecialchars(getSetting('erp_api_endpoint')) ?>"
+                                placeholder="https://erp.firma.pl/api/v1/">
                         </div>
-                        
+
                         <div class="mb-3">
                             <label for="erp_auth_token" class="form-label">Token autoryzacyjny</label>
-                            <input type="password" class="form-control" id="erp_auth_token" 
-                                   name="erp_auth_token" value="<?= htmlspecialchars(getSetting('erp_auth_token')) ?>"
-                                   placeholder="Bearer token lub API key">
+                            <input type="password" class="form-control" id="erp_auth_token"
+                                name="erp_auth_token" value="<?= htmlspecialchars(getSetting('erp_auth_token')) ?>"
+                                placeholder="Bearer token lub API key">
                         </div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
-    
+
     <div class="row">
         <!-- Integracje CRM -->
         <div class="col-md-6">
@@ -207,13 +209,13 @@ function isSettingEnabled($key) {
                 </div>
                 <div class="card-body">
                     <div class="form-check mb-3">
-                        <input class="form-check-input" type="checkbox" value="1" id="crm_integration_enabled" 
-                               name="crm_integration_enabled" <?= isSettingEnabled('crm_integration_enabled') ? 'checked' : '' ?>>
+                        <input class="form-check-input" type="checkbox" value="1" id="crm_integration_enabled"
+                            name="crm_integration_enabled" <?= isSettingEnabled('crm_integration_enabled') ? 'checked' : '' ?>>
                         <label class="form-check-label fw-bold" for="crm_integration_enabled">
                             Włącz integrację z systemem CRM
                         </label>
                     </div>
-                    
+
                     <div id="crm-settings" style="display: <?= isSettingEnabled('crm_integration_enabled') ? 'block' : 'none' ?>;">
                         <div class="mb-3">
                             <label for="crm_system_type" class="form-label">Typ systemu CRM</label>
@@ -226,25 +228,25 @@ function isSettingEnabled($key) {
                                 <option value="custom" <?= getSetting('crm_system_type') === 'custom' ? 'selected' : '' ?>>Własny system</option>
                             </select>
                         </div>
-                        
+
                         <div class="mb-3">
                             <label for="crm_api_key" class="form-label">Klucz API</label>
-                            <input type="password" class="form-control" id="crm_api_key" 
-                                   name="crm_api_key" value="<?= htmlspecialchars(getSetting('crm_api_key')) ?>"
-                                   placeholder="Klucz API lub token">
+                            <input type="password" class="form-control" id="crm_api_key"
+                                name="crm_api_key" value="<?= htmlspecialchars(getSetting('crm_api_key')) ?>"
+                                placeholder="Klucz API lub token">
                         </div>
-                        
+
                         <div class="mb-3">
                             <label for="crm_webhook_url" class="form-label">URL webhook</label>
-                            <input type="url" class="form-control" id="crm_webhook_url" 
-                                   name="crm_webhook_url" value="<?= htmlspecialchars(getSetting('crm_webhook_url')) ?>"
-                                   placeholder="https://crm.firma.pl/webhooks/rental">
+                            <input type="url" class="form-control" id="crm_webhook_url"
+                                name="crm_webhook_url" value="<?= htmlspecialchars(getSetting('crm_webhook_url')) ?>"
+                                placeholder="https://crm.firma.pl/webhooks/rental">
                         </div>
                     </div>
                 </div>
             </div>
         </div>
-        
+
         <!-- Ustawienia synchronizacji -->
         <div class="col-md-6">
             <div class="card mb-4">
@@ -254,32 +256,32 @@ function isSettingEnabled($key) {
                 <div class="card-body">
                     <div class="mb-3">
                         <label for="webhook_secret" class="form-label">Webhook Secret</label>
-                        <input type="password" class="form-control" id="webhook_secret" 
-                               name="webhook_secret" value="<?= htmlspecialchars(getSetting('webhook_secret')) ?>"
-                               placeholder="Tajny klucz do walidacji webhook">
+                        <input type="password" class="form-control" id="webhook_secret"
+                            name="webhook_secret" value="<?= htmlspecialchars(getSetting('webhook_secret')) ?>"
+                            placeholder="Tajny klucz do walidacji webhook">
                         <div class="form-text">Używany do bezpiecznej walidacji przychodzących webhook.</div>
                     </div>
-                    
+
                     <div class="form-check mb-3">
-                        <input class="form-check-input" type="checkbox" value="1" id="sync_customer_data" 
-                               name="sync_customer_data" <?= isSettingEnabled('sync_customer_data') ? 'checked' : '' ?>>
+                        <input class="form-check-input" type="checkbox" value="1" id="sync_customer_data"
+                            name="sync_customer_data" <?= isSettingEnabled('sync_customer_data') ? 'checked' : '' ?>>
                         <label class="form-check-label" for="sync_customer_data">
                             Synchronizuj dane klientów
                         </label>
                     </div>
-                    
+
                     <div class="form-check mb-3">
-                        <input class="form-check-input" type="checkbox" value="1" id="sync_reservations" 
-                               name="sync_reservations" <?= isSettingEnabled('sync_reservations') ? 'checked' : '' ?>>
+                        <input class="form-check-input" type="checkbox" value="1" id="sync_reservations"
+                            name="sync_reservations" <?= isSettingEnabled('sync_reservations') ? 'checked' : '' ?>>
                         <label class="form-check-label" for="sync_reservations">
                             Synchronizuj rezerwacje
                         </label>
                     </div>
-                    
+
                     <div class="alert alert-light">
                         <small class="text-muted">
                             <i class="bi bi-info-circle me-1"></i>
-                            Synchronizacja jest automatyczna po włączeniu odpowiednich integracji. 
+                            Synchronizacja jest automatyczna po włączeniu odpowiednich integracji.
                             Dane są przesyłane w czasie rzeczywistym przy tworzeniu/aktualizacji rekordów.
                         </small>
                     </div>
@@ -287,7 +289,7 @@ function isSettingEnabled($key) {
             </div>
         </div>
     </div>
-    
+
     <div class="row">
         <div class="col-12">
             <div class="d-flex justify-content-between align-items-center">
@@ -303,55 +305,57 @@ function isSettingEnabled($key) {
 </form>
 
 <script>
-document.addEventListener('DOMContentLoaded', function() {
-    // Toggle visibility of integration settings
-    function toggleSettings() {
-        const invoiceEnabled = document.getElementById('invoice_integration_enabled').checked;
-        const erpEnabled = document.getElementById('erp_integration_enabled').checked;
-        const crmEnabled = document.getElementById('crm_integration_enabled').checked;
-        
-        document.getElementById('invoice-settings').style.display = invoiceEnabled ? 'block' : 'none';
-        document.getElementById('erp-settings').style.display = erpEnabled ? 'block' : 'none';
-        document.getElementById('crm-settings').style.display = crmEnabled ? 'block' : 'none';
-    }
-    
-    // Add event listeners
-    document.getElementById('invoice_integration_enabled').addEventListener('change', toggleSettings);
-    document.getElementById('erp_integration_enabled').addEventListener('change', toggleSettings);
-    document.getElementById('crm_integration_enabled').addEventListener('change', toggleSettings);
-    
-    // Initial state
-    toggleSettings();
-});
+    document.addEventListener('DOMContentLoaded', function() {
+        // Toggle visibility of integration settings
+        function toggleSettings() {
+            const invoiceEnabled = document.getElementById('invoice_integration_enabled').checked;
+            const erpEnabled = document.getElementById('erp_integration_enabled').checked;
+            const crmEnabled = document.getElementById('crm_integration_enabled').checked;
 
-async function testConnections() {
-    const button = event.target;
-    const originalText = button.innerHTML;
-    button.innerHTML = '<i class="bi bi-spinner bi-spin me-2"></i>Testowanie...';
-    button.disabled = true;
-    
-    try {
-        // Simulate API testing - replace with actual endpoints
-        await new Promise(resolve => setTimeout(resolve, 2000));
-        
-        alert('Test połączeń zakończony. Sprawdź logi systemowe dla szczegółów.');
-    } catch (error) {
-        alert('Błąd podczas testowania połączeń: ' + error.message);
-    } finally {
-        button.innerHTML = originalText;
-        button.disabled = false;
+            document.getElementById('invoice-settings').style.display = invoiceEnabled ? 'block' : 'none';
+            document.getElementById('erp-settings').style.display = erpEnabled ? 'block' : 'none';
+            document.getElementById('crm-settings').style.display = crmEnabled ? 'block' : 'none';
+        }
+
+        // Add event listeners
+        document.getElementById('invoice_integration_enabled').addEventListener('change', toggleSettings);
+        document.getElementById('erp_integration_enabled').addEventListener('change', toggleSettings);
+        document.getElementById('crm_integration_enabled').addEventListener('change', toggleSettings);
+
+        // Initial state
+        toggleSettings();
+    });
+
+    async function testConnections() {
+        const button = event.target;
+        const originalText = button.innerHTML;
+        button.innerHTML = '<i class="bi bi-spinner bi-spin me-2"></i>Testowanie...';
+        button.disabled = true;
+
+        try {
+            // Simulate API testing - replace with actual endpoints
+            await new Promise(resolve => setTimeout(resolve, 2000));
+
+            alert('Test połączeń zakończony. Sprawdź logi systemowe dla szczegółów.');
+        } catch (error) {
+            alert('Błąd podczas testowania połączeń: ' + error.message);
+        } finally {
+            button.innerHTML = originalText;
+            button.disabled = false;
+        }
     }
-}
 </script>
 
 <style>
-.card-header {
-    font-weight: 600;
-}
-.form-check-label.fw-bold {
-    font-weight: 600 !important;
-}
-.alert-light {
-    border: 1px solid #dee2e6;
-}
+    .card-header {
+        font-weight: 600;
+    }
+
+    .form-check-label.fw-bold {
+        font-weight: 600 !important;
+    }
+
+    .alert-light {
+        border: 1px solid #dee2e6;
+    }
 </style>

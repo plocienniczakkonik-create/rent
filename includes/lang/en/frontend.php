@@ -44,7 +44,7 @@ return [
     'nav_offer' => 'OFFER',
     'nav_reserve' => 'RESERVE',
     'nav_extras' => 'EXTRAS',
-    
+
     // Cart and invoice
     'request_invoice' => 'I want to receive an invoice',
     'invoice_data' => 'Invoice data',

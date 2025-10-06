@@ -86,6 +86,9 @@
     text-decoration: none;
     transition: all 0.2s ease;
     cursor: pointer;
+    pointer-events: auto !important;
+    position: relative;
+    z-index: 50;
 
     i {
       color: #6b7280;
@@ -424,6 +427,8 @@
   .text-muted {
     color: #6b7280 !important;
   }
+
+
 
   /* Responsive */
   @media (max-width: 768px) {
@@ -935,4 +940,57 @@
     margin-right: 0.75rem;
     flex-shrink: 0;
   }
+}/* ===== Email Template List Styles ===== */
+.email-template-list {
+  .template-item {
+    background: white;
+    color: #23233a;
+    border-left: 4px solid transparent;
+    font-weight: 500;
+    transition: border-color 0.2s, font-weight 0.2s;
+
+    &.active {
+      background: #fff !important;
+      color: #23233a !important;
+      border-left: 6px solid #7b8cff !important;
+      font-weight: 700 !important;
+    }
+
+    .template-name {
+      font-weight: inherit;
+    }
+
+    .template-desc {
+      color: #888;
+    }
+
+    &.active .template-desc {
+      color: #23233a !important;
+      font-weight: 500;
+    }
+  }
+}
+
+#email-template-list .template-item.active {
+  background: #fff !important;
+  color: #23233a !important;
+  border-left: 6px solid #7b8cff !important;
+  font-weight: 700 !important;
+}
+#email-template-list .template-item.active .template-desc {
+  color: #23233a !important;
+  font-weight: 500;
+}
+#email-template-list .list-group-item.active {
+  background: #fff !important;
+  color: #23233a !important;
+  border-left: 6px solid #7b8cff !important;
+  border-top: none !important;
+  border-bottom: none !important;
+  border-right: none !important;
+  font-weight: 700 !important;
+}
+#email-template-list .list-group-item.active .template-desc {
+  color: #23233a !important;
+  font-weight: 500;
 }

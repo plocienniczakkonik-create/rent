@@ -44,7 +44,7 @@ return [
     'nav_offer' => 'OFERTA',
     'nav_reserve' => 'ZAREZERWUJ',
     'nav_extras' => 'DODATKI',
-    
+
     // Koszyk i faktura
     'request_invoice' => 'Chcę otrzymać fakturę',
     'invoice_data' => 'Dane do faktury',

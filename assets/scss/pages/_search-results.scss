@@ -1,36 +1,57 @@
 /* /assets/scss/pages/_search-results.scss */
 
+// Wspólne style dla search-panel (używane na home i search-results)
+.search-panel {
+  max-width: 1100px;
+  margin-inline: auto;
+  
+  .wyszukiwarkaCL > .container {
+    max-width: 100%;
+    padding-inline: 0;
+    background: transparent;
+  }
+}
+
+.wyszukiwarkaCL > .container {
+  max-width: 100%;
+  padding-inline: 0;
+  background: transparent;
+}
+
+.search-wrapper .card {
+  border-radius: 18px;
+  box-shadow: 0 6px 24px rgba(0,0,0,.08);
+  border: 1px solid rgba(0,0,0,.06);
+  padding: clamp(12px, 1.2vw, 18px);
+}
+
+// Hero na stronie głównej - dodatkowe style dla wyrównania
+.hero {
+  .container-xl {
+    width: 100%;
+    max-width: 1320px;
+    margin: 0 auto;
+    padding-left: var(--bs-gutter-x, 0.75rem);
+    padding-right: var(--bs-gutter-x, 0.75rem);
+  }
+  
+  .search-panel {
+    max-width: 1320px; // Match container-xl width
+    margin-inline: auto;
+    
+    .search-wrapper {
+      max-width: 100%; // Override default 1100px limit in hero
+      margin-inline: 0; // Remove centering, let search-panel handle it
+    }
+  }
+}
+
 #search-results-shell {
   background: rgb(234, 234, 227);
 
   .search-hero {
     padding-block: 72px 24px;
     background: rgb(234, 234, 227);
-
-    .page-title {
-      text-align: center;
-      margin: 0 0 16px;
-      font-size: clamp(1.4rem, 1.1rem + 1vw, 2rem);
-      font-weight: 700;
-    }
-
-    .search-panel {
-      max-width: 1100px;
-      margin-inline: auto;
-    }
-
-    .wyszukiwarkaCL > .container {
-      max-width: 100%;
-      padding-inline: 0;
-      background: transparent;
-    }
-
-    .search-wrapper .card {
-      border-radius: 18px;
-      box-shadow: 0 6px 24px rgba(0,0,0,.08);
-      border: 1px solid rgba(0,0,0,.06);
-      padding: clamp(12px, 1.2vw, 18px);
-    }
   }
 
   .after-form {
@@ -40,6 +61,16 @@
 
   section#offer {
     padding-top: 0;
+  }
+}
+
+// Common styles for search-hero (used on both home and search-results)
+.search-hero {
+  .page-title {
+    text-align: center;
+    margin: 0 0 16px;
+    font-size: clamp(1.4rem, 1.1rem + 1vw, 2rem);
+    font-weight: 700;
   }
 }
 
