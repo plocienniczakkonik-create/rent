@@ -62,7 +62,7 @@ function run_search(array $input): array
     $sql = "
       SELECT
         id, name, sku, price, price_unit, stock, status,
-        category, seats, doors, gearbox, fuel, image_path, description
+        category, car_type, seats, doors, gearbox, fuel, image_path, description
       FROM products
       WHERE status = 'active' AND stock > 0
     ";

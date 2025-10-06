@@ -232,7 +232,9 @@ if ($applyPromos) {
                                 <span class="text-muted">Brak dostępnych dodatków.</span>
                             <?php endif; ?>
                         </div>
-                        <button type="submit" id="reserveBtn" class="btn btn-theme btn-primary btn-lg w-100 mb-3">Rezerwuj</button>
+                        <button type="button" id="reserveBtn" class="btn btn-theme btn-primary btn-lg w-100 mb-3">
+                            <i class="bi bi-bag-plus me-2"></i>Dodaj do koszyka
+                        </button>
                         <div class="price-box text-center mb-2" id="livePriceBox">
                             <?php if ($priceFinal < $standardPriceDirect && $promoLabel !== ''): ?>
                                 <span class="price-label">Cena:</span>
@@ -397,6 +399,55 @@ if ($applyPromos) {
             el.addEventListener('change', validateDates);
             el.addEventListener('input', validateDates);
         });
+
+        // Event listener dla przycisku "Dodaj do koszyka"
+        if (reserveBtn) {
+            reserveBtn.addEventListener('click', function(e) {
+                e.preventDefault();
+                
+                // Sprawdź czy formularz jest poprawnie wypełniony
+                if (!validateDates()) {
+                    alert('Proszę podać prawidłowe daty rezerwacji.');
+                    return;
+                }
+                
+                const pickAt = pickAtEl?.value || '';
+                const retAt = retAtEl?.value || '';
+                const pickLoc = pickLocEl?.value || '';
+                const dropLoc = dropLocEl?.value || '';
+                
+                if (!pickAt || !retAt || !pickLoc || !dropLoc) {
+                    alert('Proszę wypełnić wszystkie wymagane pola.');
+                    return;
+                }
+                
+                // Zbierz wybrane dodatki
+                const selectedExtras = [];
+                addons.forEach(ch => {
+                    if (ch.checked) {
+                        selectedExtras.push(ch.value);
+                    }
+                });
+                
+                // Dodaj do koszyka
+                const cartItem = {
+                    sku: sku,
+                    name: '<?= htmlspecialchars($product['name'] ?? '') ?>',
+                    price: <?= $basePrice ?>,
+                    pickup_at: pickAt,
+                    return_at: retAt,
+                    pickup_location: pickLoc,
+                    dropoff_location: dropLoc,
+                    extras: selectedExtras
+                };
+                
+                if (window.cartManager) {
+                    window.cartManager.addToCart(cartItem);
+                } else {
+                    alert('System koszyka nie jest dostępny. Spróbuj ponownie.');
+                }
+            });
+        }
 
         // Początkowe przeliczenie
         // Inicjalny stan: blokuj przycisk, dopóki zakres niepoprawny

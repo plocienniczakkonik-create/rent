@@ -220,6 +220,69 @@ $fmt = function ($n) {
                     </select>
                 </div>
                 <div class="mb-3">
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" value="1" id="request_invoice" name="request_invoice" form="checkout-form">
+                        <label class="form-check-label fw-semibold" for="request_invoice">
+                            <?= __('request_invoice', 'frontend', 'Chcę otrzymać fakturę') ?>
+                        </label>
+                    </div>
+                </div>
+
+                <!-- Pola do faktury (ukryte domyślnie) -->
+                <div id="invoice-fields" style="display: none;">
+                    <div class="card bg-light p-3 mb-3">
+                        <h6 class="mb-3"><?= __('invoice_data', 'frontend', 'Dane do faktury') ?></h6>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-2">
+                                    <label class="form-label"><?= __('company_name', 'frontend', 'Nazwa firmy') ?> <span class="text-danger">*</span></label>
+                                    <input type="text" class="form-control" name="invoice_company_name" form="checkout-form">
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-2">
+                                    <label class="form-label"><?= __('tax_number', 'frontend', 'NIP') ?> <span class="text-danger">*</span></label>
+                                    <input type="text" class="form-control" name="invoice_tax_number" form="checkout-form" 
+                                        placeholder="000-000-00-00" pattern="[0-9-]{10,13}">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="mb-2">
+                            <label class="form-label"><?= __('company_address', 'frontend', 'Adres firmy') ?> <span class="text-danger">*</span></label>
+                            <input type="text" class="form-control" name="invoice_address" form="checkout-form"
+                                placeholder="ul. Przykładowa 123">
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-2">
+                                    <label class="form-label"><?= __('company_city', 'frontend', 'Miasto') ?> <span class="text-danger">*</span></label>
+                                    <input type="text" class="form-control" name="invoice_city" form="checkout-form">
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-2">
+                                    <label class="form-label"><?= __('company_postcode', 'frontend', 'Kod pocztowy') ?> <span class="text-danger">*</span></label>
+                                    <input type="text" class="form-control" name="invoice_postcode" form="checkout-form"
+                                        placeholder="00-000">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="mb-2">
+                            <label class="form-label"><?= __('company_country', 'frontend', 'Kraj') ?> <span class="text-danger">*</span></label>
+                            <select class="form-select" name="invoice_country" form="checkout-form">
+                                <option value="" disabled selected>Wybierz kraj...</option>
+                                <option value="PL" selected>Polska</option>
+                                <option value="DE">Niemcy</option>
+                                <option value="CZ">Czechy</option>
+                                <option value="SK">Słowacja</option>
+                                <option value="UA">Ukraina</option>
+                                <option value="Other">Inny</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="mb-3">
                     <label class="form-label">Forma płatności</label>
                     <select class="form-select" name="payment_method" required form="checkout-form">
                         <option value="" disabled selected>Wybierz...</option>
@@ -356,3 +419,35 @@ $fmt = function ($n) {
         </div>
     </div>
 </div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const requestInvoiceCheckbox = document.getElementById('request_invoice');
+    const invoiceFields = document.getElementById('invoice-fields');
+    const invoiceInputs = invoiceFields.querySelectorAll('input[name^="invoice_"], select[name^="invoice_"]');
+
+    function toggleInvoiceFields() {
+        if (requestInvoiceCheckbox.checked) {
+            invoiceFields.style.display = 'block';
+            // Dodaj required do pól faktury
+            invoiceInputs.forEach(input => {
+                if (input.name !== 'invoice_country') { // country ma już selected option
+                    input.required = true;
+                }
+            });
+        } else {
+            invoiceFields.style.display = 'none';
+            // Usuń required z pól faktury
+            invoiceInputs.forEach(input => {
+                input.required = false;
+                input.value = ''; // Wyczyść wartości
+            });
+        }
+    }
+
+    requestInvoiceCheckbox.addEventListener('change', toggleInvoiceFields);
+    
+    // Inicjalne ustawienie
+    toggleInvoiceFields();
+});
+</script>

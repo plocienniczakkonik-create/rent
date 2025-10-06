@@ -60,6 +60,15 @@ $billingPostcode = trim((string)($_POST['billing_postcode'] ?? ''));
 $billingCountry = trim((string)($_POST['billing_country'] ?? ''));
 $paymentMethod  = trim((string)($_POST['payment_method'] ?? ''));
 
+// Dane do faktury
+$requestInvoice = isset($_POST['request_invoice']) ? 1 : 0;
+$invoiceCompanyName = trim((string)($_POST['invoice_company_name'] ?? ''));
+$invoiceTaxNumber = trim((string)($_POST['invoice_tax_number'] ?? ''));
+$invoiceAddress = trim((string)($_POST['invoice_address'] ?? ''));
+$invoiceCity = trim((string)($_POST['invoice_city'] ?? ''));
+$invoicePostcode = trim((string)($_POST['invoice_postcode'] ?? ''));
+$invoiceCountry = trim((string)($_POST['invoice_country'] ?? ''));
+
 $errors = [];
 if ($sku === '') $errors[] = 'Brak identyfikatora produktu.';
 if ($pickupLocation === '' || $dropLocation === '') $errors[] = 'Wybierz miejsca odbioru i zwrotu.';
@@ -67,6 +76,16 @@ if ($customerName === '' || $customerEmail === '' || $customerPhone === '') $err
 if ($billingAddress === '' || $billingCity === '' || $billingCountry === '') $errors[] = 'Uzupełnij adres rozliczeniowy.';
 if (!preg_match('/^\+[1-9]\d{1,14}$/', $customerPhone)) $errors[] = 'Numer telefonu musi zawierać kod kraju (np. +48123456789).';
 if (!in_array($paymentMethod, ['online', 'card_on_pickup', 'cash_on_pickup'], true)) $errors[] = 'Nieprawidłowa forma płatności.';
+
+// Walidacja danych do faktury
+if ($requestInvoice) {
+    if ($invoiceCompanyName === '' || $invoiceTaxNumber === '' || $invoiceAddress === '' || $invoiceCity === '' || $invoiceCountry === '') {
+        $errors[] = 'Przy zamówieniu faktury wszystkie pola firmowe są wymagane.';
+    }
+    if ($invoiceTaxNumber !== '' && !preg_match('/^[0-9-]{10,13}$/', $invoiceTaxNumber)) {
+        $errors[] = 'Nieprawidłowy format numeru NIP.';
+    }
+}
 
 $pickupAt = parse_dt($pickupAtRaw);
 $returnAt = parse_dt($returnAtRaw);
@@ -226,12 +245,14 @@ if (empty($errors)) {
       (sku, product_name, pickup_location, dropoff_location, pickup_at, return_at, rental_days,
        price_per_day_base, price_per_day_final, addons_total, total_gross, promo_applied, promo_label,
        customer_name, customer_email, customer_phone, billing_address, billing_city, billing_postcode, billing_country, payment_method, status,
-       vehicle_id, pickup_location_id, dropoff_location_id, deposit_amount, deposit_type, location_fee, total_with_deposit)
+       vehicle_id, pickup_location_id, dropoff_location_id, deposit_amount, deposit_type, location_fee, total_with_deposit,
+       request_invoice, invoice_company_name, invoice_tax_number, invoice_address, invoice_city, invoice_postcode, invoice_country)
        VALUES
       (:sku, :pname, :pick_loc, :drop_loc, :pick_at, :ret_at, :days,
        :ppb, :ppf, :addons, :total, :promo_applied, :promo_label,
        :cname, :cemail, :cphone, :billing_address, :billing_city, :billing_postcode, :billing_country, :pmethod, 'pending',
-       :vehicle_id, :pickup_location_id, :dropoff_location_id, :deposit_amount, :deposit_type, :location_fee, :total_with_deposit)");
+       :vehicle_id, :pickup_location_id, :dropoff_location_id, :deposit_amount, :deposit_type, :location_fee, :total_with_deposit,
+       :request_invoice, :invoice_company_name, :invoice_tax_number, :invoice_address, :invoice_city, :invoice_postcode, :invoice_country)");
 
         $ins->execute([
             ':sku'   => $sku,
@@ -263,6 +284,14 @@ if (empty($errors)) {
             ':deposit_type' => $depositType,
             ':location_fee' => $locationFee,
             ':total_with_deposit' => $totalWithDeposit,
+            // Dane do faktury
+            ':request_invoice' => $requestInvoice,
+            ':invoice_company_name' => $requestInvoice ? $invoiceCompanyName : null,
+            ':invoice_tax_number' => $requestInvoice ? $invoiceTaxNumber : null,
+            ':invoice_address' => $requestInvoice ? $invoiceAddress : null,
+            ':invoice_city' => $requestInvoice ? $invoiceCity : null,
+            ':invoice_postcode' => $requestInvoice ? $invoicePostcode : null,
+            ':invoice_country' => $requestInvoice ? $invoiceCountry : null,
         ]);
 
         $reservationId = (int)$pdo->lastInsertId();

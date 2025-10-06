@@ -40,7 +40,8 @@ $sections = [
         'title' => __('shop', 'admin', 'Sklep'),
         'icon' => 'bi-shop',
         'subsections' => [
-            'general' => __('general_settings', 'admin', 'Ustawienia ogólne')
+            'general' => __('general_settings', 'admin', 'Ustawienia ogólne'),
+            'integrations' => __('integrations', 'admin', 'Integracje')
         ]
     ],
     'theme' => [

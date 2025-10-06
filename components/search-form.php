@@ -146,7 +146,7 @@ $clearUrl = $ROOT_INDEX . '?page=' . $clearToPage;
                         <!-- Typ pojazdu -->
                         <div class="dropdown" data-bs-display="static" style="overflow: visible;">
                             <button class="btn btn-light rounded-pill px-3 dropdown-toggle" type="button" data-bs-toggle="dropdown">
-                                <?= htmlspecialchars($labelVehicle[$vehicleType] ?? 'Typ pojazdu') ?>
+                                <i class="bi bi-car-front me-2"></i><?= htmlspecialchars($labelVehicle[$vehicleType] ?? 'Typ pojazdu') ?>
                             </button>
                             <ul class="dropdown-menu shadow mt-2" style="position:absolute; inset:auto auto 0 0; transform:translateY(100%);">
                                 <li><a class="dropdown-item" data-value="">Dowolny</a></li>
@@ -162,7 +162,7 @@ $clearUrl = $ROOT_INDEX . '?page=' . $clearToPage;
                         <!-- Skrzynia biegów -->
                         <div class="dropdown" data-bs-display="static" style="overflow: visible;">
                             <button class="btn btn-light rounded-pill px-3 dropdown-toggle" type="button" data-bs-toggle="dropdown">
-                                <?= htmlspecialchars($labelTrans[$trans] ?? 'Skrzynia biegów') ?>
+                                <i class="bi bi-gear me-2"></i><?= htmlspecialchars($labelTrans[$trans] ?? 'Skrzynia biegów') ?>
                             </button>
                             <ul class="dropdown-menu shadow mt-2" style="position:absolute; inset:auto auto 0 0; transform:translateY(100%);">
                                 <li><a class="dropdown-item" data-value=""><?= i18n::__('any_transmission', 'frontend') ?></a></li>
@@ -175,7 +175,7 @@ $clearUrl = $ROOT_INDEX . '?page=' . $clearToPage;
                         <!-- Minimalna liczba miejsc -->
                         <div class="dropdown" data-bs-display="static" style="overflow: visible;">
                             <button class="btn btn-light rounded-pill px-3 dropdown-toggle" type="button" data-bs-toggle="dropdown">
-                                <?= htmlspecialchars($labelSeats[$seatsMin] ?? 'Minimalna liczba miejsc') ?>
+                                <i class="bi bi-people me-2"></i><?= htmlspecialchars($labelSeats[$seatsMin] ?? 'Minimalna liczba miejsc') ?>
                             </button>
                             <ul class="dropdown-menu shadow mt-2" style="position:absolute; inset:auto auto 0 0; transform:translateY(100%);">
                                 <li><a class="dropdown-item" data-value=""><?= i18n::__('any_seats', 'frontend') ?></a></li>
@@ -191,7 +191,7 @@ $clearUrl = $ROOT_INDEX . '?page=' . $clearToPage;
                         <!-- Rodzaj paliwa -->
                         <div class="dropdown" data-bs-display="static" style="overflow: visible;">
                             <button class="btn btn-light rounded-pill px-3 dropdown-toggle" type="button" data-bs-toggle="dropdown">
-                                <?= htmlspecialchars($labelFuel[$fuel] ?? 'Rodzaj paliwa') ?>
+                                <i class="bi bi-fuel-pump me-2"></i><?= htmlspecialchars($labelFuel[$fuel] ?? 'Rodzaj paliwa') ?>
                             </button>
                             <ul class="dropdown-menu shadow mt-2" style="position:absolute; inset:auto auto 0 0; transform:translateY(100%);">
                                 <li><a class="dropdown-item" data-value=""><?= i18n::__('any_fuel', 'frontend') ?></a></li>
@@ -210,7 +210,7 @@ $clearUrl = $ROOT_INDEX . '?page=' . $clearToPage;
                     <?php endif; ?>
 
                     <button class="btn btn-theme btn-primary rounded-pill px-4 ms-auto" type="submit">
-                        <?= i18n::__('show_cars', 'frontend') ?>
+                        <i class="bi bi-search me-2"></i><?= i18n::__('show_cars', 'frontend') ?>
                     </button>
                 </div>
             </form>

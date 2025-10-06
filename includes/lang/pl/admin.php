@@ -9,6 +9,7 @@ return [
     'dashboard' => 'Panel główny',
     'vehicles' => 'Pojazdy',
     'products' => 'Produkty',
+    'integrations' => 'Integracje',
     // Promotions section
     'promotions' => 'Promocje',
     'add_promotion' => 'Dodaj promocję',

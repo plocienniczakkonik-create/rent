@@ -9,6 +9,7 @@ return [
     'dashboard' => 'Dashboard',
     'vehicles' => 'Vehicles',
     'products' => 'Products',
+    'integrations' => 'Integrations',
     // Promotions section
     'promotions' => 'Promotions',
     'add_promotion' => 'Add Promotion',
