@@ -138,10 +138,10 @@ function test_payment_gateway($gateway, $settings)
         <p class="text-muted mb-0"><?= __('gateway_configuration', 'admin', 'Konfiguracja systemów płatności online') ?></p>
     </div>
     <div class="d-flex gap-2">
-        <button class="btn btn-outline-info btn-sm" data-bs-toggle="modal" data-bs-target="#webhookModal">
+        <button class="btn btn-gradient-primary btn-sm" data-bs-toggle="modal" data-bs-target="#webhookModal" style="background: var(--gradient-primary); color: #fff; border-radius: 8px; border: none;">
             <i class="bi bi-link-45deg"></i> Webhook URLs
         </button>
-        <button class="btn btn-outline-secondary btn-sm" onclick="location.reload()">
+        <button class="btn btn-gradient-primary btn-sm" onclick="location.reload()" style="background: var(--gradient-primary); color: #fff; border-radius: 8px; border: none;">
             <i class="bi bi-arrow-clockwise"></i> <?= __('refresh', 'admin', 'Odśwież') ?>
         </button>
     </div>
@@ -164,7 +164,8 @@ function test_payment_gateway($gateway, $settings)
 <div class="row g-4">
     <?php foreach ($payment_gateways as $gateway_key => $gateway): ?>
         <?php
-        $is_enabled = !empty($current_settings["{$gateway_key}_enabled"]);
+        // Domyślnie bramka wyłączona jeśli nie ma wpisu w bazie
+        $is_enabled = isset($current_settings["{$gateway_key}_enabled"]) ? (bool)$current_settings["{$gateway_key}_enabled"] : false;
         $has_config = false;
         foreach ($gateway['fields'] as $field_key => $field_config) {
             if (!empty($current_settings[$field_key])) {
@@ -181,7 +182,7 @@ function test_payment_gateway($gateway, $settings)
                         <i class="<?= $gateway['icon'] ?> text-<?= $gateway['color'] ?> fs-4 me-2"></i>
                         <div>
                             <h6 class="mb-0"><?= $gateway['name'] ?></h6>
-                            <small class="text-muted"><?= $gateway['description'] ?></small>
+                            <small class="text-white"><?= $gateway['description'] ?></small>
                         </div>
                     </div>
                     <div class="form-check form-switch">
@@ -231,7 +232,7 @@ function test_payment_gateway($gateway, $settings)
                                 <i class="bi bi-check-lg"></i> <?= __('save', 'admin', 'Zapisz') ?>
                             </button>
                             <button type="submit" name="test_gateway"
-                                class="btn btn-outline-secondary btn-sm"
+                                class="btn btn-dark btn-sm"
                                 <?= !$is_enabled || !$has_config ? 'disabled' : '' ?>>
                                 <i class="bi bi-check-circle"></i> <?= __('test_connection', 'admin', 'Testuj') ?>
                             </button>
@@ -254,27 +255,30 @@ function test_payment_gateway($gateway, $settings)
 
 <!-- Modal z webhook URLs -->
 <div class="modal fade" id="webhookModal" tabindex="-1">
-    <div class="modal-dialog modal-lg">
+    <div class="modal-dialog modal-lg d-flex align-items-center justify-content-center" style="min-height: 100vh;">
         <div class="modal-content">
-            <div class="modal-header">
+            <div class="modal-header" style="background: var(--gradient-primary); color: #fff; border-bottom: none;">
                 <h5 class="modal-title">Webhook URLs</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
             </div>
-            <div class="modal-body">
+            <div class="modal-body text-center">
                 <p><?= __('configure_webhook_urls', 'admin', 'Skonfiguruj poniższe URL-e webhook w panelach bramek płatności:') ?></p>
+                <div class="row justify-content-center">
                 <?php foreach ($payment_gateways as $gateway_key => $gateway): ?>
-                    <div class="mb-3">
-                        <label class="form-label fw-semibold"><?= $gateway['name'] ?></label>
+                    <div class="mb-3 col-12 col-md-8 mx-auto">
+                        <label class="form-label fw-semibold text-primary" style="font-size:1.1rem;"><?= $gateway['name'] ?></label>
                         <div class="input-group">
                             <input type="text" class="form-control font-monospace"
                                 value="<?= $BASE ?>/webhooks/<?= $gateway_key ?>.php" readonly>
-                            <button class="btn btn-outline-secondary" type="button"
+                            <button class="btn btn-gradient-primary" type="button"
+                                style="background: var(--gradient-primary); color: #fff; border-radius: 8px; border: none;"
                                 onclick="navigator.clipboard.writeText('<?= $BASE ?>/webhooks/<?= $gateway_key ?>.php')">
                                 <i class="bi bi-clipboard"></i>
                             </button>
                         </div>
                     </div>
                 <?php endforeach; ?>
+                </div>
             </div>
         </div>
     </div>
@@ -285,8 +289,10 @@ function test_payment_gateway($gateway, $settings)
         const form = document.querySelector(`[data-gateway="${gateway}"]`);
         const inputs = form.querySelectorAll('input, select, button');
         const hiddenInput = form.querySelector(`input[name="${gateway}_enabled"]`);
+        const label = document.querySelector(`label[for="${gateway}_enabled"]`);
 
         hiddenInput.value = enabled ? '1' : '0';
+        label.textContent = enabled ? 'Bramka włączona' : 'Bramka wyłączona';
 
         inputs.forEach(input => {
             if (input.name !== `${gateway}_enabled`) {

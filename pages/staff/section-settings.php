@@ -117,8 +117,8 @@ function settings_link(string $section, string $subsection, string $label, strin
 
     .settings-section-title {
         font-size: 0.875rem;
-        font-weight: 600;
-        color: #6c757d;
+        font-weight: 700;
+        color: #343a40;
         text-transform: uppercase;
         letter-spacing: 0.5px;
         margin-bottom: 0.5rem;
@@ -131,12 +131,24 @@ function settings_link(string $section, string $subsection, string $label, strin
     }
 
     .list-group-item.active {
-        background-color: #0d6efd;
-        border-color: #0d6efd;
+        background-color: #f8f9fa;
+        border-color: #dee2e6;
         border-top: 0px;
-        border-right: 0px;
-        color: white;
+        border-left: 4px solid var(--color-primary);
+        color: #343a40;
         pointer-events: auto !important;
+        position: relative;
+    }
+
+    .list-group-item.active::after {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 4px;
+        height: 100%;
+        background: linear-gradient(45deg, var(--color-primary), var(--color-primary-dark));
+        border-radius: 4px 0 0 4px;
     }
 
     .list-group-item:hover:not(.active) {
