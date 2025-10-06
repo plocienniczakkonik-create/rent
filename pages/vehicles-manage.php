@@ -70,9 +70,9 @@ function sort_link_manage(string $key, string $label): string
     $labelStyle = 'font-weight:600;color:#374151;text-decoration:none;font-size:1rem;';
     $chevUpStyle = 'font-size:0.9em;margin-left:2px;color:' . ($arrowUpActive ? $activeColor : $defaultColor) . ';';
     $chevDownStyle = 'font-size:0.9em;margin-left:2px;color:' . ($arrowDownActive ? $activeColor : $defaultColor) . ';';
-    return '<a class="th-sort-link" href="' . htmlspecialchars($BASE . '/index.php?' . $qs) . '" style="' . $labelStyle . '">' 
-        . '<span class="label">' . htmlspecialchars($label) . '</span>' 
-        . '<span class="chevs"><span class="chev" style="' . $chevUpStyle . '">▲</span><span class="chev" style="' . $chevDownStyle . '">▼</span></span>' 
+    return '<a class="th-sort-link" href="' . htmlspecialchars($BASE . '/index.php?' . $qs) . '" style="' . $labelStyle . '">'
+        . '<span class="label">' . htmlspecialchars($label) . '</span>'
+        . '<span class="chevs"><span class="chev" style="' . $chevUpStyle . '">▲</span><span class="chev" style="' . $chevDownStyle . '">▼</span></span>'
         . '</a>';
 }
 

@@ -78,7 +78,7 @@ $pages = max(1, (int)ceil($total / $perPage));
             <input type="text" class="form-control form-control-sm" name="q" placeholder="<?= __('search_placeholder', 'admin', 'Szukaj (nazwa/sku/email)') ?>" value="<?= e($q) ?>">
             <select name="status" class="form-select form-select-sm">
                 <option value=""><?= __('all_statuses', 'admin', 'Wszystkie statusy') ?></option>
-                <?php foreach (["pending", "confirmed", "cancelled"] as $s): ?>
+                <?php foreach (["pending", "confirmed", "completed", "cancelled"] as $s): ?>
                     <option value="<?= e($s) ?>" <?= $status === $s ? 'selected' : '' ?>><?= __($s, 'admin', $s) ?></option>
                 <?php endforeach; ?>
             </select>
@@ -126,7 +126,7 @@ $pages = max(1, (int)ceil($total / $perPage));
                                         <input type="hidden" name="filter_status" value="<?= e($status) ?>">
                                         <input type="hidden" name="p" value="<?= (int)$p ?>">
                                         <select name="status" class="form-select form-select-sm" style="width:auto">
-                                            <?php foreach (["pending", "confirmed", "cancelled"] as $s): ?>
+                                            <?php foreach (["pending", "confirmed", "completed", "cancelled"] as $s): ?>
                                                 <option value="<?= e($s) ?>" <?= ((string)$r['status'] === $s) ? 'selected' : '' ?>><?= __($s, 'admin', $s) ?></option>
                                             <?php endforeach; ?>
                                         </select>

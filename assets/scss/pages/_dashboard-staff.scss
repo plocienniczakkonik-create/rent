@@ -36,11 +36,19 @@
       color: white;
       border: 1px solid rgba(255, 255, 255, 0.2);
 
+      i {
+        color: white; // Ikony białe od razu
+      }
+
       &:hover {
         background: rgba(255, 255, 255, 0.2);
         color: white;
         border-color: rgba(255, 255, 255, 0.3);
         transform: translateY(-2px);
+
+        i {
+          color: white;
+        }
       }
     }
   }

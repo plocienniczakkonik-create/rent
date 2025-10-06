@@ -92,12 +92,12 @@ $locations = db()->query("
 $scopeTypes = [
     'global'              => 'Wszystko (bez ograniczeń)',
     'product'             => 'Konkretne samochody',
-    'category'            => 'Konkretne klasy pojazdów', 
+    'category'            => 'Konkretne klasy pojazdów',
     'product_pickup'      => 'Samochody + miejsca odbioru',
     'product_return'      => 'Samochody + miejsca zwrotu',
     'product_both'        => 'Samochody + miejsca odbioru i zwrotu',
     'category_pickup'     => 'Klasy + miejsca odbioru',
-    'category_return'     => 'Klasy + miejsca zwrotu', 
+    'category_return'     => 'Klasy + miejsca zwrotu',
     'category_both'       => 'Klasy + miejsca odbioru i zwrotu',
     'pickup_location'     => 'Tylko miejsca odbioru',
     'return_location'     => 'Tylko miejsca zwrotu',
@@ -118,7 +118,7 @@ $scopeTypes = [
                 <i class="bi bi-tag me-3" style="font-size: 1.25rem;"></i>
                 <h4 class="mb-0"><?= $id ? 'Edycja promocji' : 'Dodaj nową promocję' ?></h4>
             </div>
-            
+
             <div class="card-body p-0" style="background: white;">
                 <form method="post" action="<?= $BASE ? ($BASE . '/pages/promo-save.php') : 'promo-save.php' ?>" class="p-4">
                     <?= csrf_field() ?>
@@ -228,7 +228,7 @@ $scopeTypes = [
                                 <label class="form-label">Miejsca odbioru</label>
                                 <select name="scope_value_pickup_ids[]" class="form-select" multiple size="6">
                                     <?php foreach ($locations as $loc): ?>
-                                        <?php 
+                                        <?php
                                         $locationId = (string)$loc['id'];
                                         $locationText = $loc['name'] . ' (' . $loc['city'] . ')';
                                         $sel = in_array($locationId, $pickupLocationIds, true) ? 'selected' : '';
@@ -244,7 +244,7 @@ $scopeTypes = [
                                 <label class="form-label">Miejsca zwrotu</label>
                                 <select name="scope_value_return_ids[]" class="form-select" multiple size="6">
                                     <?php foreach ($locations as $loc): ?>
-                                        <?php 
+                                        <?php
                                         $locationId = (string)$loc['id'];
                                         $locationText = $loc['name'] . ' (' . $loc['city'] . ')';
                                         $sel = in_array($locationId, $returnLocationIds, true) ? 'selected' : '';
@@ -349,9 +349,9 @@ $scopeTypes = [
         function syncScope() {
             // Ukryj wszystkie sekcje
             ['scopeProduct', 'scopeCategory', 'scopePickup', 'scopeReturn'].forEach(hide);
-            
+
             const t = scopeType.value;
-            
+
             // Pokaż odpowiednie sekcje w zależności od typu
             if (t === 'product' || t.startsWith('product_')) {
                 show('scopeProduct');

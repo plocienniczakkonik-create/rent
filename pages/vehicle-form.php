@@ -1,4 +1,3 @@
-
 <?php
 require_once dirname(__DIR__) . '/auth/auth.php';
 require_once dirname(__DIR__) . '/partials/head.php';
@@ -31,7 +30,8 @@ if ($id > 0) {
     $currentLocation = VehicleLocationManager::getCurrentLocation($id);
 }
 $allLocations = VehicleLocationManager::getAllLocations();
-function old($key, $default = '') {
+function old($key, $default = '')
+{
     if (isset($_POST[$key])) return htmlspecialchars((string)$_POST[$key]);
     global $edit, $prefill_product_id;
     if ($edit && array_key_exists($key, $edit)) return htmlspecialchars((string)$edit[$key]);

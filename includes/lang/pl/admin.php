@@ -422,6 +422,7 @@ return [
     'return' => 'Zwrot',
     'pending' => 'Oczekujące',
     'confirmed' => 'Potwierdzone',
+    'completed' => 'Zakończone',
     'cancelled' => 'Anulowane',
 
     // Promotions section

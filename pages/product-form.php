@@ -38,7 +38,8 @@ if ($id > 0) {
         }
     }
 }
-function dict_names_active(PDO $pdo, string $typeSlug): array {
+function dict_names_active(PDO $pdo, string $typeSlug): array
+{
     $sql = "SELECT t.name FROM dict_terms t JOIN dict_types dt ON dt.id = t.dict_type_id WHERE dt.slug = :slug AND t.status = 'active' ORDER BY t.sort_order ASC, t.name ASC";
     $st = $pdo->prepare($sql);
     $st->execute([':slug' => $typeSlug]);
@@ -308,6 +309,7 @@ $units      = ['per_day' => i18n::__('per_day'), 'per_hour' => i18n::__('per_hou
         const nameInput = document.getElementById('product-name');
         const skuInput = document.getElementById('product-sku');
         const generateBtn = document.getElementById('auto-generate-sku');
+
         function generateSKU(name) {
             return name.toUpperCase().replace(/[^A-Z0-9\s]/g, '').replace(/\s+/g, '-').replace(/^-+|-+$/g, '').substring(0, 20);
         }

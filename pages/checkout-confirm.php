@@ -146,14 +146,13 @@ try {
     $fleetEnabled = $fleetManager->isEnabled();
 
     if ($fleetEnabled) {
-        // 1. Znajdź ID lokalizacji
+        // 1. Znajdź ID lokalizacji (używamy ujednoliconych nazw z dict_terms)
         $locations = $fleetManager->getActiveLocations();
         foreach ($locations as $location) {
-            $displayName = $location['name'] . ' (' . $location['city'] . ')';
-            if ($displayName === $pickupLocation || $location['name'] === $pickupLocation || $location['city'] === $pickupLocation) {
+            if ($location['name'] === $pickupLocation) {
                 $pickupLocationId = $location['id'];
             }
-            if ($displayName === $dropLocation || $location['name'] === $dropLocation || $location['city'] === $dropLocation) {
+            if ($location['name'] === $dropLocation) {
                 $dropoffLocationId = $location['id'];
             }
         }

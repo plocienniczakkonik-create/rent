@@ -4,13 +4,14 @@
 require_once dirname(__DIR__) . '/includes/db.php';
 require_once __DIR__ . '/includes/search.php'; // wspólna logika promocji
 $pdo = db();
+
 // Dodatki
 $addons = [];
 $stmt = $pdo->prepare("SELECT name, price, charge_type FROM dict_terms WHERE status='active' AND dict_type_id = (SELECT id FROM dict_types WHERE slug='addon' LIMIT 1) ORDER BY sort_order, name");
 $stmt->execute();
 $addons = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-// Lokalizacje
+// Lokalizacje - używaj nazw z dict_terms jako źródła prawdy
 $locations = [];
 $stmtLoc = $pdo->prepare("SELECT t.name FROM dict_terms t JOIN dict_types dt ON dt.id = t.dict_type_id WHERE dt.slug = 'location' AND t.status = 'active' ORDER BY t.sort_order ASC, t.name ASC");
 $stmtLoc->execute();

@@ -65,6 +65,7 @@ $monthlyLabelsJson = json_encode(array_column($reports['monthly_revenue'], 'mont
                 <select class="form-select form-select-sm" name="location" id="location">
                     <option value=""><?= __('all_locations', 'admin', 'Wszystkie lokalizacje') ?></option>
                     <?php
+                    // Pobieramy lokalizacje z rzeczywistych rezerwacji (powinny być z naszych słowników)
                     $locations = db()->query("SELECT DISTINCT pickup_location FROM reservations WHERE pickup_location IS NOT NULL ORDER BY pickup_location")->fetchAll();
                     foreach ($locations as $loc): ?>
                         <option value="<?= htmlspecialchars($loc['pickup_location']) ?>"><?= htmlspecialchars($loc['pickup_location']) ?></option>
@@ -92,6 +93,12 @@ $monthlyLabelsJson = json_encode(array_column($reports['monthly_revenue'], 'mont
                 </button>
                 <button type="button" class="btn-filter-type" data-report-type="vehicles" onclick="setReportType('vehicles')">
                     <i class="bi bi-truck me-1"></i>Pojazdy
+                </button>
+                <button type="button" class="btn-filter-type" data-report-type="incidents" onclick="setReportType('incidents')">
+                    <i class="bi bi-exclamation-triangle me-1"></i>Incydenty
+                </button>
+                <button type="button" class="btn-filter-type" data-report-type="services" onclick="setReportType('services')">
+                    <i class="bi bi-gear me-1"></i>Serwisy
                 </button>
             </div>
             <button type="button" class="btn btn-primary btn-sm ms-2" onclick="applyFilters()">
@@ -332,11 +339,20 @@ $monthlyLabelsJson = json_encode(array_column($reports['monthly_revenue'], 'mont
             case 'vehicles':
                 updateVehiclesView();
                 break;
+            case 'incidents':
+                updateIncidentsView();
+                break;
+            case 'services':
+                updateServicesView();
+                break;
         }
     }
 
     function updateSummaryView() {
         if (!currentData.summary) return;
+
+        // Aktualizuj KPI dla podsumowania
+        updateKPI('summary');
 
         const summary = currentData.summary;
 
@@ -382,6 +398,8 @@ $monthlyLabelsJson = json_encode(array_column($reports['monthly_revenue'], 'mont
     }
 
     function updateRevenueView() {
+        // Aktualizuj KPI dla przychodów
+        updateKPI(currentReportType === 'revenue_daily' ? 'revenue_daily' : 'revenue_monthly');
         const labelKey = currentReportType === 'revenue_daily' ? 'date' : 'month_label';
         const title = currentReportType === 'revenue_daily' ? 'Przychód dzienny' : 'Przychód miesięczny';
 
@@ -407,6 +425,8 @@ $monthlyLabelsJson = json_encode(array_column($reports['monthly_revenue'], 'mont
     }
 
     function updateProductsView() {
+        // Aktualizuj KPI dla produktów
+        updateKPI('products');
         updateMainChart(currentData.slice(0, 10), 'name', 'revenue', 'Przychód z produktów');
         updatePieChart(currentData.slice(0, 8), 'name', 'reservations', 'Liczba rezerwacji');
 
@@ -441,6 +461,8 @@ $monthlyLabelsJson = json_encode(array_column($reports['monthly_revenue'], 'mont
     }
 
     function updateLocationsView() {
+        // Aktualizuj KPI dla lokalizacji
+        updateKPI('locations');
         updateMainChart(currentData.pickups.slice(0, 10), 'location', 'revenue', 'Przychód z lokalizacji');
         updatePieChart(currentData.pickups.slice(0, 8), 'location', 'pickups', 'Liczba odbiorów');
 
@@ -485,17 +507,214 @@ $monthlyLabelsJson = json_encode(array_column($reports['monthly_revenue'], 'mont
     }
 
     function updateVehiclesView() {
-        updateMainChart(currentData, 'status', 'count', 'Liczba pojazdów wg statusu');
-        updatePieChart(currentData, 'status', 'count', 'Rozkład statusów pojazdów');
+        // Aktualizuj KPI dla pojazdów
+        updateKPI('vehicles');
+
+        // Grupujemy dane dla wykresów - modele vs rezerwacje i przychody
+        const modelData = {};
+        const statusData = {};
+
+        currentData.forEach(vehicle => {
+            const model = vehicle.model || 'Nieznany';
+            const reservations = parseInt(vehicle.reservations || 0);
+
+            // Grupowanie po modelach
+            if (!modelData[model]) {
+                modelData[model] = {
+                    reservations: 0,
+                    revenue: 0,
+                    vehicles: 0
+                };
+            }
+            modelData[model].reservations += reservations;
+            modelData[model].revenue += parseFloat(vehicle.revenue || 0);
+            modelData[model].vehicles += 1;
+
+            // Status pojazdu na podstawie aktywności
+            let status;
+            if (reservations === 0) {
+                status = 'Nieaktywny';
+            } else if (reservations >= 3) {
+                status = 'Bardzo aktywny';
+            } else if (reservations >= 1) {
+                status = 'Aktywny';
+            }
+
+            statusData[status] = (statusData[status] || 0) + 1;
+        });
+
+        // Dane dla wykresów - przychody po modelach
+        const modelChartData = Object.keys(modelData).map(model => ({
+            label: model,
+            value: modelData[model].revenue,
+            count: modelData[model].vehicles
+        }));
+
+        // Dane dla wykresów kołowych - statusy pojazdów  
+        const statusChartData = Object.keys(statusData).map(status => ({
+            label: status,
+            value: statusData[status]
+        }));
+
+        updateMainChart(modelChartData, 'label', 'value', 'Przychody według modeli');
+        updatePieChart(statusChartData, 'label', 'value', 'Rozkład statusów pojazdów');
 
         updateTable(currentData, [{
-                key: 'status',
-                label: 'Status pojazdu'
+                key: 'registration_number',
+                label: 'Nr rejestracyjny'
             },
             {
-                key: 'count',
-                label: 'Liczba',
+                key: 'model',
+                label: 'Model'
+            },
+            {
+                key: 'vin',
+                label: 'VIN'
+            },
+            {
+                key: 'reservations',
+                label: 'Rezerwacje',
                 class: 'text-center'
+            },
+            {
+                key: 'revenue',
+                label: 'Przychód (PLN)',
+                class: 'text-end',
+                format: 'currency'
+            },
+            {
+                key: 'avg_days',
+                label: 'Śr. dni wynajmu',
+                class: 'text-center'
+            }
+        ]);
+    }
+
+    function updateIncidentsView() {
+        // Aktualizuj KPI dla incydentów
+        updateKPI('incidents');
+
+        // Grupujemy dane dla wykresów - wina vs koszt
+        const faultData = {};
+        const modelData = {};
+
+        currentData.forEach(incident => {
+            const fault = incident.fault_label || 'Nieznana';
+            const model = incident.model || 'Nieznany';
+
+            faultData[fault] = (faultData[fault] || 0) + parseFloat(incident.repair_cost || 0);
+            modelData[model] = (modelData[model] || 0) + parseFloat(incident.repair_cost || 0);
+        });
+
+        const faultChartData = Object.keys(faultData).map(key => ({
+            label: key,
+            value: faultData[key]
+        }));
+
+        updateMainChart(faultChartData, 'label', 'value', 'Koszty napraw wg rodzaju winy');
+        updatePieChart(faultChartData, 'label', 'value', 'Rozkład kosztów wg winy');
+
+        updateTable(currentData, [{
+                key: 'incident_date',
+                label: 'Data',
+                format: 'date'
+            },
+            {
+                key: 'registration_number',
+                label: 'Pojazd'
+            },
+            {
+                key: 'model',
+                label: 'Model'
+            },
+            {
+                key: 'damage_desc',
+                label: 'Opis szkody'
+            },
+            {
+                key: 'fault_label',
+                label: 'Wina'
+            },
+            {
+                key: 'repair_cost',
+                label: 'Koszt (PLN)',
+                class: 'text-end',
+                format: 'currency'
+            },
+            {
+                key: 'location',
+                label: 'Lokalizacja'
+            },
+            {
+                key: 'driver_name',
+                label: 'Kierowca'
+            }
+        ]);
+    }
+
+    function updateServicesView() {
+        // Aktualizuj KPI dla serwisów
+        updateKPI('services');
+
+        // Grupujemy dane dla wykresów - warsztat vs koszt
+        const workshopData = {};
+        const modelData = {};
+
+        currentData.forEach(service => {
+            const workshop = service.workshop_name || 'Nieznany';
+            const model = service.model || 'Nieznany';
+
+            workshopData[workshop] = (workshopData[workshop] || 0) + parseFloat(service.cost_total || 0);
+            modelData[model] = (modelData[model] || 0) + parseFloat(service.cost_total || 0);
+        });
+
+        const workshopChartData = Object.keys(workshopData).map(key => ({
+            label: key,
+            value: workshopData[key]
+        }));
+
+        updateMainChart(workshopChartData, 'label', 'value', 'Koszty serwisów wg warsztatów');
+        updatePieChart(workshopChartData, 'label', 'value', 'Rozkład kosztów wg warsztatów');
+
+        updateTable(currentData, [{
+                key: 'service_date',
+                label: 'Data',
+                format: 'date'
+            },
+            {
+                key: 'registration_number',
+                label: 'Pojazd'
+            },
+            {
+                key: 'model',
+                label: 'Model'
+            },
+            {
+                key: 'workshop_name',
+                label: 'Warsztat'
+            },
+            {
+                key: 'issues_found',
+                label: 'Stwierdzone problemy'
+            },
+            {
+                key: 'actions_taken',
+                label: 'Wykonane działania'
+            },
+            {
+                key: 'cost_total',
+                label: 'Koszt (PLN)',
+                class: 'text-end',
+                format: 'currency'
+            },
+            {
+                key: 'odometer_km',
+                label: 'Przebieg (km)',
+                class: 'text-center'
+            },
+            {
+                key: 'invoice_no',
+                label: 'Nr faktury'
             }
         ]);
     }
@@ -615,6 +834,11 @@ $monthlyLabelsJson = json_encode(array_column($reports['monthly_revenue'], 'mont
                     }) + ' PLN';
                 } else if (col.format === 'decimal') {
                     value = Number(value).toFixed(1);
+                } else if (col.format === 'date') {
+                    if (value) {
+                        const date = new Date(value);
+                        value = date.toLocaleDateString('pl-PL');
+                    }
                 }
 
                 if (col.key === 'name' && columns.length > 3) {
@@ -705,6 +929,75 @@ $monthlyLabelsJson = json_encode(array_column($reports['monthly_revenue'], 'mont
         window.open(url, '_blank');
 
         showNotification('Raport PDF został otwarty w nowym oknie', 'success');
+    }
+
+    // Funkcja do aktualizacji KPI w zależności od typu raportu
+    function updateKPI(type) {
+        const formData = new FormData(document.getElementById('reportsFilters'));
+        const params = new URLSearchParams();
+
+        for (let [key, value] of formData.entries()) {
+            if (value) params.append(key, value);
+        }
+        params.append('report_type', 'kpi');
+        params.append('kpi_type', type);
+
+        fetch('api/reports-data.php?' + params.toString())
+            .then(response => response.json())
+            .then(result => {
+                if (result.success && result.data) {
+                    const kpiData = result.data;
+
+                    // Aktualizuj każdy kafelek KPI
+                    if (kpiData.kpi1) {
+                        updateKpiTile(1, kpiData.kpi1);
+                    }
+                    if (kpiData.kpi2) {
+                        updateKpiTile(2, kpiData.kpi2);
+                    }
+                    if (kpiData.kpi3) {
+                        updateKpiTile(3, kpiData.kpi3);
+                    }
+                    if (kpiData.kpi4) {
+                        updateKpiTile(4, kpiData.kpi4);
+                    }
+                }
+            })
+            .catch(error => {
+                console.error('Błąd podczas ładowania KPI:', error);
+            });
+    }
+
+    // Funkcja pomocnicza do aktualizacji pojedynczego kafelka KPI
+    function updateKpiTile(index, kpiData) {
+        const tiles = document.querySelectorAll('.stats-card');
+        if (tiles[index - 1]) {
+            const tile = tiles[index - 1];
+
+            // Aktualizuj ikonę
+            const icon = tile.querySelector('.stats-icon i');
+            if (icon && kpiData.icon) {
+                icon.className = `bi bi-${kpiData.icon}`;
+            }
+
+            // Aktualizuj tytuł
+            const label = tile.querySelector('.stats-label');
+            if (label && kpiData.title) {
+                label.textContent = kpiData.title;
+            }
+
+            // Aktualizuj wartość
+            const value = tile.querySelector('.stats-value');
+            if (value && kpiData.value !== undefined) {
+                value.textContent = kpiData.value;
+            }
+
+            // Aktualizuj podtytuł
+            const sublabel = tile.querySelector('.stats-sublabel');
+            if (sublabel && kpiData.subtitle !== undefined) {
+                sublabel.textContent = kpiData.subtitle;
+            }
+        }
     }
 
     // === INICJALIZACJA ===

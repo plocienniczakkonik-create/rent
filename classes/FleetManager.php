@@ -342,4 +342,161 @@ class FleetManager
             return [];
         }
     }
+
+    /**
+     * Aktualizuje lokalizację pojazdu na podstawie ostatniej zakończonej rezerwacji
+     * Wywołaj to po zmianie statusu rezerwacji na 'completed'
+     */
+    public function updateVehicleLocationFromReservation(int $reservationId): bool
+    {
+        try {
+            // Pobierz dane z rezerwacji
+            $stmt = $this->db->prepare("
+                SELECT 
+                    r.vehicle_id, 
+                    r.dropoff_location,
+                    r.status,
+                    l.id as location_id,
+                    l.name as location_name
+                FROM reservations r
+                LEFT JOIN locations l ON l.name = r.dropoff_location
+                WHERE r.id = ? AND r.vehicle_id IS NOT NULL
+            ");
+            $stmt->execute([$reservationId]);
+            $reservation = $stmt->fetch(PDO::FETCH_ASSOC);
+
+            if (!$reservation || !$reservation['location_id']) {
+                return false; // Brak rezerwacji lub lokalizacji
+            }
+
+            // Aktualizuj tylko jeśli rezerwacja jest zakończona
+            if ($reservation['status'] === 'completed') {
+                return $this->updateVehicleLocation(
+                    $reservation['vehicle_id'],
+                    $reservation['location_id'],
+                    'reservation_completed',
+                    null,
+                    "Automatycznie zaktualizowano po zakończeniu rezerwacji #{$reservationId}"
+                );
+            }
+
+            return true;
+        } catch (Exception $e) {
+            error_log("FleetManager::updateVehicleLocationFromReservation error: " . $e->getMessage());
+            return false;
+        }
+    }
+
+    /**
+     * Pobiera aktualną lokalizację pojazdu na podstawie ostatniej zakończonej rezerwacji
+     * Jeśli brak rezerwacji, zwraca domyślną lokalizację
+     */
+    public function getCurrentVehicleLocation(int $vehicleId): ?array
+    {
+        try {
+            // Najpierw sprawdź current_location_id w tabeli vehicles
+            $stmt = $this->db->prepare("
+                SELECT 
+                    v.current_location_id,
+                    l.name as current_location_name,
+                    l.city as current_location_city
+                FROM vehicles v
+                LEFT JOIN locations l ON v.current_location_id = l.id
+                WHERE v.id = ?
+            ");
+            $stmt->execute([$vehicleId]);
+            $vehicle = $stmt->fetch(PDO::FETCH_ASSOC);
+
+            if ($vehicle && $vehicle['current_location_id']) {
+                return [
+                    'location_id' => $vehicle['current_location_id'],
+                    'location_name' => $vehicle['current_location_name'],
+                    'location_city' => $vehicle['current_location_city'],
+                    'source' => 'vehicle_table'
+                ];
+            }
+
+            // Jeśli brak w tabeli vehicles, sprawdź ostatnią zakończoną rezerwację
+            $stmt = $this->db->prepare("
+                SELECT 
+                    r.dropoff_location,
+                    l.id as location_id,
+                    l.name as location_name,
+                    l.city as location_city,
+                    r.return_at
+                FROM reservations r
+                LEFT JOIN locations l ON l.name = r.dropoff_location
+                WHERE r.vehicle_id = ? AND r.status = 'completed'
+                ORDER BY r.return_at DESC
+                LIMIT 1
+            ");
+            $stmt->execute([$vehicleId]);
+            $lastReservation = $stmt->fetch(PDO::FETCH_ASSOC);
+
+            if ($lastReservation && $lastReservation['location_id']) {
+                // Zaktualizuj current_location_id w tabeli vehicles
+                $this->updateVehicleLocation(
+                    $vehicleId,
+                    $lastReservation['location_id'],
+                    'auto_sync',
+                    null,
+                    'Automatyczna synchronizacja z ostatniej rezerwacji'
+                );
+
+                return [
+                    'location_id' => $lastReservation['location_id'],
+                    'location_name' => $lastReservation['location_name'],
+                    'location_city' => $lastReservation['location_city'],
+                    'source' => 'last_reservation',
+                    'last_return' => $lastReservation['return_at']
+                ];
+            }
+
+            // Fallback - zwróć pierwszą dostępną lokalizację
+            $locations = $this->getActiveLocations();
+            if (!empty($locations)) {
+                return [
+                    'location_id' => $locations[0]['id'],
+                    'location_name' => $locations[0]['name'],
+                    'location_city' => $locations[0]['city'],
+                    'source' => 'default_fallback'
+                ];
+            }
+
+            return null;
+        } catch (Exception $e) {
+            error_log("FleetManager::getCurrentVehicleLocation error: " . $e->getMessage());
+            return null;
+        }
+    }
+
+    /**
+     * Synchronizuje lokalizacje wszystkich pojazdów na podstawie ostatnich zakończonych rezerwacji
+     */
+    public function syncAllVehicleLocations(): array
+    {
+        $results = ['updated' => 0, 'skipped' => 0, 'errors' => []];
+
+        try {
+            // Pobierz wszystkie pojazdy
+            $stmt = $this->db->query("SELECT id, vin, registration_number FROM vehicles WHERE status = 'active'");
+            $vehicles = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+            foreach ($vehicles as $vehicle) {
+                $location = $this->getCurrentVehicleLocation($vehicle['id']);
+
+                if ($location && $location['source'] === 'last_reservation') {
+                    $results['updated']++;
+                } else if ($location && $location['source'] === 'vehicle_table') {
+                    $results['skipped']++;
+                } else {
+                    $results['errors'][] = "Pojazd {$vehicle['vin']} - brak lokalizacji";
+                }
+            }
+        } catch (Exception $e) {
+            $results['errors'][] = "Błąd synchronizacji: " . $e->getMessage();
+        }
+
+        return $results;
+    }
 }

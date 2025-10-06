@@ -24,9 +24,20 @@ $discount_type = (string)($_POST['discount_type'] ?? 'percent');
 $discount_val  = (float)($_POST['discount_val'] ?? 0);
 
 // walidacje
-$allowed_scope = ['global', 'product', 'category', 'pickup_location', 'return_location', 'both_locations', 
-                  'product_pickup', 'product_return', 'product_both', 
-                  'category_pickup', 'category_return', 'category_both'];
+$allowed_scope = [
+    'global',
+    'product',
+    'category',
+    'pickup_location',
+    'return_location',
+    'both_locations',
+    'product_pickup',
+    'product_return',
+    'product_both',
+    'category_pickup',
+    'category_return',
+    'category_both'
+];
 $allowed_disc  = ['percent', 'amount'];
 
 if ($name === '' || !in_array($scope_type, $allowed_scope, true) || !in_array($discount_type, $allowed_disc, true)) {
@@ -88,15 +99,15 @@ switch ($scope_type) {
     case 'both_locations':
         $pickup_ids = (array)($_POST['scope_value_pickup_ids'] ?? []);
         $pickup_ids = array_values(array_filter(array_map('intval', $pickup_ids), fn($id) => $id > 0));
-        
+
         $return_ids = (array)($_POST['scope_value_return_ids'] ?? []);
         $return_ids = array_values(array_filter(array_map('intval', $return_ids), fn($id) => $id > 0));
-        
+
         if (!$pickup_ids || !$return_ids) {
             http_response_code(422);
             exit('Wybierz co najmniej jedno miejsce odbioru i zwrotu.');
         }
-        
+
         $scope_values = [
             'pickup_location_ids' => $pickup_ids,
             'return_location_ids' => $return_ids
@@ -106,10 +117,10 @@ switch ($scope_type) {
     case 'product_pickup':
         $products_arr = (array)($_POST['scope_value_product'] ?? []);
         $products_arr = array_values(array_filter(array_map('strval', $products_arr), fn($s) => $s !== ''));
-        
+
         $pickup_ids = (array)($_POST['scope_value_pickup_ids'] ?? []);
         $pickup_ids = array_values(array_filter(array_map('intval', $pickup_ids), fn($id) => $id > 0));
-        
+
         if (!$products_arr) {
             http_response_code(422);
             exit('Wybierz co najmniej jeden samochód.');
@@ -118,7 +129,7 @@ switch ($scope_type) {
             http_response_code(422);
             exit('Wybierz co najmniej jedno miejsce odbioru.');
         }
-        
+
         $scope_values = [
             'products' => $products_arr,
             'pickup_location_ids' => $pickup_ids
@@ -128,10 +139,10 @@ switch ($scope_type) {
     case 'product_return':
         $products_arr = (array)($_POST['scope_value_product'] ?? []);
         $products_arr = array_values(array_filter(array_map('strval', $products_arr), fn($s) => $s !== ''));
-        
+
         $return_ids = (array)($_POST['scope_value_return_ids'] ?? []);
         $return_ids = array_values(array_filter(array_map('intval', $return_ids), fn($id) => $id > 0));
-        
+
         if (!$products_arr) {
             http_response_code(422);
             exit('Wybierz co najmniej jeden samochód.');
@@ -140,7 +151,7 @@ switch ($scope_type) {
             http_response_code(422);
             exit('Wybierz co najmniej jedno miejsce zwrotu.');
         }
-        
+
         $scope_values = [
             'products' => $products_arr,
             'return_location_ids' => $return_ids
@@ -150,13 +161,13 @@ switch ($scope_type) {
     case 'product_both':
         $products_arr = (array)($_POST['scope_value_product'] ?? []);
         $products_arr = array_values(array_filter(array_map('strval', $products_arr), fn($s) => $s !== ''));
-        
+
         $pickup_ids = (array)($_POST['scope_value_pickup_ids'] ?? []);
         $pickup_ids = array_values(array_filter(array_map('intval', $pickup_ids), fn($id) => $id > 0));
-        
+
         $return_ids = (array)($_POST['scope_value_return_ids'] ?? []);
         $return_ids = array_values(array_filter(array_map('intval', $return_ids), fn($id) => $id > 0));
-        
+
         if (!$products_arr) {
             http_response_code(422);
             exit('Wybierz co najmniej jeden samochód.');
@@ -165,7 +176,7 @@ switch ($scope_type) {
             http_response_code(422);
             exit('Wybierz co najmniej jedno miejsce odbioru i zwrotu.');
         }
-        
+
         $scope_values = [
             'products' => $products_arr,
             'pickup_location_ids' => $pickup_ids,
@@ -176,10 +187,10 @@ switch ($scope_type) {
     case 'category_pickup':
         $categories_arr = (array)($_POST['scope_value_category'] ?? []);
         $categories_arr = array_values(array_filter(array_map('strval', $categories_arr), fn($s) => $s !== ''));
-        
+
         $pickup_ids = (array)($_POST['scope_value_pickup_ids'] ?? []);
         $pickup_ids = array_values(array_filter(array_map('intval', $pickup_ids), fn($id) => $id > 0));
-        
+
         if (!$categories_arr) {
             http_response_code(422);
             exit('Wybierz co najmniej jedną klasę.');
@@ -188,7 +199,7 @@ switch ($scope_type) {
             http_response_code(422);
             exit('Wybierz co najmniej jedno miejsce odbioru.');
         }
-        
+
         $scope_values = [
             'categories' => $categories_arr,
             'pickup_location_ids' => $pickup_ids
@@ -198,10 +209,10 @@ switch ($scope_type) {
     case 'category_return':
         $categories_arr = (array)($_POST['scope_value_category'] ?? []);
         $categories_arr = array_values(array_filter(array_map('strval', $categories_arr), fn($s) => $s !== ''));
-        
+
         $return_ids = (array)($_POST['scope_value_return_ids'] ?? []);
         $return_ids = array_values(array_filter(array_map('intval', $return_ids), fn($id) => $id > 0));
-        
+
         if (!$categories_arr) {
             http_response_code(422);
             exit('Wybierz co najmniej jedną klasę.');
@@ -210,7 +221,7 @@ switch ($scope_type) {
             http_response_code(422);
             exit('Wybierz co najmniej jedno miejsce zwrotu.');
         }
-        
+
         $scope_values = [
             'categories' => $categories_arr,
             'return_location_ids' => $return_ids
@@ -220,13 +231,13 @@ switch ($scope_type) {
     case 'category_both':
         $categories_arr = (array)($_POST['scope_value_category'] ?? []);
         $categories_arr = array_values(array_filter(array_map('strval', $categories_arr), fn($s) => $s !== ''));
-        
+
         $pickup_ids = (array)($_POST['scope_value_pickup_ids'] ?? []);
         $pickup_ids = array_values(array_filter(array_map('intval', $pickup_ids), fn($id) => $id > 0));
-        
+
         $return_ids = (array)($_POST['scope_value_return_ids'] ?? []);
         $return_ids = array_values(array_filter(array_map('intval', $return_ids), fn($id) => $id > 0));
-        
+
         if (!$categories_arr) {
             http_response_code(422);
             exit('Wybierz co najmniej jedną klasę.');
@@ -235,7 +246,7 @@ switch ($scope_type) {
             http_response_code(422);
             exit('Wybierz co najmniej jedno miejsce odbioru i zwrotu.');
         }
-        
+
         $scope_values = [
             'categories' => $categories_arr,
             'pickup_location_ids' => $pickup_ids,
