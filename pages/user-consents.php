@@ -6,18 +6,31 @@ $user_id = $_SESSION['user_id'] ?? 1; // demo/test
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $privacy = !empty($_POST['privacy_policy']) ? 1 : 0;
-    $marketing = !empty($_POST['marketing']) ? 1 : 0;
-    // Zapisz/aktualizuj zgody
-    $db->prepare('INSERT INTO user_consents (user_id, consent_type, consent_text, given_at, ip_address, source) VALUES (?, ?, ?, NOW(), ?, ?)')
-        ->execute([$user_id, 'privacy_policy', 'Akceptacja polityki prywatności', $_SERVER['REMOTE_ADDR'], 'profile']);
-    if ($marketing) {
+    $marketing = isset($_POST['marketing']) ? 1 : 0;
+    // Zgoda na prywatność - tylko jeśli nie była już udzielona
+    if ($privacy) {
+        $already = $db->prepare('SELECT COUNT(*) FROM user_consents WHERE user_id = ? AND consent_type = ? AND revoked_at IS NULL')->execute([$user_id, 'privacy_policy']);
+        if (!$already) {
+            $db->prepare('INSERT INTO user_consents (user_id, consent_type, consent_text, given_at, ip_address, source) VALUES (?, ?, ?, NOW(), ?, ?)')
+                ->execute([$user_id, 'privacy_policy', 'Akceptacja polityki prywatności', $_SERVER['REMOTE_ADDR'], 'profile']);
+        }
+    }
+    // Marketing: udzielenie lub cofnięcie zgody
+    $current_marketing = $db->prepare('SELECT * FROM user_consents WHERE user_id = ? AND consent_type = ? AND revoked_at IS NULL ORDER BY given_at DESC LIMIT 1');
+    $current_marketing->execute([$user_id, 'marketing']);
+    $row = $current_marketing->fetch(PDO::FETCH_ASSOC);
+    if ($marketing && !$row) {
+        // Udziel zgody
         $db->prepare('INSERT INTO user_consents (user_id, consent_type, consent_text, given_at, ip_address, source) VALUES (?, ?, ?, NOW(), ?, ?)')
             ->execute([$user_id, 'marketing', 'Zgoda na marketing', $_SERVER['REMOTE_ADDR'], 'profile']);
+    } elseif (!$marketing && $row) {
+        // Cofnij zgodę
+        $db->prepare('UPDATE user_consents SET revoked_at = NOW() WHERE id = ?')->execute([$row['id']]);
     }
     echo '<div class="alert alert-success">Zgody zapisane!</div>';
 }
-// Pobierz status zgód
-$consents = $db->query('SELECT consent_type, given_at, revoked_at FROM user_consents WHERE user_id = ' . (int)$user_id)->fetchAll(PDO::FETCH_ASSOC);
+// Pobierz status zgód i historię
+$consents = $db->query('SELECT id, consent_type, given_at, revoked_at FROM user_consents WHERE user_id = ' . (int)$user_id . ' ORDER BY given_at DESC')->fetchAll(PDO::FETCH_ASSOC);
 $privacy_accepted = false;
 $marketing_accepted = false;
 foreach ($consents as $c) {
@@ -42,9 +55,32 @@ foreach ($consents as $c) {
                 <label class="form-check-label" for="marketing">
                     Wyrażam zgodę na otrzymywanie informacji marketingowych
                 </label>
+                <?php if ($marketing_accepted): ?>
+                    <span class="text-success ms-2">(zgoda aktywna)</span>
+                <?php else: ?>
+                    <span class="text-muted ms-2">(zgoda nieaktywna)</span>
+                <?php endif; ?>
             </div>
             <button type="submit" class="btn btn-gradient-primary" style="background: var(--gradient-primary); color: #fff; border-radius: 8px; border: none;">Zapisz zgody</button>
         </form>
+        <hr>
+        <h6>Historia zgód</h6>
+        <div class="table-responsive">
+            <table class="table table-sm align-middle mb-0">
+                <thead>
+                    <tr><th>Typ zgody</th><th>Udzielono</th><th>Cofnięto</th></tr>
+                </thead>
+                <tbody>
+                <?php foreach ($consents as $c): ?>
+                    <tr>
+                        <td><?= htmlspecialchars($c['consent_type']) ?></td>
+                        <td><?= $c['given_at'] ? date('Y-m-d H:i', strtotime($c['given_at'])) : '-' ?></td>
+                        <td><?= $c['revoked_at'] ? date('Y-m-d H:i', strtotime($c['revoked_at'])) : '-' ?></td>
+                    </tr>
+                <?php endforeach; ?>
+                </tbody>
+            </table>
+        </div>
     </div>
 </div>
 <!-- Modal polityki prywatności -->

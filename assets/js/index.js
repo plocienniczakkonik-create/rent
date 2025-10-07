@@ -1,3 +1,77 @@
+// BANER COOKIES – wyświetlanie i obsługa szczegółowych zgód
+document.addEventListener("DOMContentLoaded", function () {
+  var banner = document.getElementById("cookieBanner");
+  var form = document.getElementById("cookieConsentForm");
+  var acceptAllBtn = document.getElementById("cookieAcceptAllBtn");
+  var saveBtn = document.getElementById("cookieSaveBtn");
+  var statsBox = document.getElementById("consent_stats");
+  var marketingBox = document.getElementById("consent_marketing");
+  if (!banner || !form || !acceptAllBtn || !saveBtn) return;
+
+  // Odczytaj zgody z localStorage
+  function getConsent() {
+    try {
+      return JSON.parse(localStorage.getItem("cookieConsent")) || {};
+    } catch (e) {
+      return {};
+    }
+  }
+  function setConsent(consent) {
+    localStorage.setItem("cookieConsent", JSON.stringify(consent));
+  }
+
+  var consent = getConsent();
+  function showBanner() {
+    banner.style.display = "block";
+    setTimeout(function() {
+      banner.classList.add("visible");
+    }, 10);
+  }
+  function hideBanner() {
+    banner.classList.remove("visible");
+    setTimeout(function() {
+      banner.style.display = "none";
+    }, 450);
+  }
+
+  if (!consent || !consent.accepted) {
+    showBanner();
+    // Ustaw checkboxy wg poprzedniego wyboru
+    if (typeof consent.stats === "boolean") statsBox.checked = consent.stats;
+    if (typeof consent.marketing === "boolean") marketingBox.checked = consent.marketing;
+  } else {
+    // Jeśli zaakceptowano, ustaw checkboxy (np. po reloadzie)
+    if (typeof consent.stats === "boolean") statsBox.checked = consent.stats;
+    if (typeof consent.marketing === "boolean") marketingBox.checked = consent.marketing;
+  }
+
+  acceptAllBtn.addEventListener("click", function () {
+    var newConsent = {
+      accepted: true,
+      stats: true,
+      marketing: true,
+      date: new Date().toISOString(),
+    };
+    setConsent(newConsent);
+    statsBox.checked = true;
+    marketingBox.checked = true;
+    hideBanner();
+    // TODO: tutaj można uruchomić skrypty stat/marketing jeśli są blokowane
+  });
+
+  form.addEventListener("submit", function (e) {
+    e.preventDefault();
+    var newConsent = {
+      accepted: true,
+      stats: statsBox.checked,
+      marketing: marketingBox.checked,
+      date: new Date().toISOString(),
+    };
+    setConsent(newConsent);
+    hideBanner();
+    // TODO: tutaj można uruchomić skrypty stat/marketing jeśli są blokowane
+  });
+});
 // BACK TO TOP – szybki init (opcjonalnie, jeśli chcesz go zachować w teście)
 (function initBackToTop() {
   const btn = document.getElementById("backToTop");

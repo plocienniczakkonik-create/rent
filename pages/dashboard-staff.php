@@ -451,37 +451,18 @@ $reports = [
 
         // Małe opóźnienie dla Bootstrap
         setTimeout(function() {
-            console.log('=== URL PROCESSING DEBUG ===');
-
-            // Obsługa hash URL - tylko przy załadowaniu strony
-            var hash = window.location.hash;
+            // --- POPRAWKA: wymuszaj aktywację zakładki "Ustawienia" jeśli settings_section lub section=settings ---
             var urlParams = new URLSearchParams(window.location.search);
             var section = urlParams.get('section');
-
-            console.log('Full URL:', window.location.href);
-            console.log('URL params:', {
-                section: section,
-                hash: hash
-            });
-
-            // Sprawdź czy elementy istnieją
-            console.log('Settings button exists:', !!document.querySelector('#tab-settings'));
-            console.log('Settings pane exists:', !!document.querySelector('#pane-settings'));
-
-
-            // Aktywuj settings tab jeśli section=settings lub settings_section istnieje
             var settingsSection = urlParams.get('settings_section');
-            if (section === 'settings' || settingsSection) {
+            var hash = window.location.hash;
+
+            // Jeśli settings_section lub section=settings, wymuś hash na #pane-settings
+            if (settingsSection || section === 'settings') {
                 hash = '#pane-settings';
-                console.log('Forcing settings tab activation (settings_section detected)');
             } else if (section && !hash) {
                 hash = '#pane-' + section;
-            } else if (hash === '#location-fees') {
-                hash = '#pane-settings';
-                console.log('Forcing settings tab activation (location-fees)');
             }
-
-            console.log('Target hash:', hash);
 
             if (hash) {
                 if (!activateTab(hash)) {

@@ -1,3 +1,37 @@
+// --- USTAWIENIA BANERA COOKIES/RODO ---
+if ($settings_section === 'gdpr' && $settings_subsection === 'banner') {
+    $db = db();
+    $msg = null;
+    // Obsługa zapisu
+    if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+        $privacy_url = trim($_POST['privacy_policy_url'] ?? '');
+        $banner_text = trim($_POST['banner_text'] ?? '');
+        $db->prepare("REPLACE INTO settings (setting_key, setting_value) VALUES (?, ?), (?, ?)")
+            ->execute(['privacy_policy_url', $privacy_url, 'cookie_banner_text', $banner_text]);
+        $msg = '<div class="alert alert-success">Zapisano ustawienia banera cookies/RODO.</div>';
+    }
+    // Pobierz aktualne wartości
+    $privacy_url = $db->query("SELECT setting_value FROM settings WHERE setting_key = 'privacy_policy_url'")->fetchColumn() ?: '/rental/index.php?page=privacy-policy';
+    $banner_text = $db->query("SELECT setting_value FROM settings WHERE setting_key = 'cookie_banner_text'")->fetchColumn() ?: 'Ta strona korzysta z plików cookies w celach opisanych w <a href=\"/rental/index.php?page=privacy-policy\">Polityce prywatności</a>.';
+    echo $msg;
+    ?>
+    <div class="card mb-4"><div class="card-header"><b>Ustawienia banera cookies/RODO</b></div>
+    <div class="card-body">
+    <form method="post">
+        <div class="mb-3">
+            <label for="privacy_policy_url" class="form-label">Adres URL polityki prywatności</label>
+            <input type="text" class="form-control" id="privacy_policy_url" name="privacy_policy_url" value="<?= htmlspecialchars($privacy_url) ?>" required>
+        </div>
+        <div class="mb-3">
+            <label for="banner_text" class="form-label">Treść banera cookies (HTML dozwolony)</label>
+            <textarea class="form-control" id="banner_text" name="banner_text" rows="3" required><?= htmlspecialchars($banner_text) ?></textarea>
+        </div>
+        <button type="submit" class="btn btn-primary">Zapisz ustawienia</button>
+    </form>
+    </div></div>
+    <?php
+    return;
+}
 <?php
 // /pages/staff/section-settings.php
 require_once dirname(__DIR__, 2) . '/includes/db.php';
@@ -66,9 +100,10 @@ $sections = [
         'subsections' => [
             'consents' => __('gdpr_consents', 'admin', 'Zgody użytkowników'),
             'requests' => __('gdpr_requests', 'admin', 'Żądania RODO'),
-            'audit' => __('gdpr_audit', 'admin', 'Historia audytu RODO')
+            'audit' => __('gdpr_audit', 'admin', 'Historia audytu RODO'),
+            'banner' => 'Baner cookies/RODO'
         ]
-    ]
+    ],
 ];
 
 // Walidacja sekcji i podsekcji
@@ -99,11 +134,8 @@ function settings_link(string $section, string $subsection, string $label, strin
     // For GDPR tabs, always force full reload with anchor
     $force_reload = ($section === 'gdpr');
     $href = $BASE . '/index.php?page=dashboard-staff&section=settings&settings_section=' . $section . '&settings_subsection=' . $subsection . '#pane-settings';
-    if ($force_reload) {
-        return '<a href="' . htmlspecialchars($href) . '" class="list-group-item list-group-item-action ' . $active . '" style="color:#d63384;font-weight:bold;">' . htmlspecialchars($label) . '</a>';
-    } else {
-        return '<a href="' . htmlspecialchars($href) . '" class="list-group-item list-group-item-action ' . $active . '">' . htmlspecialchars($label) . '</a>';
-    }
+    // Wszystkie sekcje mają ten sam styl (grafitowy, cienki)
+    return '<a href="' . htmlspecialchars($href) . '" class="list-group-item list-group-item-action ' . $active . '" style="color:#343a40;font-weight:400;">' . htmlspecialchars($label) . '</a>';
 }
 ?>
 
@@ -249,11 +281,7 @@ function settings_link(string $section, string $subsection, string $label, strin
                     </div>
                     <div class="card-body">
                         <?php
-                        // DEBUG BANNER: pokaż aktualną sekcję i podsekcję oraz raw GET
-                        echo '<div style="background:#ffeeba;color:#856404;padding:8px 16px;margin-bottom:12px;border-radius:6px;font-weight:bold;">';
-                        echo 'DEBUG: Ładowana sekcja <span style="color:#005cbf;">' . htmlspecialchars($settings_section) . '</span>, podsekcja <span style="color:#005cbf;">' . htmlspecialchars($settings_subsection) . '</span>';
-                        echo ' | RAW GET: section=<span style="color:#d63384;">' . htmlspecialchars($debug_raw_section) . '</span>, subsection=<span style="color:#d63384;">' . htmlspecialchars($debug_raw_subsection) . '</span>';
-                        echo '</div>';
+                        // Usunięto debug banner
 
                         // Ładowanie odpowiedniej podsekcji
                         $gdpr_map = [

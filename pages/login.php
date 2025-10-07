@@ -30,7 +30,7 @@ $loggedOut = isset($_GET['out']);
 
 <main>
   <div class="container" style="max-width:520px;">
-    <h1 class="h3 mb-3">Logowanie</h1>
+  <h1 class="h3 mb-3 text-center w-100" style="font-weight:600;">Logowanie</h1>
 
     <?php if ($err === 'empty'): ?>
       <div class="alert alert-warning">Wpisz e-mail i hasło.</div>
@@ -40,17 +40,95 @@ $loggedOut = isset($_GET['out']);
       <div class="alert alert-success">Zostałeś wylogowany.</div>
     <?php endif; ?>
 
-    <form method="post" action="<?= $BASE ? ($BASE . '/auth/login-handler.php') : 'auth/login-handler.php' ?>" class="card p-3">
+    <style>
+      .login-modern-card {
+        max-width: 400px;
+        margin: 0 auto;
+        border-radius: 18px;
+        box-shadow: 0 4px 32px rgba(0,0,0,0.10);
+        border: 1px solid #e5e7eb;
+        background: #fff;
+        padding: 38px 32px 28px 32px;
+      }
+      .login-modern-card .form-label {
+        font-weight: 500;
+        color: #343a40;
+        margin-bottom: 6px;
+      }
+      .login-modern-card .form-control {
+        border-radius: 10px;
+        border: 1px solid #e5e7eb;
+        font-size: 1.08em;
+        padding: 12px 14px;
+        margin-bottom: 18px;
+        background: #f8fafc;
+        transition: border .2s;
+      }
+      .login-modern-card .form-control:focus {
+        border-color: #8b5cf6;
+        background: #fff;
+        box-shadow: 0 0 0 2px #e9d5ff;
+      }
+      .login-modern-card .form-check-input {
+        border-radius: 6px;
+        border: 1.5px solid #bdbdbd;
+        width: 20px; height: 20px;
+        margin-right: 8px;
+      }
+      .login-modern-card .form-check-label {
+        font-size: 1em;
+        color: #555;
+        margin-bottom: 0;
+      }
+      .login-modern-card .btn-gradient-primary {
+        background: linear-gradient(90deg, #6d8cff 0%, #8b5cf6 100%);
+        color: #fff;
+        border: none;
+        border-radius: 10px;
+        font-size: 1.13em;
+        font-weight: 500;
+        padding: 12px 0;
+        margin-top: 8px;
+        box-shadow: 0 2px 12px rgba(139,92,246,0.08);
+        transition: background .2s;
+      }
+      .login-modern-card .btn-gradient-primary:hover {
+        background: linear-gradient(90deg, #8b5cf6 0%, #6d8cff 100%);
+      }
+      .login-modern-card .login-links {
+        margin-top: 22px;
+        text-align: center;
+      }
+      .login-modern-card .login-links a {
+        color: #4f46e5;
+        text-decoration: underline;
+        font-size: 1.04em;
+        font-weight: 500;
+        transition: color .2s;
+      }
+      .login-modern-card .login-links a:hover {
+        color: #8b5cf6;
+      }
+    </style>
+    <form method="post" action="<?= $BASE ? ($BASE . '/auth/login-handler.php') : 'auth/login-handler.php' ?>" class="login-modern-card">
       <input type="hidden" name="redirect" value="<?= htmlspecialchars($redirect) ?>">
-      <div class="mb-3">
+      <div class="mb-2">
         <label class="form-label">E-mail</label>
         <input type="email" name="email" class="form-control" required autocomplete="username">
       </div>
-      <div class="mb-3">
+      <div class="mb-2">
         <label class="form-label">Hasło</label>
         <input type="password" name="password" class="form-control" required autocomplete="current-password">
       </div>
-      <button type="submit" class="btn btn-primary w-100">Zaloguj</button>
+      <div class="mb-2 form-check d-flex align-items-center">
+        <input type="checkbox" class="form-check-input" id="remember" name="remember">
+        <label class="form-check-label ms-1" for="remember">Pamiętaj mnie</label>
+      </div>
+      <button type="submit" class="btn btn-gradient-primary w-100">Zaloguj</button>
+      <div class="login-links">
+        <a href="index.php?page=register">Nie masz konta? Zarejestruj się</a><br>
+        <a href="index.php?page=reset-password" class="mt-2 d-inline-block">Nie pamiętasz hasła?</a>
+      </div>
     </form>
   </div>
 </main>

@@ -41,15 +41,27 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $errors[] = i18n::__('message_required', 'frontend');
         }
 
-        if (empty($errors)) {
-            // Here you would typically send email or save to database
-            // For now, we'll just simulate success
-            $success = true;
+        // Sprawdź zgodę na politykę prywatności
+        if (empty($_POST['privacy_consent'])) {
+            $errors[] = 'Musisz zaakceptować politykę prywatności.';
+        }
 
-            // In a real application, you would:
-            // - Save to database
-            // - Send email notification
-            // - Use proper email service
+        if (empty($errors)) {
+            // Zapisz zgodę do bazy user_consents
+            try {
+                $db = db();
+                $stmt = $db->prepare('INSERT INTO user_consents (user_id, consent_type, consent_text, given_at, ip_address, source) VALUES (NULL, :type, :text, NOW(), :ip, :source)');
+                $stmt->execute([
+                    ':type' => 'privacy_policy',
+                    ':text' => 'Akceptacja polityki prywatności przez formularz kontaktowy',
+                    ':ip' => $_SERVER['REMOTE_ADDR'] ?? '',
+                    ':source' => 'contact_form'
+                ]);
+            } catch (Exception $e) {
+                // Możesz logować błąd
+            }
+            $success = true;
+            // ...existing code...
         } else {
             $error = true;
         }
@@ -414,6 +426,12 @@ if (!isset($_SESSION['csrf_token'])) {
                             <label for="message"><?= i18n::__('message', 'frontend') ?></label>
                         </div>
 
+                        <div class="form-check my-3">
+                            <input class="form-check-input" type="checkbox" id="privacy_consent" name="privacy_consent" value="1" required <?= isset($_POST['privacy_consent']) ? 'checked' : '' ?>>
+                            <label class="form-check-label" for="privacy_consent">
+                                Akceptuję <a href="privacy-policy" target="_blank">politykę prywatności</a> i wyrażam zgodę na przetwarzanie danych w celu obsługi zapytania.
+                            </label>
+                        </div>
                         <div class="text-center">
                             <button type="submit" class="btn btn-theme btn-primary">
                                 <i class="fas fa-paper-plane me-2"></i>
