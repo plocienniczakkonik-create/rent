@@ -217,57 +217,78 @@ $reports = [
             <div class="col-12">
                 <div class="nav-container p-3 bg-white rounded-4 shadow-sm"
                     style="position: relative !important; z-index: 1200 !important; overflow: visible !important;">
-                    <ul class="nav nav-pills-custom gap-2" id="staffTabs" role="tablist"
+                    <ul class="nav nav-pills nav-pills-custom gap-2" id="staffTabs" role="tablist"
                         style="background: transparent; position: relative !important; z-index: 1200 !important; pointer-events: auto !important;">
                         <li class="nav-item" role="presentation">
-                            <button class="nav-link-custom active" id="tab-products" data-bs-toggle="pill" data-bs-target="#pane-products" type="button" role="tab"
+                            <button class="nav-link nav-link-custom active" id="tab-products" data-bs-toggle="pill" data-bs-target="#pane-products" type="button" role="tab"
                                 style="pointer-events: auto !important; cursor: pointer !important; position: relative !important; z-index: 1100 !important;">
                                 <i class="bi bi-box-seam"></i> <?= __('products', 'admin', 'Produkty') ?>
                             </button>
                         </li>
                         <li class="nav-item" role="presentation">
-                            <button class="nav-link-custom" id="tab-vehicles" data-bs-toggle="pill" data-bs-target="#pane-vehicles" type="button" role="tab"
+                            <button class="nav-link nav-link-custom" id="tab-vehicles" data-bs-toggle="pill" data-bs-target="#pane-vehicles" type="button" role="tab"
                                 style="pointer-events: auto !important; cursor: pointer !important; position: relative !important; z-index: 1100 !important;">
                                 <i class="bi bi-truck"></i> <?= __('vehicles', 'admin', 'Pojazdy') ?>
                             </button>
                         </li>
                         <li class="nav-item" role="presentation">
-                            <button class="nav-link-custom" id="tab-orders" data-bs-toggle="pill" data-bs-target="#pane-orders" type="button" role="tab"
+                            <button class="nav-link nav-link-custom" id="tab-orders" data-bs-toggle="pill" data-bs-target="#pane-orders" type="button" role="tab"
                                 style="pointer-events: auto !important; cursor: pointer !important; position: relative !important; z-index: 1100 !important;">
                                 <i class="bi bi-receipt"></i> <?= __('orders', 'admin', 'Zamówienia') ?>
                             </button>
                         </li>
                         <li class="nav-item" role="presentation">
-                            <button class="nav-link-custom" id="tab-promos" data-bs-toggle="pill" data-bs-target="#pane-promos" type="button" role="tab"
+                            <button class="nav-link nav-link-custom" id="tab-promos" data-bs-toggle="pill" data-bs-target="#pane-promos" type="button" role="tab"
                                 style="pointer-events: auto !important; cursor: pointer !important; position: relative !important; z-index: 1100 !important;">
                                 <i class="bi bi-stars"></i> <?= __('promotions', 'admin', 'Promocje') ?>
                             </button>
                         </li>
                         <li class="nav-item" role="presentation">
-                            <button class="nav-link-custom" id="tab-upcoming" data-bs-toggle="pill" data-bs-target="#pane-upcoming" type="button" role="tab"
+                            <button class="nav-link nav-link-custom" id="tab-upcoming" data-bs-toggle="pill" data-bs-target="#pane-upcoming" type="button" role="tab"
                                 style="pointer-events: auto !important; cursor: pointer !important; position: relative !important; z-index: 1100 !important;">
                                 <i class="bi bi-calendar-event"></i> <?= __('upcoming_dates', 'admin', 'Najbliższe terminy') ?>
                             </button>
                         </li>
                         <li class="nav-item" role="presentation">
-                            <button class="nav-link-custom" id="tab-reports" data-bs-toggle="pill" data-bs-target="#pane-reports" type="button" role="tab"
+                            <button class="nav-link nav-link-custom" id="tab-reports" data-bs-toggle="pill" data-bs-target="#pane-reports" type="button" role="tab"
                                 style="pointer-events: auto !important; cursor: pointer !important; position: relative !important; z-index: 1100 !important;">
                                 <i class="bi bi-bar-chart"></i> <?= __('reports', 'admin', 'Raporty') ?>
                             </button>
                         </li>
                         <li class="nav-item" role="presentation">
-                            <button class="nav-link-custom" id="tab-dicts" data-bs-toggle="pill" data-bs-target="#pane-dicts" type="button" role="tab"
+                            <button class="nav-link nav-link-custom" id="tab-dicts" data-bs-toggle="pill" data-bs-target="#pane-dicts" type="button" role="tab"
                                 style="pointer-events: auto !important; cursor: pointer !important; position: relative !important; z-index: 1100 !important;">
                                 <i class="bi bi-journal-bookmark"></i> <?= __('dictionaries', 'admin', 'Słowniki') ?>
                             </button>
                         </li>
                         <li class="nav-item" role="presentation">
-                            <button class="nav-link-custom" id="tab-settings" data-bs-toggle="pill" data-bs-target="#pane-settings" type="button" role="tab"
+                            <button class="nav-link nav-link-custom" id="tab-settings" data-bs-toggle="pill" data-bs-target="#pane-settings" type="button" role="tab"
                                 style="pointer-events: auto !important; cursor: pointer !important; position: relative !important; z-index: 1100 !important;">
                                 <i class="bi bi-gear"></i> <?= __('settings', 'admin', 'Ustawienia') ?>
                             </button>
                         </li>
                     </ul>
+<!-- Fallback JS na wypadek gdyby Bootstrap nie zadziałał (np. niestandardowe klasy lub konflikt) -->
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+    var tabButtons = document.querySelectorAll("#staffTabs .nav-link");
+    var tabPanes = document.querySelectorAll(".tab-pane");
+    tabButtons.forEach(function (btn) {
+        btn.addEventListener("click", function () {
+            // Dezaktywuj wszystkie
+            tabButtons.forEach(function (b) { b.classList.remove("active"); });
+            tabPanes.forEach(function (p) { p.classList.remove("show", "active"); });
+            // Aktywuj kliknięty
+            btn.classList.add("active");
+            var target = btn.getAttribute("data-bs-target");
+            if (target) {
+                var pane = document.querySelector(target);
+                if (pane) pane.classList.add("show", "active");
+            }
+        });
+    });
+});
+</script>
                 </div>
             </div>
 

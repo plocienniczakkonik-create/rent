@@ -29,8 +29,23 @@ if (!$ok) {
     exit;
 }
 
+
 // logujemy
 $_SESSION['user_id'] = (int)$row['id'];
+
+// Ustaw język panelu admina po zalogowaniu (jeśli nie ustawiony)
+if (!isset($_SESSION['admin_language'])) {
+    $lang = 'pl';
+    try {
+        $stmtLang = db()->prepare("SELECT preferred_language FROM users WHERE id = ?");
+        $stmtLang->execute([$_SESSION['user_id']]);
+        $resLang = $stmtLang->fetch(PDO::FETCH_ASSOC);
+        if (!empty($resLang['preferred_language'])) {
+            $lang = $resLang['preferred_language'];
+        }
+    } catch (Exception $e) {}
+    $_SESSION['admin_language'] = $lang;
+}
 
 // ustal redirect: 1) jeśli przyszedł w POST → użyj go (wewnętrzny), 2) w przeciwnym razie wg roli
 $redirect = trim($_POST['redirect'] ?? '');
