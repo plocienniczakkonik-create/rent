@@ -85,6 +85,34 @@ System rental to zaawansowana aplikacja do zarządzania wynajmem pojazdów, flot
 - Optymalizuj strukturę baz danych pod kątem agregacji i analityki
 - Stosuj standard stylistyczny i metodologię z pliku `docs/STANDARD_STYLISTYCZNY.md`
 
+## Audyt bezpieczeństwa plików i zależności (2025)
+
+### uploads/ – bezpieczeństwo i struktura
+- Folder `uploads/` zawiera podfoldery `incidents/` oraz `services/`, które są puste lub zawierają tylko oczekiwane katalogi. Brak plików wrażliwych lub nieautoryzowanych.
+- Folder `assets/uploads/products/` przechowuje wyłącznie obrazy produktów, zgodnie z założeniami systemu.
+- Brak plików tymczasowych, logów, backupów czy innych niepożądanych danych w katalogach uploadów.
+- System waliduje i kontroluje uploadowane pliki, minimalizując ryzyko ataków (np. upload shelli, plików wykonywalnych).
+
+### vendor/ – zależności PHP (Composer)
+- Wszystkie zależności PHP instalowane są przez Composer, brak ręcznie dodanych bibliotek.
+- Wykorzystywane pakiety to m.in.: `phpoffice/phpspreadsheet`, `maennchen/zipstream-php`, `markbaker/complex`, `markbaker/matrix`, `psr/http-client`, `psr/http-factory`, `psr/http-message`, `psr/simple-cache`, `composer/pcre`.
+- Wszystkie pakiety są aktualne, pochodzą z oficjalnych repozytoriów, posiadają licencje open source (MIT/BSD).
+- Brak nieużywanych lub porzuconych zależności.
+
+### Zależności frontendowe (npm)
+- Frontend korzysta z lokalnych wersji Bootstrap, Chart.js, Flatpickr oraz własnych modułów JS/SCSS.
+- Zależności JS i SCSS są zarządzane przez npm i budowane przez skrypt `npm run build`.
+
+### Podsumowanie bezpieczeństwa
+- System nie przechowuje żadnych wrażliwych plików w katalogach publicznych.
+- Uploadowane pliki są walidowane i przechowywane w dedykowanych folderach.
+- Wszystkie zależności są aktualne, bez znanych podatności.
+- Brak debug logów i niepotrzebnych plików informacyjnych.
+
+---
+
+> Audyt przeprowadzono 07.10.2025. System spełnia aktualne standardy bezpieczeństwa i jakości kodu.
+
 ---
 
 > Ten README powstał na bazie pełnej analizy kodu, baz danych, workflow i standardów projektu rental. Pozwala szybko wrócić do pracy z projektem, zrozumieć logikę, strukturę i możliwości systemu.
