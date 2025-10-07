@@ -23,8 +23,22 @@ $audit_logs = $db->query('SELECT ga.*, u.email FROM gdpr_audit ga LEFT JOIN user
                     <tr>
                         <td><?= $log['id'] ?></td>
                         <td><?= htmlspecialchars($log['email']) ?></td>
-                        <td><?= htmlspecialchars($log['action']) ?></td>
-                        <td><?= htmlspecialchars($log['details']) ?></td>
+                        <td><?php
+                            $actionMap = [
+                                'erase' => 'Anonimizacja',
+                                'export' => 'Eksport danych',
+                                'access' => 'Dostęp do danych',
+                                'rectify' => 'Sprostowanie',
+                            ];
+                            echo $actionMap[$log['action']] ?? htmlspecialchars(ucfirst(str_replace('_', ' ', $log['action'])));
+                            ?></td>
+                        <td><?php
+                            $details = $log['details'];
+                            if (mb_detect_encoding($details, 'UTF-8', true) === false) {
+                                $details = mb_convert_encoding($details, 'UTF-8', 'ISO-8859-2,Windows-1250,ASCII');
+                            }
+                            echo htmlspecialchars($details, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
+                            ?></td>
                         <td><?= $log['created_at'] ?></td>
                     </tr>
                 <?php endforeach; ?>

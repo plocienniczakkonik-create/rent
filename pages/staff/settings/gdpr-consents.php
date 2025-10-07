@@ -26,12 +26,33 @@ $consents = $db->query('SELECT uc.*, u.email FROM user_consents uc LEFT JOIN use
                     <tr>
                         <td><?= $c['id'] ?></td>
                         <td><?= htmlspecialchars($c['email']) ?></td>
-                        <td><?= htmlspecialchars($c['consent_type']) ?></td>
-                        <td><?= htmlspecialchars($c['consent_text']) ?></td>
+                        <td><?php
+                            $typeMap = [
+                                'privacy_policy' => 'Polityka prywatności',
+                                'marketing' => 'Zgoda marketingowa',
+                                'terms' => 'Regulamin',
+                                'profiling' => 'Profilowanie',
+                            ];
+                            echo $typeMap[$c['consent_type']] ?? htmlspecialchars(ucfirst(str_replace('_', ' ', $c['consent_type'])));
+                            ?></td>
+                        <td><?php
+                            $text = $c['consent_text'];
+                            if (mb_detect_encoding($text, 'UTF-8', true) === false) {
+                                $text = mb_convert_encoding($text, 'UTF-8', 'ISO-8859-2,Windows-1250,ASCII');
+                            }
+                            echo htmlspecialchars($text, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
+                            ?></td>
                         <td><?= $c['given_at'] ?></td>
                         <td><?= $c['revoked_at'] ?></td>
                         <td><?= $c['ip_address'] ?></td>
-                        <td><?= $c['source'] ?></td>
+                        <td><?php
+                            $sourceMap = [
+                                'register_form' => 'Formularz rejestracji',
+                                'profile_edit' => 'Edycja profilu',
+                                'admin_panel' => 'Panel administratora',
+                            ];
+                            echo $sourceMap[$c['source']] ?? htmlspecialchars(ucfirst(str_replace('_', ' ', $c['source'])));
+                            ?></td>
                     </tr>
                 <?php endforeach; ?>
             </tbody>

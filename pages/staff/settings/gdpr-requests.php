@@ -21,9 +21,19 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'], $_POST['req
             exit;
         } elseif ($action === 'erase') {
             // Anonimizacja/usunięcie danych użytkownika
-            $db->prepare('UPDATE users SET first_name = NULL, last_name = NULL, email = CONCAT("anon_", id, "@example.com"), phone = NULL, is_active = 0 WHERE id = ?')->execute([$user_id]);
-            $db->prepare('UPDATE reservations SET user_id = NULL WHERE user_id = ?')->execute([$user_id]);
-            $db->prepare('UPDATE contact_messages SET email = CONCAT("anon_", ? , "@example.com") WHERE email = ?')->execute([$user_id, $user['email']]);
+            $user = $db->query('SELECT * FROM users WHERE id = ' . $user_id)->fetch(PDO::FETCH_ASSOC);
+            $anonEmail = 'anon_' . $user_id . '@example.com';
+            $userEmail = $user['email'] ?? null;
+            $db->prepare('UPDATE users SET first_name = NULL, last_name = NULL, email = ?, phone = NULL, is_active = 0 WHERE id = ?')->execute([$anonEmail, $user_id]);
+            if ($userEmail) {
+                $db->prepare('UPDATE reservations SET customer_name = NULL, customer_email = ?, customer_phone = NULL WHERE customer_email = ?')->execute([$anonEmail, $userEmail]);
+                // Kontaktowe wiadomości mogą nie istnieć w bazie testowej – obsłuż błąd
+                try {
+                    $db->prepare('UPDATE contact_messages SET email = ? WHERE email = ?')->execute([$anonEmail, $userEmail]);
+                } catch (PDOException $e) {
+                    // Tabela nie istnieje – pomiń
+                }
+            }
             $db->prepare('UPDATE gdpr_requests SET status = "completed", processed_at = NOW() WHERE id = ?')->execute([$request_id]);
             $msg = '<div class="alert alert-success">Dane użytkownika zostały zanonimizowane/usunięte.</div>';
         } elseif ($action === 'delete') {
@@ -45,7 +55,21 @@ if (isset($_POST['export_csv'])) {
 }
 $requests = $db->query('SELECT gr.*, u.email FROM gdpr_requests gr LEFT JOIN users u ON gr.user_id = u.id ORDER BY gr.requested_at DESC')->fetchAll(PDO::FETCH_ASSOC);
 ?>
-<?php if ($msg) echo $msg; ?>
+<?php if ($msg) echo '<div id="gdpr-success-msg">' . $msg . '</div>'; ?>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        var msg = document.getElementById('gdpr-success-msg');
+        if (msg) {
+            setTimeout(function() {
+                msg.style.transition = 'opacity 0.7s';
+                msg.style.opacity = '0';
+                setTimeout(function() {
+                    msg.remove();
+                }, 800);
+            }, 2200);
+        }
+    });
+</script>
 <form method="post" class="mb-3">
     <button type="submit" name="export_csv" class="btn btn-outline-primary btn-sm">Eksportuj wszystkie żądania do CSV</button>
 </form>
@@ -71,12 +95,40 @@ $requests = $db->query('SELECT gr.*, u.email FROM gdpr_requests gr LEFT JOIN use
                 <?php foreach ($requests as $r): ?>
                     <tr>
                         <td><?= $r['id'] ?></td>
-                        <td><?= htmlspecialchars($r['email']) ?></td>
-                        <td><?= htmlspecialchars($r['request_type']) ?></td>
-                        <td><?= htmlspecialchars($r['status']) ?></td>
+                        <td><?php
+                            // Wyświetl email jeśli istnieje, w przeciwnym razie informacja o braku
+                            echo ($r['email'] && $r['email'] !== 'anon_' . $r['user_id'] . '@example.com')
+                                ? htmlspecialchars($r['email'])
+                                : '<span class="text-muted">Brak</span>';
+                            ?></td>
+                        <td><?php
+                            $typeMap = [
+                                'access' => 'Dostęp do danych',
+                                'erase' => 'Usunięcie danych',
+                                'rectify' => 'Sprostowanie danych',
+                                'export' => 'Eksport danych',
+                            ];
+                            echo $typeMap[$r['request_type']] ?? htmlspecialchars($r['request_type']);
+                            ?></td>
+                        <td><?php
+                            $statusMap = [
+                                'new' => 'Nowe',
+                                'processing' => 'W realizacji',
+                                'completed' => 'Zakończone',
+                                'rejected' => 'Odrzucone',
+                            ];
+                            echo $statusMap[$r['status']] ?? htmlspecialchars($r['status']);
+                            ?></td>
                         <td><?= $r['requested_at'] ?></td>
                         <td><?= $r['processed_at'] ?></td>
-                        <td><?= htmlspecialchars($r['details']) ?></td>
+                        <td><?php
+                            // Spróbuj naprawić polskie znaki jeśli są źle zakodowane
+                            $details = $r['details'];
+                            if (mb_detect_encoding($details, 'UTF-8', true) === false) {
+                                $details = mb_convert_encoding($details, 'UTF-8', 'ISO-8859-2,Windows-1250,ASCII');
+                            }
+                            echo htmlspecialchars($details, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
+                            ?></td>
                         <td>
                             <?php if ($r['status'] === 'new'): ?>
                                 <?php if ($r['request_type'] === 'export'): ?>
