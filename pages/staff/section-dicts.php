@@ -93,16 +93,23 @@ function isActiveRow(array $row): bool
             <span class="text-light">/ <?= htmlspecialchars($validKinds[$kind]) ?></span>
         </div>
         <div class="d-flex gap-2">
-            <a class="btn btn-outline-light btn-sm" href="<?= panel_url(['kind' => 'location']) ?>"><?= __('locations', 'admin', 'Lokalizacje') ?></a>
-            <a class="btn btn-outline-light btn-sm" href="<?= panel_url(['kind' => 'car_class']) ?>"><?= __('car_class', 'admin', 'Klasa samochodu') ?></a>
-            <a class="btn btn-outline-light btn-sm" href="<?= panel_url(['kind' => 'car_type']) ?>"><?= __('car_type', 'admin', 'Typ samochodu') ?></a>
-            <a class="btn btn-outline-light btn-sm" href="<?= panel_url(['kind' => 'addon']) ?>"><?= __('addons', 'admin', 'Dodatki') ?></a>
+            <?php foreach ($validKinds as $k => $label): ?>
+                <a class="btn btn-outline-light btn-sm" href="<?= panel_url(['kind' => $k]) ?>"><?= $label ?></a>
+            <?php endforeach; ?>
         </div>
     </div>
 
     <div class="card-body">
+            <!-- Dynamiczne podsekcje na dole -->
+            <div class="mb-2" style="font-size:0.95em;">
+                <span>Podsekcje: </span>
+                <?php $i = 0; foreach ($validKinds as $k => $label): ?>
+                    <?php if ($i++ > 0) echo ' • '; ?>
+                    <a href="<?= panel_url(['kind' => $k]) ?>" style="text-decoration:underline;"><?= $label ?></a>
+                <?php endforeach; ?>
+            </div>
 
-        <?php if (!empty($_GET['msg'])): ?>
+            <?php if (!empty($_GET['msg'])): ?>
             <div class="alert alert-success alert-dismissible fade show js-flash" role="alert">
                 <?= htmlspecialchars((string)$_GET['msg']) ?>
                 <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>

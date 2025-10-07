@@ -36,7 +36,8 @@ $sections = [
 		'icon' => 'bi-shop',
 		'subsections' => [
 			'general' => __('general_settings', 'admin', 'Ustawienia ogólne'),
-			'integrations' => __('integrations', 'admin', 'Integracje')
+			'integrations' => __('integrations', 'admin', 'Integracje'),
+			'imports' => __('imports', 'admin', 'Importy')
 		]
 	],
 	'theme' => [
@@ -59,9 +60,7 @@ $sections = [
 		'title' => 'RODO / GDPR',
 		'icon' => 'bi-shield-lock',
 		'subsections' => [
-			'consents' => __('gdpr_consents', 'admin', 'Zgody użytkowników'),
-			'requests' => __('gdpr_requests', 'admin', 'Żądania RODO'),
-			'audit' => __('gdpr_audit', 'admin', 'Historia audytu RODO'),
+			'panel' => 'Panel RODO',
 			'banner' => 'Baner cookies/RODO'
 		]
 	],
