@@ -326,19 +326,18 @@ document.addEventListener("DOMContentLoaded", function () {
 
 <script>
     document.addEventListener('DOMContentLoaded', function() {
-        console.log('Dashboard loaded - setting up menu');
+    // ...existing code...
 
         // Debug - sprawdź czy przyciski istnieją
         const buttons = document.querySelectorAll('.nav-link-custom');
-        console.log('Found menu buttons:', buttons.length);
+    // ...existing code...
 
         // Dodaj event listenery dla debug
         buttons.forEach(function(button, index) {
-            console.log('Button', index, button.id, 'exists');
+            // ...existing code...
 
             // Dodaj click listener z debug
             button.addEventListener('click', function(e) {
-                console.log('Button clicked:', button.id, e);
                 // Upewnij się że kliknięcie nie jest blokowane
                 e.stopPropagation();
             });
@@ -364,16 +363,14 @@ document.addEventListener("DOMContentLoaded", function () {
 
         // Funkcja do aktywacji konkretnej zakładki
         function activateTab(targetHash) {
-            console.log('=== ACTIVATE TAB DEBUG ===');
-            console.log('Target hash:', targetHash);
+            // ...existing code...
 
             clearAllActiveStates();
 
             var trigger = document.querySelector('button[data-bs-target="' + targetHash + '"]');
             var targetPane = document.querySelector(targetHash);
 
-            console.log('Trigger found:', trigger);
-            console.log('Target pane found:', targetPane);
+            // ...existing code...
 
             if (trigger && targetPane) {
                 trigger.classList.add('active');
@@ -386,29 +383,20 @@ document.addEventListener("DOMContentLoaded", function () {
                     btn.style.position = 'relative';
                 });
 
-                console.log('Tab activated successfully');
+                // ...existing code...
                 return true;
             }
-            console.log('Failed to activate tab');
+            // ...existing code...
             return false;
         }
 
         // Obsługa kliknięć w zakładki
         document.querySelectorAll('.nav-link-custom').forEach(function(tab) {
             tab.addEventListener('click', function(e) {
-                console.log('=== TAB CLICK DEBUG ===');
-                console.log('Tab clicked:', this.id, this.getAttribute('data-bs-target'));
-                console.log('Current URL:', window.location.href);
-                console.log('Current hash:', window.location.hash);
-                console.log('Event target:', e.target);
-                console.log('Button element:', this);
-                console.log('=== END DEBUG ===');
-
                 // NIE blokuj domyślnego działania Bootstrap
                 // e.preventDefault(); // <- to blokuje Bootstrap!
                 var target = this.getAttribute('data-bs-target');
                 if (target) {
-                    console.log('Activating tab:', target);
                     activateTab(target);
                 }
             });
@@ -416,11 +404,11 @@ document.addEventListener("DOMContentLoaded", function () {
 
         // Inicjalizacja Bootstrap Tab - wymuszenie
         setTimeout(function() {
-            console.log('Initializing Bootstrap tabs...');
+            // ...existing code...
 
             // Sprawdź czy Bootstrap jest dostępny
             if (typeof bootstrap !== 'undefined') {
-                console.log('Bootstrap available, initializing tabs');
+                // ...existing code...
 
                 // Inicjalizuj każdy przycisk jako Bootstrap tab
                 document.querySelectorAll('.nav-link-custom').forEach(function(button) {
@@ -433,13 +421,13 @@ document.addEventListener("DOMContentLoaded", function () {
 
                         // Stwórz nową instancję Bootstrap Tab
                         new bootstrap.Tab(button);
-                        console.log('Tab initialized for:', button.id);
+                        // ...existing code...
                     } catch (e) {
-                        console.error('Error initializing tab:', button.id, e);
+                        // ...existing code...
                     }
                 });
             } else {
-                console.error('Bootstrap not available!');
+                // ...existing code...
             }
         }, 100);
 

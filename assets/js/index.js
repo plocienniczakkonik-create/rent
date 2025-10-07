@@ -97,8 +97,8 @@ document.addEventListener("DOMContentLoaded", function () {
 (function initStickyNavbar() {
   const nav = document.getElementById("siteNav");
   if (!nav) {
-    console.warn("stickyNavbar: #siteNav not found");
-    return;
+  // ...existing code...
+  return;
   }
   const apply = () => {
     const shouldStick = window.scrollY > 16;
@@ -112,8 +112,6 @@ document.addEventListener("DOMContentLoaded", function () {
 
 document.addEventListener("DOMContentLoaded", function () {
   const calendarEl = document.getElementById("product-calendar");
-  console.log("Test FullCalendar: calendarEl", calendarEl);
-  console.log("Test FullCalendar: window.FullCalendar", window.FullCalendar);
   if (calendarEl && window.FullCalendar && window.FullCalendar.Calendar) {
     // Stan cen w aktualnym zakresie
     let dailyPrices = {};
@@ -185,7 +183,6 @@ document.addEventListener("DOMContentLoaded", function () {
         const data = await res.json();
         dailyPrices = data.prices || {};
       } catch (e) {
-        console.warn("Nie udało się pobrać cen dziennych", e);
         dailyPrices = {};
       } finally {
         calendar.rerenderDates();
@@ -207,8 +204,6 @@ document.addEventListener("DOMContentLoaded", function () {
     if (dropoffSelect)
       dropoffSelect.addEventListener("change", onLocationChange);
     calendar.render();
-    console.log("FullCalendar został zainicjalizowany");
-  } else {
-    console.warn("FullCalendar nie jest dostępny lub brak calendarEl");
-  }
+  // FullCalendar initialized
+  } 
 });
