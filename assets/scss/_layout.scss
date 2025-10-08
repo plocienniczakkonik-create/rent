@@ -1,3 +1,64 @@
+[data-theme] .location-fees-manage-btn.btn-outline-primary:hover .bi,
+[data-theme] .location-fees-manage-btn.btn-outline-primary:focus .bi {
+  color: #764ba2 !important;
+  transition: color 0.2s;
+}
+// Specjalny styl dla przycisku w sekcji location-fees na fioletowym tle
+.location-fees-manage-btn.btn-outline-primary {
+  color: #fff !important;
+  border-color: #fff !important;
+  background: transparent !important;
+  transition: background 0.2s, color 0.2s;
+}
+.location-fees-manage-btn.btn-outline-primary:hover, 
+.location-fees-manage-btn.btn-outline-primary:focus {
+  color: #764ba2 !important;
+  background: #fff !important;
+  border-color: #fff !important;
+}
+
+[data-theme="dark"] .location-fees-manage-btn.btn-outline-primary {
+  color: #fff !important;
+  border-color: #fff !important;
+  background: transparent !important;
+}
+[data-theme="dark"] .location-fees-manage-btn.btn-outline-primary:hover, 
+[data-theme="dark"] .location-fees-manage-btn.btn-outline-primary:focus {
+  color: #764ba2 !important;
+  background: #fff !important;
+  border-color: #fff !important;
+}
+[data-theme="dark"] .navbar .theme-toggle-btn:hover #themeToggleIcon,
+[data-theme="dark"] .navbar .theme-toggle-btn:focus #themeToggleIcon,
+[data-theme="dark"] .navbar .cart-icon:hover .bi,
+[data-theme="dark"] .navbar .cart-icon:focus .bi {
+  color: #23272a !important;
+  background: #fff !important;
+  border-radius: 50%;
+  transition: color 0.2s, background 0.2s;
+}
+[data-theme="dark"] .navbar .btn-outline-dark,
+[data-theme="dark"] .navbar .btn-dark,
+[data-theme="dark"] .navbar .btn,
+[data-theme="dark"] .navbar .language-switcher,
+[data-theme="dark"] .navbar .language-switcher * {
+  color: #fff !important;
+  border-color: #fff !important;
+}
+[data-theme="dark"] .navbar .btn-outline-dark:hover,
+[data-theme="dark"] .navbar .btn-dark:hover,
+[data-theme="dark"] .navbar .btn:hover {
+  color: #23272a !important;
+  background: #fff !important;
+  border-color: #fff !important;
+}
+// Kolory tekstu w navbarze dla dark mode
+[data-theme="dark"] .navbar, [data-theme="dark"] .navbar .nav-link, [data-theme="dark"] .navbar .navbar-brand {
+  color: #f3f4f6 !important;
+}
+[data-theme="dark"] .navbar .nav-link.active, [data-theme="dark"] .navbar .nav-link:focus, [data-theme="dark"] .navbar .nav-link:hover {
+  color: #fff !important;
+}
 /* ===== HERO ===== */
 .hero {
   height: 100vh;

@@ -1,7 +1,33 @@
 /* global background */
   $app-bg: rgb(234, 234, 227); // 
 
+
 :root {
+[data-theme="dark"] {
+  --color-text: #f3f4f6;
+  --color-bg: #181a1b;
+  --color-accent: #ffb86c;
+  --color-accent-hover: #ff8800;
+  --color-btt: #a5b4fc;
+  --color-btt-hover: #6366f1;
+  --color-card-bg: #23272a;
+  --color-card-border: #444c56;
+  --color-search-bg: #23272a;
+  --color-feature-icon-bg: #23272a;
+  --color-muted: #b0b3b8;
+  --nav-stuck-bg: rgba(24, 26, 27, 0.95);
+  --nav-stuck-link: #f3f4f6;
+  --nav-stuck-link-hover: #fff;
+  --color-black: #000;
+  --color-white: #fff;
+  --footer-bg: #181a1b;
+  --footer-text: #e5e7eb;
+  --footer-link: #e5e7eb;
+  --footer-link-hover: #fff;
+  --footer-border: rgba(255,255,255,.08);
+  --footer-badge-bg: #23272a;
+  --footer-badge-fg: #f3f4f6;
+}
 
   
   /* Teksty i tła */

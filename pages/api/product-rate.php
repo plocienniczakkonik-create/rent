@@ -61,6 +61,40 @@ try {
         }
     }
 
+    // --- Opłata lokalizacyjna (jak w checkout) ---
+    require_once dirname(__DIR__, 2) . '/classes/LocationFeeManager.php';
+    require_once dirname(__DIR__, 2) . '/classes/FleetManager.php';
+    $locationFee = 0.0;
+    $locationFeeDesc = '';
+    $fleetEnabled = false;
+    try {
+        $fleetManager = new FleetManager($pdo);
+        $locationFeeManager = new LocationFeeManager($pdo);
+        $fleetEnabled = $fleetManager->isEnabled();
+        if ($fleetEnabled && $pickup_location && $dropoff_location && $pickup_location !== $dropoff_location) {
+            $locations = $fleetManager->getActiveLocations();
+            $pickupLocationId = null;
+            $dropoffLocationId = null;
+            foreach ($locations as $loc) {
+                $displayName = $loc['name'] . ' (' . $loc['city'] . ')';
+                if ($displayName === $pickup_location || $loc['name'] === $pickup_location || $loc['city'] === $pickup_location) {
+                    $pickupLocationId = $loc['id'];
+                }
+                if ($displayName === $dropoff_location || $loc['name'] === $dropoff_location || $loc['city'] === $dropoff_location) {
+                    $dropoffLocationId = $loc['id'];
+                }
+            }
+            if ($pickupLocationId && $dropoffLocationId && $pickupLocationId !== $dropoffLocationId) {
+                $feeData = $locationFeeManager->calculateLocationFee($pickupLocationId, $dropoffLocationId);
+                $locationFee = $feeData['amount'] ?? 0.0;
+                $locationFeeDesc = $feeData['description'] ?? '';
+            }
+        }
+    } catch (Throwable $e) {
+        $locationFee = 0.0;
+        $locationFeeDesc = '';
+    }
+
     echo json_encode([
         'sku' => $sku,
         'per_day_base' => (float)$perDayBase,
@@ -68,6 +102,9 @@ try {
         'promo_applied' => (bool)$promoApplied,
         'promo_label' => $promoLabel,
         'rental_days' => (int)$rentalDays,
+        'location_fee' => (float)$locationFee,
+        'location_fee_desc' => $locationFeeDesc,
+        'fleet_enabled' => (bool)$fleetEnabled,
     ]);
 } catch (Throwable $e) {
     http_response_code(500);

@@ -268,27 +268,31 @@ $reports = [
                             </button>
                         </li>
                     </ul>
-<!-- Fallback JS na wypadek gdyby Bootstrap nie zadziałał (np. niestandardowe klasy lub konflikt) -->
-<script>
-document.addEventListener("DOMContentLoaded", function () {
-    var tabButtons = document.querySelectorAll("#staffTabs .nav-link");
-    var tabPanes = document.querySelectorAll(".tab-pane");
-    tabButtons.forEach(function (btn) {
-        btn.addEventListener("click", function () {
-            // Dezaktywuj wszystkie
-            tabButtons.forEach(function (b) { b.classList.remove("active"); });
-            tabPanes.forEach(function (p) { p.classList.remove("show", "active"); });
-            // Aktywuj kliknięty
-            btn.classList.add("active");
-            var target = btn.getAttribute("data-bs-target");
-            if (target) {
-                var pane = document.querySelector(target);
-                if (pane) pane.classList.add("show", "active");
-            }
-        });
-    });
-});
-</script>
+                    <!-- Fallback JS na wypadek gdyby Bootstrap nie zadziałał (np. niestandardowe klasy lub konflikt) -->
+                    <script>
+                        document.addEventListener("DOMContentLoaded", function() {
+                            var tabButtons = document.querySelectorAll("#staffTabs .nav-link");
+                            var tabPanes = document.querySelectorAll(".tab-pane");
+                            tabButtons.forEach(function(btn) {
+                                btn.addEventListener("click", function() {
+                                    // Dezaktywuj wszystkie
+                                    tabButtons.forEach(function(b) {
+                                        b.classList.remove("active");
+                                    });
+                                    tabPanes.forEach(function(p) {
+                                        p.classList.remove("show", "active");
+                                    });
+                                    // Aktywuj kliknięty
+                                    btn.classList.add("active");
+                                    var target = btn.getAttribute("data-bs-target");
+                                    if (target) {
+                                        var pane = document.querySelector(target);
+                                        if (pane) pane.classList.add("show", "active");
+                                    }
+                                });
+                            });
+                        });
+                    </script>
                 </div>
             </div>
 
@@ -326,11 +330,11 @@ document.addEventListener("DOMContentLoaded", function () {
 
 <script>
     document.addEventListener('DOMContentLoaded', function() {
-    // ...existing code...
+        // ...existing code...
 
         // Debug - sprawdź czy przyciski istnieją
         const buttons = document.querySelectorAll('.nav-link-custom');
-    // ...existing code...
+        // ...existing code...
 
         // Dodaj event listenery dla debug
         buttons.forEach(function(button, index) {

@@ -10,7 +10,23 @@ $to = function (string $path) use ($BASE): string {
     return $BASE ? ($BASE . '/' . $path) : ('../' . $path); // jesteśmy w /auth
 };
 
+
+require_once dirname(__DIR__) . '/includes/_helpers.php';
+csrf_verify();
+
 $email = trim($_POST['email'] ?? '');
+$ip = $_SERVER['REMOTE_ADDR'] ?? 'unknown';
+$failFile = __DIR__ . '/../assets/uploads/loginfail_' . md5($ip) . '.tmp';
+$maxAttempts = 5;
+$blockMinutes = 15;
+$failData = ['count' => 0, 'last' => 0];
+if (file_exists($failFile)) {
+    $failData = json_decode(file_get_contents($failFile), true) ?: $failData;
+    if ($failData['count'] >= $maxAttempts && (time() - $failData['last']) < $blockMinutes * 60) {
+        header('Location: ' . $to('index.php?page=login&e=blocked'));
+        exit();
+    }
+}
 $pass  = $_POST['password'] ?? '';
 
 if ($email === '' || $pass === '') {
@@ -24,6 +40,15 @@ $stmt->execute([$email]);
 $row = $stmt->fetch(PDO::FETCH_ASSOC);
 
 $ok = $row && (int)$row['is_active'] === 1 && password_verify($pass, $row['password_hash']);
+if (!$ok) {
+    // Zwiększ licznik nieudanych prób
+    $failData['count']++;
+    $failData['last'] = time();
+    file_put_contents($failFile, json_encode($failData));
+} else {
+    // Resetuj licznik po sukcesie
+    if (file_exists($failFile)) unlink($failFile);
+}
 if (!$ok) {
     header('Location: ' . $to('index.php?page=login&e=invalid'));
     exit;
@@ -43,7 +68,8 @@ if (!isset($_SESSION['admin_language'])) {
         if (!empty($resLang['preferred_language'])) {
             $lang = $resLang['preferred_language'];
         }
-    } catch (Exception $e) {}
+    } catch (Exception $e) {
+    }
     $_SESSION['admin_language'] = $lang;
 }
 

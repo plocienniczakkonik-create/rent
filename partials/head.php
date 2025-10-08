@@ -1,4 +1,10 @@
 <?php
+// Wymuszenie HTTPS na wszystkich stronach (poza CLI)
+if (php_sapi_name() !== 'cli' && (!isset($_SERVER['HTTPS']) || $_SERVER['HTTPS'] !== 'on')) {
+    $redirect = 'https://' . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
+    header('Location: ' . $redirect);
+    exit();
+}
 // /partials/head.php
 // Upewnij się, że w /includes/config.php masz:
 // define('BASE_URL', '/rental'); // lub odpowiednią ścieżkę katalogu projektu
@@ -17,6 +23,7 @@ $themeCssFs  = dirname(__DIR__) . '/assets/css/theme-system.css';
 $themeCssVer = file_exists($themeCssFs) ? filemtime($themeCssFs) : time();
 ?>
 <!DOCTYPE html>
+
 <html lang="pl">
 
 <head>
@@ -74,3 +81,66 @@ $themeCssVer = file_exists($themeCssFs) ? filemtime($themeCssFs) : time();
     <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.11/index.global.min.js"></script>
 </head>
 </head>
+
+<body>
+    <script>
+        // Dark mode: automatyczne wykrywanie i obsługa localStorage
+        function setTheme(theme) {
+            document.documentElement.setAttribute('data-theme', theme);
+            localStorage.setItem('theme', theme);
+        }
+
+        function getPreferredTheme() {
+            const stored = localStorage.getItem('theme');
+            if (stored) return stored;
+            if (window.matchMedia('(prefers-color-scheme: dark)').matches) return 'dark';
+            return 'light';
+        }
+        setTheme(getPreferredTheme());
+    </script>
+
+    <script>
+        function setTheme(theme) {
+            document.documentElement.setAttribute('data-theme', theme);
+            localStorage.setItem('theme', theme);
+        }
+
+        function getPreferredTheme() {
+            const stored = localStorage.getItem('theme');
+            if (stored) return stored;
+            if (window.matchMedia('(prefers-color-scheme: dark)').matches) return 'dark';
+            return 'light';
+        }
+        setTheme(getPreferredTheme());
+        window.addEventListener('DOMContentLoaded', function() {
+            const btn = document.getElementById('themeToggleBtn');
+            const icon = document.getElementById('themeToggleIcon');
+
+            function updateIcon() {
+                if (document.documentElement.getAttribute('data-theme') === 'dark') {
+                    icon.classList.remove('bi-moon');
+                    icon.classList.add('bi-sun');
+                    btn.setAttribute('aria-label', 'Przełącz na tryb jasny');
+                } else {
+                    icon.classList.remove('bi-sun');
+                    icon.classList.add('bi-moon');
+                    btn.setAttribute('aria-label', 'Przełącz na tryb ciemny');
+                }
+            }
+            if (btn && icon) {
+                btn.addEventListener('click', function() {
+                    const current = document.documentElement.getAttribute('data-theme');
+                    const next = current === 'dark' ? 'light' : 'dark';
+                    setTheme(next);
+                    updateIcon();
+                });
+                updateIcon();
+                window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', e => {
+                    if (!localStorage.getItem('theme')) {
+                        setTheme(e.matches ? 'dark' : 'light');
+                        updateIcon();
+                    }
+                });
+            }
+        });
+    </script>

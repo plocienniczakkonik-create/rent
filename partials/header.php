@@ -62,7 +62,7 @@ if ($isDashboard && !$overlay) {
                 <!-- Ikona koszyka -->
                 <li class="nav-item me-3">
                     <button type="button" class="nav-link btn btn-link position-relative cart-icon" id="cart-toggle-btn" style="border: none; background: none; padding: 0.5rem 0.75rem;">
-                        <i class="bi bi-bag-fill fs-5"></i>
+                        <i class="bi bi-bag fs-5" id="cart-icon-outline"></i>
                         <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger cart-count" id="cart-count" style="display: none;">
                             0
                         </span>
@@ -89,6 +89,11 @@ if ($isDashboard && !$overlay) {
                     <li class="nav-item">
                         <a class="nav-link" href="<?= BASE_URL ?>/index.php?page=<?= in_array($role, ['staff', 'admin']) ? 'dashboard-staff' : 'dashboard-client' ?>"><?= __('dashboard', 'frontend', 'Panel') ?></a>
                     </li>
+                    <li class="nav-item">
+                        <button id="themeToggleBtn" type="button" class="nav-link btn btn-link px-2 py-1 theme-toggle-btn" aria-label="Przełącz tryb ciemny/jasny">
+                            <i id="themeToggleIcon" class="bi bi-moon" aria-hidden="true"></i>
+                        </button>
+                    </li>
                     <li class="nav-item ms-2">
                         <a class="btn btn-sm btn-outline-dark rounded-pill" href="<?= BASE_URL ?>/auth/logout.php"><?= __('logout', 'frontend', 'Wyloguj') ?></a>
                     </li>
@@ -104,6 +109,49 @@ if ($isDashboard && !$overlay) {
                         echo i18n::renderLanguageSwitcher('frontend', $_SERVER['REQUEST_URI']);
                         echo "<script>window.languageJustChanged = true; setTimeout(function(){window.languageJustChanged = false;}, 2000);</script>";
                         ?>
+                    </li>
+                    <li class="nav-item">
+                        <button id="themeToggleBtn" type="button" class="nav-link btn btn-link px-2 py-1 theme-toggle-btn" aria-label="Przełącz tryb ciemny/jasny">
+                            <i id="themeToggleIcon" class="bi bi-moon" aria-hidden="true"></i>
+                        </button>
+                        <style>
+                            .theme-toggle-btn {
+                                background: none;
+                                border: 2px solid #111;
+                                border-radius: 50%;
+                                outline: none;
+                                box-shadow: none;
+                                font-size: 1.35em;
+                                line-height: 1;
+                                width: 2.2em;
+                                height: 2.2em;
+                                display: flex;
+                                align-items: center;
+                                justify-content: center;
+                                padding: 0;
+                                transition: border-color 0.2s, background 0.2s;
+                            }
+
+                            .theme-toggle-btn:hover,
+                            .theme-toggle-btn:focus {
+                                border-color: #8b5cf6;
+                                background: #f3f4f6;
+                            }
+
+                            .theme-toggle-btn #themeToggleIcon {
+                                color: #111;
+                                transition: color 0.2s;
+                            }
+
+                            [data-theme="dark"] .theme-toggle-btn {
+                                border-color: #fff;
+                                background: #23272a;
+                            }
+
+                            [data-theme="dark"] .theme-toggle-btn #themeToggleIcon {
+                                color: #fff;
+                            }
+                        </style>
                     </li>
                     <li class="nav-item ms-2">
                         <a class="btn btn-md btn-dark rounded-pill" href="<?= BASE_URL ?>/index.php?page=login"><?= __('login', 'frontend', 'Zaloguj') ?></a>

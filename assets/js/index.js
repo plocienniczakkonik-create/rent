@@ -23,13 +23,13 @@ document.addEventListener("DOMContentLoaded", function () {
   var consent = getConsent();
   function showBanner() {
     banner.style.display = "block";
-    setTimeout(function() {
+    setTimeout(function () {
       banner.classList.add("visible");
     }, 10);
   }
   function hideBanner() {
     banner.classList.remove("visible");
-    setTimeout(function() {
+    setTimeout(function () {
       banner.style.display = "none";
     }, 450);
   }
@@ -38,11 +38,13 @@ document.addEventListener("DOMContentLoaded", function () {
     showBanner();
     // Ustaw checkboxy wg poprzedniego wyboru
     if (typeof consent.stats === "boolean") statsBox.checked = consent.stats;
-    if (typeof consent.marketing === "boolean") marketingBox.checked = consent.marketing;
+    if (typeof consent.marketing === "boolean")
+      marketingBox.checked = consent.marketing;
   } else {
     // Jeśli zaakceptowano, ustaw checkboxy (np. po reloadzie)
     if (typeof consent.stats === "boolean") statsBox.checked = consent.stats;
-    if (typeof consent.marketing === "boolean") marketingBox.checked = consent.marketing;
+    if (typeof consent.marketing === "boolean")
+      marketingBox.checked = consent.marketing;
   }
 
   acceptAllBtn.addEventListener("click", function () {
@@ -97,8 +99,8 @@ document.addEventListener("DOMContentLoaded", function () {
 (function initStickyNavbar() {
   const nav = document.getElementById("siteNav");
   if (!nav) {
-  // ...existing code...
-  return;
+    // ...existing code...
+    return;
   }
   const apply = () => {
     const shouldStick = window.scrollY > 16;
@@ -204,6 +206,6 @@ document.addEventListener("DOMContentLoaded", function () {
     if (dropoffSelect)
       dropoffSelect.addEventListener("change", onLocationChange);
     calendar.render();
-  // FullCalendar initialized
-  } 
+    // FullCalendar initialized
+  }
 });

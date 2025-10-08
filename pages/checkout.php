@@ -310,18 +310,25 @@ $fmt = function ($n) {
             </div>
 
             <div class="card p-3 mb-3">
+
                 <h5 class="mb-3">Rozliczenie</h5>
                 <div class="table-responsive">
                     <table class="table align-middle mb-0">
                         <tbody>
                             <tr>
                                 <td>Cena bazowa za dzień</td>
-                                <td class="text-end"><?= $fmt($perDayBase) ?> PLN</td>
+                                <td class="text-end">
+                                    <?php if ($promoApplied && $perDayFinal < $perDayBase): ?>
+                                        <span class="text-muted text-decoration-line-through"><?= $fmt($perDayBase) ?> PLN</span>
+                                    <?php else: ?>
+                                        <span><?= $fmt($perDayBase) ?> PLN</span>
+                                    <?php endif; ?>
+                                </td>
                             </tr>
                             <?php if ($promoApplied && $perDayFinal < $perDayBase): ?>
                                 <tr>
                                     <td>Cena promocyjna za dzień <?= $promoLabel ? '(' . htmlspecialchars($promoLabel) . ')' : '' ?></td>
-                                    <td class="text-end text-danger"><?= $fmt($perDayFinal) ?> PLN</td>
+                                    <td class="text-end text-danger fw-bold"><?= $fmt($perDayFinal) ?> PLN</td>
                                 </tr>
                             <?php endif; ?>
                             <tr>
@@ -365,32 +372,17 @@ $fmt = function ($n) {
                                     <td class="text-end"><strong><?= $fmt($addonsTotal) ?> PLN</strong></td>
                                 </tr>
                             <?php endif; ?>
-
-                            <?php if ($fleetEnabled && ($locationFee > 0 || $depositAmount > 0)): ?>
-                                <tr class="border-top">
-                                    <td colspan="2" class="pt-3"><small class="text-muted">Fleet Management</small></td>
+                            <?php if ($fleetEnabled && $locationFee > 0): ?>
+                                <tr>
+                                    <td class="fw-bold text-primary">Opłata lokalizacyjna</td>
+                                    <td class="text-end fw-bold text-primary">+ <?= $fmt($locationFee) ?> PLN</td>
                                 </tr>
-                                <?php if ($locationFee > 0): ?>
-                                    <tr>
-                                        <td>Opłata międzymiastowa</td>
-                                        <td class="text-end"><?= $fmt($locationFee) ?> PLN</td>
-                                    </tr>
-                                <?php endif; ?>
-                                <?php if ($depositAmount > 0): ?>
-                                    <tr>
-                                        <td>
-                                            Kaucja
-                                            <small class="text-muted">(<?= $depositType === 'percentage' ? 'procent' : 'stała kwota' ?>)</small>
-                                        </td>
-                                        <td class="text-end"><?= $fmt($depositAmount) ?> PLN</td>
-                                    </tr>
-                                <?php endif; ?>
                             <?php endif; ?>
                         </tbody>
                         <tfoot>
                             <tr>
-                                <th>Suma do zapłaty</th>
-                                <th class="text-end"><?= $fmt($finalTotal) ?> PLN</th>
+                                <th class="fs-5">Suma do zapłaty</th>
+                                <th class="text-end fs-5"><?= $fmt($finalTotal) ?> PLN</th>
                             </tr>
                             <?php if ($fleetEnabled && $depositAmount > 0): ?>
                                 <tr>

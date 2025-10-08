@@ -10,6 +10,8 @@ $success = false;
 $errors = [];
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    require_once dirname(__DIR__) . '/includes/_helpers.php';
+    csrf_verify();
     $first_name = trim($_POST['first_name'] ?? '');
     $last_name = trim($_POST['last_name'] ?? '');
     $email = trim($_POST['email'] ?? '');
@@ -150,33 +152,35 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         </ul>
                     </div>
                 <?php endif; ?>
-                <form method="POST" autocomplete="off">
+                <form method="POST" autocomplete="off" aria-labelledby="registerTitle">
+                    <?php require_once dirname(__DIR__) . '/includes/_helpers.php';
+                    csrf_field(); ?>
                     <div class="row">
                         <div class="col-md-6 mb-3">
                             <label for="first_name" class="form-label">Imię</label>
-                            <input type="text" class="form-control" id="first_name" name="first_name" required value="<?= htmlspecialchars($_POST['first_name'] ?? '') ?>">
+                            <input type="text" class="form-control" id="first_name" name="first_name" required aria-required="true" aria-label="Imię" value="<?= htmlspecialchars($_POST['first_name'] ?? '') ?>">
                         </div>
                         <div class="col-md-6 mb-3">
                             <label for="last_name" class="form-label">Nazwisko</label>
-                            <input type="text" class="form-control" id="last_name" name="last_name" required value="<?= htmlspecialchars($_POST['last_name'] ?? '') ?>">
+                            <input type="text" class="form-control" id="last_name" name="last_name" required aria-required="true" aria-label="Nazwisko" value="<?= htmlspecialchars($_POST['last_name'] ?? '') ?>">
                         </div>
                     </div>
                     <div class="mb-3">
                         <label for="email" class="form-label">Email</label>
-                        <input type="email" class="form-control" id="email" name="email" required value="<?= htmlspecialchars($_POST['email'] ?? '') ?>">
+                        <input type="email" class="form-control" id="email" name="email" required aria-required="true" aria-label="Adres e-mail" value="<?= htmlspecialchars($_POST['email'] ?? '') ?>">
                     </div>
                     <div class="mb-3">
                         <label for="password" class="form-label">Hasło</label>
-                        <input type="password" class="form-control" id="password" name="password" required minlength="6">
+                        <input type="password" class="form-control" id="password" name="password" required minlength="6" aria-required="true" aria-label="Hasło">
                     </div>
                     <div class="form-check mb-2 d-flex align-items-start">
-                        <input class="form-check-input mt-1" type="checkbox" id="privacy_consent" name="privacy_consent" value="1" required <?= isset($_POST['privacy_consent']) ? 'checked' : '' ?>>
+                        <input class="form-check-input mt-1" type="checkbox" id="privacy_consent" name="privacy_consent" value="1" required aria-required="true" aria-label="Akceptuję politykę prywatności" <?= isset($_POST['privacy_consent']) ? 'checked' : '' ?>>
                         <label class="form-check-label ms-2" for="privacy_consent" style="line-height:1.5;">
                             Akceptuję <a href="privacy-policy" target="_blank">politykę prywatności</a> i wyrażam zgodę na przetwarzanie danych w celu założenia konta.
                         </label>
                     </div>
                     <div class="form-check mb-3 d-flex align-items-start">
-                        <input class="form-check-input mt-1" type="checkbox" id="marketing_consent" name="marketing_consent" value="1" <?= isset($_POST['marketing_consent']) ? 'checked' : '' ?>>
+                        <input class="form-check-input mt-1" type="checkbox" id="marketing_consent" name="marketing_consent" value="1" aria-label="Zgoda na marketing" <?= isset($_POST['marketing_consent']) ? 'checked' : '' ?>>
                         <label class="form-check-label ms-2" for="marketing_consent" style="line-height:1.5;">
                             Zgadzam się na otrzymywanie informacji marketingowych (opcjonalnie)
                         </label>

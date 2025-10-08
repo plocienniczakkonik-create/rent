@@ -151,9 +151,6 @@ $timezones = [
         <h5 class="mb-1"><?= __('shop_general_settings', 'admin', 'Ustawienia sklepu') ?></h5>
         <p class="text-muted mb-0"><?= __('shop_configuration', 'admin', 'Konfiguracja biznesowa i regionalna') ?></p>
     </div>
-    <a href="<?= $BASE ?>/location-fees.php" class="btn btn-outline-primary btn-sm">
-        <i class="bi bi-geo-alt"></i> <?= __('manage_location_fees', 'admin', 'Zarządzaj opłatami lokalizacyjnymi') ?>
-    </a>
 </div>
 
 <?php if (isset($success_message)): ?>
@@ -414,8 +411,11 @@ $timezones = [
         <!-- Opłaty lokalizacyjne -->
         <div class="col-12" id="location-fees">
             <div class="card">
-                <div class="card-header">
+                <div class="card-header d-flex justify-content-between align-items-center">
                     <h6 class="mb-0"><i class="bi bi-geo-alt-fill"></i> <?= __('location_fees', 'admin', 'Opłaty lokalizacyjne') ?></h6>
+                    <a href="<?= $BASE ?>/location-fees.php" class="btn btn-outline-primary btn-sm ms-2 location-fees-manage-btn" style="border-width:1px;">
+                        <i class="bi bi-gear"></i> <?= __('manage_location_fees', 'admin', 'Zarządzaj opłatami') ?>
+                    </a>
                 </div>
                 <div class="card-body">
                     <div class="row g-3">

@@ -146,7 +146,7 @@ if ($applyPromos) {
             <div class="col-12 col-lg-6 d-flex flex-column justify-content-start align-items-center">
                 <div style="margin-top:2.5rem;"></div>
                 <h1 class="mb-2 fw-bold fs-2" style="color: #23272b; text-align: center; width: 100%; padding-bottom: 1.2rem; margin-top:0.5rem;"><?= htmlspecialchars($product['name'] ?? '') ?></h1>
-                <div class="badge-grid mb-2" style="width:100%; display:grid; grid-template-columns:repeat(2,1fr); gap:16px; justify-items:center; padding-top: 0.5rem; padding-bottom: 1.2rem;">
+                <div class="badge-grid mb-2" style="width:100%; display:grid; grid-template-columns:repeat(2,1fr); gap:16px; justify-items:start; padding-top: 0.5rem; padding-bottom: 1.2rem;">
                     <span class="badge bg-light text-dark px-4 py-2 fs-5 d-flex align-items-center" style="font-size:1.15rem;min-width:120px; border:1px solid #764ba2; color:#23272b; background:#f3f4f6;">
                         <i class="bi bi-people-fill me-2"></i><?= (int)($product['seats'] ?? 0) ?> osobowy
                     </span>
@@ -444,17 +444,29 @@ if ($applyPromos) {
                 const promoApplied = !!data.promo_applied && perDayFinal < perDayBase && pickAt && retAt;
 
                 let html = '';
+                const locationFee = Number(data.location_fee) || 0;
+                const fleetEnabled = !!data.fleet_enabled;
+                // Suma bez opłaty lokalizacyjnej
+                const sumWithoutLocFee = promoApplied ? finalTotal - locationFee : baseTotal;
                 if (promoApplied) {
                     html += '<span class="price-label">Suma:</span> ';
                     html += '<span class="price-value-final text-danger fw-bold fs-5">' + fmt(finalTotal) + ' PLN</span> ';
                     if (data.promo_label) {
                         html += '<span class="text-danger fw-semibold">(' + String(data.promo_label) + ')</span>';
                     }
+                    if (fleetEnabled && locationFee > 0) {
+                        html += '<br><span class="price-label text-primary">W tym opłata lokalizacyjna:</span> ';
+                        html += '<span class="fw-bold text-primary">' + fmt(locationFee) + ' PLN</span>';
+                    }
                     html += '<br><span class="price-label text-muted small">Cena standardowa za ' + days + ' dni + dodatki:</span> ';
-                    html += '<span class="price-old text-muted text-decoration-line-through small">' + fmt(baseTotal) + ' PLN</span>';
+                    html += '<span class="price-old text-muted text-decoration-line-through small">' + fmt(sumWithoutLocFee) + ' PLN</span>';
                 } else {
                     html += '<span class="price-label">Suma:</span> ';
-                    html += '<span class="price-value-old price-value">' + fmt(baseTotal) + ' PLN</span>';
+                    html += '<span class="price-value-old price-value">' + fmt(sumWithoutLocFee + locationFee) + ' PLN</span>';
+                    if (fleetEnabled && locationFee > 0) {
+                        html += '<br><span class="price-label text-primary">W tym opłata lokalizacyjna:</span> ';
+                        html += '<span class="fw-bold text-primary">' + fmt(locationFee) + ' PLN</span>';
+                    }
                 }
                 priceBox.innerHTML = html;
             } catch (e) {

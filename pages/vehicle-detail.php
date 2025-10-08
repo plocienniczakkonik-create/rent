@@ -136,26 +136,28 @@ $faultBadge = [
     <?= ThemeConfig::generateCSSVariables() ?>
 </style>
 <div class="container py-4">
-    <nav aria-label="breadcrumb">
-        <ol class="breadcrumb">
-            <li class="breadcrumb-item"><a href="<?= $BASE ?>/index.php?page=vehicles">Pojazdy — modele</a></li>
-            <li class="breadcrumb-item">
-                <a href="<?= $BASE ?>/index.php?page=vehicles-manage&product=<?= (int)$veh['product_id'] ?>">
-                    <?= htmlspecialchars($veh['product_name']) ?>
-                </a>
-            </li>
-            <li class="breadcrumb-item active" aria-current="page"><?= htmlspecialchars($veh['registration_number']) ?></li>
-        </ol>
-    </nav>
-
-    <!-- Sekcja: Header pojazdu -->
-    <div class="card shadow-sm mb-4" style="border: 1px solid var(--color-light);">
-        <div class="card-header" style="background: var(--gradient-primary); color: white; border-bottom: 1px solid var(--color-primary-dark);">
-            <div class="d-flex flex-wrap align-items-center justify-content-between">
-                <h4 class="mb-0">
-                    <i class="bi bi-car-front-fill me-2"></i>Pojazd: <?= htmlspecialchars($veh['registration_number']) ?>
-                </h4>
-                <div class="d-flex gap-2 align-items-center">
+    <div class="card mb-4">
+        <div class="card-header text-white" style="background: var(--gradient-primary); border: none;">
+            <div class="d-flex flex-column flex-md-row align-items-md-center justify-content-between">
+                <div>
+                    <nav aria-label="breadcrumb" class="mb-2 mb-md-0">
+                        <ol class="breadcrumb mb-1">
+                            <li class="breadcrumb-item"><a href="<?= $BASE ?>/index.php?page=vehicles" class="text-light">Pojazdy — modele</a></li>
+                            <li class="breadcrumb-item">
+                                <a href="<?= $BASE ?>/index.php?page=vehicles-manage&product=<?= (int)$veh['product_id'] ?>" class="text-light">
+                                    <?= htmlspecialchars($veh['product_name']) ?>
+                                </a>
+                            </li>
+                            <li class="breadcrumb-item active text-light" aria-current="page"><?= htmlspecialchars($veh['registration_number']) ?></li>
+                        </ol>
+                    </nav>
+                    <h1 class="mb-0 d-flex align-items-center">
+                        <i class="fas fa-car me-3"></i>
+                        Szczegóły pojazdu: <?= htmlspecialchars($veh['registration_number']) ?>
+                    </h1>
+                </div>
+                <div class="d-flex gap-2 align-items-center mt-3 mt-md-0">
+                    <span class="badge bg-light text-dark fs-6">ID: <?= (int)$veh['id'] ?></span>
                     <span class="badge fs-6" style="background: #f3f4f6; color: #374151; border: 1px solid #d1d5db;">
                         <?= htmlspecialchars($statusLabels[$veh['status']] ?? $veh['status']) ?>
                     </span>
@@ -166,659 +168,657 @@ $faultBadge = [
                 </div>
             </div>
         </div>
-    </div>
-
-    <div class="row g-3">
-        <!-- Lewa kolumna: główne sekcje -->
-        <div class="col-lg-8">
-            <!-- Sekcja: Metryka pojazdu -->
-            <div class="card mb-3 shadow-sm" style="border: 1px solid var(--color-light);">
-                <div class="card-header" style="background: white; border-bottom: 1px solid #6b7280; color: var(--color-dark);">
-                    <h6 class="mb-0">
-                        <i class="bi bi-info-circle-fill me-2" style="color: var(--color-primary);"></i>Metryka pojazdu
-                    </h6>
-                </div>
-                <div class="card-body p-0">
-                    <table class="table table-striped mb-0">
-                        <tbody>
-                            <tr>
-                                <th class="w-25 p-3">
-                                    <i class="bi bi-car-front text-primary me-2"></i>Model
-                                </th>
-                                <td class="fw-semibold p-3"><?= htmlspecialchars($veh['product_name']) ?></td>
-                                <th class="w-25 p-3">
-                                    <i class="bi bi-qr-code text-secondary me-2"></i>VIN
-                                </th>
-                                <td class="fw-semibold p-3">
-                                    <?php if ($veh['vin']): ?>
-                                        <code><?= htmlspecialchars($veh['vin']) ?></code>
-                                    <?php else: ?>
-                                        <span class="text-muted">—</span>
-                                    <?php endif; ?>
-                                </td>
-                            </tr>
-                            <tr>
-                                <th class="p-3">
-                                    <i class="bi bi-speedometer text-warning me-2"></i>Przebieg
-                                </th>
-                                <td class="p-3">
-                                    <?php if ($veh['mileage'] !== null): ?>
-                                        <span class="fw-semibold"><?= number_format((int)$veh['mileage']) ?> km</span>
-                                    <?php else: ?>
-                                        <span class="text-muted">—</span>
-                                    <?php endif; ?>
-                                </td>
-                                <th class="p-3">
-                                    <i class="bi bi-geo-alt text-danger me-2"></i>Lokalizacja
-                                </th>
-                                <td class="p-3">
-                                    <?= VehicleLocationManager::formatLocationDisplay($currentLocation) ?>
-                                    <?php if ($currentLocation && $currentLocation['location_id']): ?>
-                                        <div class="small text-muted mt-1">
-                                            <i class="bi bi-building me-1"></i>ID lokalizacji: <?= $currentLocation['location_id'] ?>
-                                        </div>
-                                    <?php endif; ?>
-                                </td>
-                            </tr>
-                            <tr>
-                                <th class="p-3">
-                                    <i class="bi bi-toggle-on text-success me-2"></i>Status
-                                </th>
-                                <td class="p-3">
-                                    <span class="badge <?= $badge ?> fs-6"><?= htmlspecialchars($veh['status']) ?></span>
-                                </td>
-                                <th class="p-3"></th>
-                                <td class="p-3"></td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-
-            <!-- Sekcja: Terminy -->
-            <div class="card mb-3 shadow-sm" style="border: 1px solid var(--color-light);">
-                <div class="card-header" style="background: white; border-bottom: 1px solid #6b7280; color: var(--color-dark);">
-                    <h6 class="mb-0">
-                        <i class="bi bi-calendar-check me-2" style="color: var(--color-primary);"></i>Terminy
-                    </h6>
-                </div>
-                <div class="card-body">
-                    <div class="row g-3">
-                        <div class="col-md-6">
-                            <div class="d-flex align-items-center mb-2">
-                                <i class="bi bi-tools text-success me-2"></i>
-                                <div class="text-muted small">Przegląd techniczny</div>
-                            </div>
-                            <div class="fw-semibold fs-5">
-                                <?php if ($veh['inspection_date']): ?>
-                                    <?= htmlspecialchars($veh['inspection_date']) ?>
-                                <?php else: ?>
-                                    <span class="text-muted">—</span>
-                                <?php endif; ?>
-                            </div>
+        <div class="card-body">
+            <div class="row g-3">
+                <div class="col-lg-8">
+                    <!-- Sekcja: Metryka pojazdu -->
+                    <div class="card mb-3 shadow-sm" style="border: 1px solid var(--color-light);">
+                        <div class="card-header" style="background: white; border-bottom: 1px solid #6b7280; color: var(--color-dark);">
+                            <h6 class="mb-0">
+                                <i class="bi bi-info-circle-fill me-2" style="color: var(--color-primary);"></i>Metryka pojazdu
+                            </h6>
                         </div>
-                        <div class="col-md-6">
-                            <div class="d-flex align-items-center mb-2">
-                                <i class="bi bi-shield-check text-info me-2"></i>
-                                <div class="text-muted small">Ubezpieczenie do</div>
-                            </div>
-                            <div class="fw-semibold fs-5">
-                                <?php if ($veh['insurance_expiry_date']): ?>
-                                    <?= htmlspecialchars($veh['insurance_expiry_date']) ?>
-                                <?php else: ?>
-                                    <span class="text-muted">—</span>
-                                <?php endif; ?>
-                            </div>
+                        <div class="card-body p-0">
+                            <table class="table table-striped mb-0">
+                                <tbody>
+                                    <tr>
+                                        <th class="w-25 p-3">
+                                            <i class="bi bi-car-front text-primary me-2"></i>Model
+                                        </th>
+                                        <td class="fw-semibold p-3"><?= htmlspecialchars($veh['product_name']) ?></td>
+                                        <th class="w-25 p-3">
+                                            <i class="bi bi-qr-code text-secondary me-2"></i>VIN
+                                        </th>
+                                        <td class="fw-semibold p-3">
+                                            <?php if ($veh['vin']): ?>
+                                                <code><?= htmlspecialchars($veh['vin']) ?></code>
+                                            <?php else: ?>
+                                                <span class="text-muted">—</span>
+                                            <?php endif; ?>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <th class="p-3">
+                                            <i class="bi bi-speedometer text-warning me-2"></i>Przebieg
+                                        </th>
+                                        <td class="p-3">
+                                            <?php if ($veh['mileage'] !== null): ?>
+                                                <span class="fw-semibold"><?= number_format((int)$veh['mileage']) ?> km</span>
+                                            <?php else: ?>
+                                                <span class="text-muted">—</span>
+                                            <?php endif; ?>
+                                        </td>
+                                        <th class="p-3">
+                                            <i class="bi bi-geo-alt text-danger me-2"></i>Lokalizacja
+                                        </th>
+                                        <td class="p-3">
+                                            <?= VehicleLocationManager::formatLocationDisplay($currentLocation) ?>
+                                            <?php if ($currentLocation && $currentLocation['location_id']): ?>
+                                                <div class="small text-muted mt-1">
+                                                    <i class="bi bi-building me-1"></i>ID lokalizacji: <?= $currentLocation['location_id'] ?>
+                                                </div>
+                                            <?php endif; ?>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <th class="p-3">
+                                            <i class="bi bi-toggle-on text-success me-2"></i>Status
+                                        </th>
+                                        <td class="p-3">
+                                            <span class="badge <?= $badge ?> fs-6"><?= htmlspecialchars($veh['status']) ?></span>
+                                        </td>
+                                        <th class="p-3"></th>
+                                        <td class="p-3"></td>
+                                    </tr>
+                                </tbody>
+                            </table>
                         </div>
                     </div>
-                </div>
-            </div>
 
-            <!-- Sekcja: Notatki -->
-            <div class="card mb-3 shadow-sm" style="border: 1px solid var(--color-light);">
-                <div class="card-header" style="background: white; border-bottom: 1px solid #6b7280; color: var(--color-dark);">
-                    <h6 class="mb-0">
-                        <i class="bi bi-sticky me-2" style="color: var(--color-primary);"></i>Notatki
-                    </h6>
-                </div>
-                <div class="card-body">
-                    <?php if ($veh['notes']): ?>
-                        <div class="p-3 bg-light rounded">
-                            <i class="bi bi-quote text-muted me-2"></i>
-                            <?= nl2br(htmlspecialchars($veh['notes'])) ?>
+                    <!-- Sekcja: Terminy -->
+                    <div class="card mb-3 shadow-sm" style="border: 1px solid var(--color-light);">
+                        <div class="card-header" style="background: white; border-bottom: 1px solid #6b7280; color: var(--color-dark);">
+                            <h6 class="mb-0">
+                                <i class="bi bi-calendar-check me-2" style="color: var(--color-primary);"></i>Terminy
+                            </h6>
                         </div>
-                    <?php else: ?>
-                        <div class="text-center text-muted py-4">
-                            <i class="bi bi-journal-x display-6 d-block mb-2 opacity-50"></i>
-                            <span>Brak notatek dla tego pojazdu</span>
-                        </div>
-                    <?php endif; ?>
-                </div>
-            </div>
-
-            <!-- Sekcja: Historia lokalizacji -->
-            <div class="card mb-3 shadow-sm" style="border: 1px solid var(--color-light);">
-                <div class="card-header d-flex justify-content-between align-items-center" style="background: white; border-bottom: 1px solid #6b7280; color: var(--color-dark);">
-                    <h6 class="mb-0">
-                        <i class="bi bi-geo-alt me-2" style="color: var(--color-primary);"></i>Historia lokalizacji
-                    </h6>
-                    <button class="btn btn-sm" style="background: var(--color-primary); color: white; border: none;"
-                        data-bs-toggle="modal" data-bs-target="#changeLocationModal">
-                        <i class="bi bi-arrow-left-right me-1"></i>Zmień lokalizację
-                    </button>
-                </div>
-                <div class="card-body">
-                    <?php if (count($locationHistory) > 0): ?>
-                        <div class="timeline">
-                            <?php foreach ($locationHistory as $history): ?>
-                                <div class="d-flex mb-3">
-                                    <div class="flex-shrink-0 me-3">
-                                        <div class="bg-primary rounded-circle d-flex align-items-center justify-content-center" style="width: 32px; height: 32px;">
-                                            <i class="bi bi-geo-alt text-white small"></i>
-                                        </div>
+                        <div class="card-body">
+                            <div class="row g-3">
+                                <div class="col-md-6">
+                                    <div class="d-flex align-items-center mb-2">
+                                        <i class="bi bi-tools text-success me-2"></i>
+                                        <div class="text-muted small">Przegląd techniczny</div>
                                     </div>
-                                    <div class="flex-grow-1">
-                                        <div class="fw-semibold">
-                                            <?= $history['location_name'] ? htmlspecialchars($history['location_name'] . ' - ' . $history['location_city']) : 'Lokalizacja usunięta' ?>
-                                        </div>
-                                        <div class="small text-muted">
-                                            <?= date('d.m.Y H:i', strtotime($history['moved_at'])) ?>
-                                            <?php if ($history['moved_by_username']): ?>
-                                                przez <?= htmlspecialchars($history['moved_by_username']) ?>
-                                            <?php endif; ?>
-                                        </div>
-                                        <?php if ($history['reason'] !== 'manual'): ?>
-                                            <div class="small">
-                                                <span class="badge bg-info"><?= ucfirst($history['reason']) ?></span>
-                                            </div>
-                                        <?php endif; ?>
-                                        <?php if ($history['notes']): ?>
-                                            <div class="small text-muted mt-1">
-                                                <i class="bi bi-chat-square-quote me-1"></i><?= htmlspecialchars($history['notes']) ?>
-                                            </div>
+                                    <div class="fw-semibold fs-5">
+                                        <?php if ($veh['inspection_date']): ?>
+                                            <?= htmlspecialchars($veh['inspection_date']) ?>
+                                        <?php else: ?>
+                                            <span class="text-muted">—</span>
                                         <?php endif; ?>
                                     </div>
                                 </div>
-                            <?php endforeach; ?>
-                        </div>
-                    <?php else: ?>
-                        <div class="text-center text-muted py-4">
-                            <i class="bi bi-geo display-6 d-block mb-2 opacity-50"></i>
-                            <span>Brak historii zmian lokalizacji</span>
-                            <div class="small mt-2">
-                                Pojazd nie ma jeszcze przypisanej lokalizacji w systemie flotowym
+                                <div class="col-md-6">
+                                    <div class="d-flex align-items-center mb-2">
+                                        <i class="bi bi-shield-check text-info me-2"></i>
+                                        <div class="text-muted small">Ubezpieczenie do</div>
+                                    </div>
+                                    <div class="fw-semibold fs-5">
+                                        <?php if ($veh['insurance_expiry_date']): ?>
+                                            <?= htmlspecialchars($veh['insurance_expiry_date']) ?>
+                                        <?php else: ?>
+                                            <span class="text-muted">—</span>
+                                        <?php endif; ?>
+                                    </div>
+                                </div>
                             </div>
                         </div>
-                    <?php endif; ?>
-                </div>
-            </div>
+                    </div>
 
-            <!-- Sekcja: Serwisy -->
-            <div class="card mb-3 shadow-sm" style="border: 1px solid var(--color-light);">
-                <div class="card-header d-flex justify-content-between align-items-center" style="background: white; border-bottom: 1px solid #6b7280; color: var(--color-dark);">
-                    <h6 class="mb-0">
-                        <i class="bi bi-tools me-2" style="color: var(--color-primary);"></i>Serwisy
-                    </h6>
-                    <a class="btn btn-sm" style="background: var(--color-info); color: white; border: none;"
-                        href="<?= $BASE ?>/index.php?page=vehicle-service-form&vehicle_id=<?= (int)$veh['id'] ?>">
-                        <i class="bi bi-plus-circle me-1"></i>Dodaj serwis
-                    </a>
-                </div>
-                <div class="card-body p-0">
-                    <?php if (!$services): ?>
-                        <div class="text-center text-muted py-5">
-                            <i class="bi bi-wrench-adjustable display-4 d-block mb-3 opacity-25"></i>
-                            <h6>Brak wpisów serwisowych</h6>
-                            <p class="mb-0">Ten pojazd nie ma jeszcze żadnych zapisów serwisowych</p>
+                    <!-- Sekcja: Notatki -->
+                    <div class="card mb-3 shadow-sm" style="border: 1px solid var(--color-light);">
+                        <div class="card-header" style="background: white; border-bottom: 1px solid #6b7280; color: var(--color-dark);">
+                            <h6 class="mb-0">
+                                <i class="bi bi-sticky me-2" style="color: var(--color-primary);"></i>Notatki
+                            </h6>
                         </div>
-                    <?php else: ?>
-                        <div class="table-responsive">
-                            <table class="table table-hover mb-0 align-middle">
-                                <thead class="table-light">
-                                    <tr>
-                                        <th style="width: 120px;"><i class="bi bi-calendar-event me-1"></i><?= sort_link_detail('services', 'date', 'Data', (int)$veh['id']) ?></th>
-                                        <th style="width: 130px;"><i class="bi bi-speedometer me-1"></i><?= sort_link_detail('services', 'mileage', 'Przebieg', (int)$veh['id']) ?></th>
-                                        <th><i class="bi bi-exclamation-triangle me-1"></i>Usterka</th>
-                                        <th style="width: 130px;"><i class="bi bi-currency-dollar me-1"></i><?= sort_link_detail('services', 'cost', 'Kwota', (int)$veh['id']) ?></th>
-                                        <th style="width: 160px;"><i class="bi bi-building me-1"></i><?= sort_link_detail('services', 'workshop', 'Warsztat', (int)$veh['id']) ?></th>
-                                        <th class="text-end" style="width: 100px;"><i class="bi bi-gear me-1"></i>Akcje</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <?php foreach ($services as $s): ?>
-                                        <tr style="border-left: 3px solid #3b82f6;">
-                                            <td>
-                                                <i class="bi bi-calendar3 me-1" style="color: #6b7280;"></i>
-                                                <?= htmlspecialchars($s['service_date']) ?>
-                                            </td>
-                                            <td>
-                                                <?php if ($s['odometer_km']): ?>
-                                                    <span class="badge" style="background: #f3f4f6; color: #374151; border: 1px solid #d1d5db;">
-                                                        <i class="bi bi-speedometer2 me-1"></i><?= (int)$s['odometer_km'] ?> km
-                                                    </span>
-                                                <?php else: ?>
-                                                    <span class="text-muted">—</span>
-                                                <?php endif; ?>
-                                            </td>
-                                            <td class="text-truncate" style="max-width:320px;">
-                                                <?php if ($s['issues_found']): ?>
-                                                    <small class="text-muted d-block">
-                                                        <i class="bi bi-tools me-1"></i>
-                                                        <?= nl2br(htmlspecialchars($s['issues_found'])) ?>
-                                                    </small>
-                                                <?php else: ?>
-                                                    <span class="text-muted">—</span>
-                                                <?php endif; ?>
-                                            </td>
-                                            <td>
-                                                <span class="fw-bold" style="color: #374151; white-space: nowrap;">
-                                                    <?= number_format((float)$s['cost_total'], 2, ',', ' ') ?> zł
-                                                </span>
-                                            </td>
-                                            <td>
-                                                <?php if ($s['workshop_name']): ?>
-                                                    <i class="bi bi-shop me-1" style="color: #6b7280;"></i>
-                                                    <?= htmlspecialchars($s['workshop_name']) ?>
-                                                <?php else: ?>
-                                                    <span class="text-muted">—</span>
-                                                <?php endif; ?>
-                                            </td>
-                                            <td class="text-end">
-                                                <div class="d-flex gap-1 justify-content-end align-items-center">
-                                                    <a class="btn btn-sm p-1" style="width: 32px; height: 32px; background: #f3f4f6; border: 1px solid #d1d5db; border-radius: 6px;"
-                                                        href="<?= $BASE ?>/index.php?page=vehicle-service-form&id=<?= (int)$s['id'] ?>&vehicle_id=<?= (int)$veh['id'] ?>"
-                                                        title="Edytuj serwis">
-                                                        <i class="bi bi-gear" style="color: #6b7280; font-size: 14px;"></i>
-                                                    </a>
-                                                    <form method="post" action="<?= $BASE ?>/index.php?page=vehicle-service-delete"
-                                                        class="d-inline" onsubmit="return confirm('Usunąć wpis serwisu?')">
-                                                        <?php
-                                                        if (session_status() !== PHP_SESSION_ACTIVE) {
-                                                            session_start();
-                                                        }
-                                                        $tok = $_SESSION['_token'] ?? bin2hex(random_bytes(32));
-                                                        $_SESSION['_token'] = $tok;
-                                                        echo '<input type="hidden" name="_token" value="' . htmlspecialchars($tok, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8') . '">';
-                                                        ?>
-                                                        <input type="hidden" name="id" value="<?= (int)$s['id'] ?>">
-                                                        <input type="hidden" name="vehicle_id" value="<?= (int)$veh['id'] ?>">
-                                                        <button class="btn btn-sm p-1" style="width: 32px; height: 32px; background: #fef2f2; border: 1px solid #fecaca; border-radius: 6px;" title="Usuń serwis">
-                                                            <i class="bi bi-trash" style="color: #ef4444; font-size: 14px;"></i>
-                                                        </button>
-                                                    </form>
+                        <div class="card-body">
+                            <?php if ($veh['notes']): ?>
+                                <div class="p-3 bg-light rounded">
+                                    <i class="bi bi-quote text-muted me-2"></i>
+                                    <?= nl2br(htmlspecialchars($veh['notes'])) ?>
+                                </div>
+                            <?php else: ?>
+                                <div class="text-center text-muted py-4">
+                                    <i class="bi bi-journal-x display-6 d-block mb-2 opacity-50"></i>
+                                    <span>Brak notatek dla tego pojazdu</span>
+                                </div>
+                            <?php endif; ?>
+                        </div>
+                    </div>
+
+                    <!-- Sekcja: Historia lokalizacji -->
+                    <div class="card mb-3 shadow-sm" style="border: 1px solid var(--color-light);">
+                        <div class="card-header d-flex justify-content-between align-items-center" style="background: white; border-bottom: 1px solid #6b7280; color: var(--color-dark);">
+                            <h6 class="mb-0">
+                                <i class="bi bi-geo-alt me-2" style="color: var(--color-primary);"></i>Historia lokalizacji
+                            </h6>
+                            <button class="btn btn-sm" style="background: var(--color-primary); color: white; border: none;"
+                                data-bs-toggle="modal" data-bs-target="#changeLocationModal">
+                                <i class="bi bi-arrow-left-right me-1"></i>Zmień lokalizację
+                            </button>
+                        </div>
+                        <div class="card-body">
+                            <?php if (count($locationHistory) > 0): ?>
+                                <div class="timeline">
+                                    <?php foreach ($locationHistory as $history): ?>
+                                        <div class="d-flex mb-3">
+                                            <div class="flex-shrink-0 me-3">
+                                                <div class="bg-primary rounded-circle d-flex align-items-center justify-content-center" style="width: 32px; height: 32px;">
+                                                    <i class="bi bi-geo-alt text-white small"></i>
                                                 </div>
-                                            </td>
-                                        </tr>
-                                    <?php endforeach; ?>
-                                </tbody>
-                            </table>
-                        </div>
-                    <?php endif; ?>
-                </div>
-            </div>
-
-            <!-- Sekcja: Kolizje / Szkody -->
-            <div class="card mb-3 shadow-sm" style="border: 1px solid var(--color-light);">
-                <div class="card-header d-flex justify-content-between align-items-center" style="background: white; border-bottom: 1px solid #6b7280; color: var(--color-dark);">
-                    <h6 class="mb-0">
-                        <i class="bi bi-exclamation-triangle me-2" style="color: var(--color-primary);"></i>Kolizje / szkody
-                    </h6>
-                    <a class="btn btn-sm" style="background: var(--color-danger); color: white; border: none;"
-                        href="<?= $BASE ?>/index.php?page=vehicle-incident-form&vehicle_id=<?= (int)$veh['id'] ?>">
-                        <i class="bi bi-plus-circle me-1"></i>Zgłoś kolizję
-                    </a>
-                </div>
-                <div class="card-body p-0">
-                    <?php if (!$incidents): ?>
-                        <div class="text-center text-muted py-5">
-                            <i class="bi bi-shield-check display-4 d-block mb-3 text-success opacity-25"></i>
-                            <h6>Brak zgłoszonych kolizji</h6>
-                            <p class="mb-0">Ten pojazd nie ma żadnych zgłoszonych incydentów</p>
-                        </div>
-                    <?php else: ?>
-                        <div class="table-responsive">
-                            <table class="table table-hover mb-0 align-middle">
-                                <thead class="table-light">
-                                    <tr>
-                                        <th style="width: 120px;"><i class="bi bi-calendar-event me-1"></i><?= sort_link_detail('incidents', 'date', 'Data', (int)$veh['id']) ?></th>
-                                        <th style="width: 150px;"><i class="bi bi-person me-1"></i><?= sort_link_detail('incidents', 'driver', 'Kierowca', (int)$veh['id']) ?></th>
-                                        <th><i class="bi bi-file-text me-1"></i>Opis</th>
-                                        <th style="width: 120px;"><i class="bi bi-shield-exclamation me-1"></i><?= sort_link_detail('incidents', 'fault', 'Wina', (int)$veh['id']) ?></th>
-                                        <th style="width: 130px;"><i class="bi bi-currency-dollar me-1"></i><?= sort_link_detail('incidents', 'cost', 'Koszt', (int)$veh['id']) ?></th>
-                                        <th class="text-end" style="width: 100px;"><i class="bi bi-gear me-1"></i>Akcje</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <?php foreach ($incidents as $i): ?>
-                                        <tr style="border-left: 3px solid #ef4444;">
-                                            <td>
-                                                <i class="bi bi-calendar3 me-1" style="color: #6b7280;"></i>
-                                                <?= htmlspecialchars($i['incident_date']) ?>
-                                            </td>
-                                            <td>
-                                                <?php if ($i['driver_name']): ?>
-                                                    <i class="bi bi-person-fill me-1" style="color: #6b7280;"></i>
-                                                    <?= htmlspecialchars($i['driver_name']) ?>
-                                                <?php else: ?>
-                                                    <span class="text-muted">—</span>
-                                                <?php endif; ?>
-                                            </td>
-                                            <td class="text-truncate" style="max-width:320px;">
-                                                <?php if ($i['damage_desc']): ?>
-                                                    <small class="text-muted d-block">
-                                                        <i class="bi bi-file-text me-1"></i>
-                                                        <?= nl2br(htmlspecialchars($i['damage_desc'])) ?>
-                                                    </small>
-                                                <?php else: ?>
-                                                    <span class="text-muted">—</span>
-                                                <?php endif; ?>
-                                            </td>
-                                            <td>
-                                                <?php
-                                                $f = $i['fault'] ?? 'unknown';
-                                                $lbl = $faultLabel[$f] ?? $f;
-                                                $cls = $faultBadge[$f] ?? 'secondary';
-                                                ?>
-                                                <span class="badge px-3 py-2" style="background: #f3f4f6; color: #374151; border: 1px solid #d1d5db;">
-                                                    <i class="bi bi-shield-<?= $f === 'none' ? 'check' : 'exclamation' ?> me-1"></i>
-                                                    <?= htmlspecialchars($lbl) ?>
-                                                </span>
-                                            </td>
-                                            <td>
-                                                <span class="fw-bold" style="color: #374151; white-space: nowrap;">
-                                                    <?= number_format((float)$i['repair_cost'], 2, ',', ' ') ?> zł
-                                                </span>
-                                            </td>
-                                            <td class="text-end">
-                                                <div class="d-flex gap-1 justify-content-end align-items-center">
-                                                    <a class="btn btn-sm p-1" style="width: 32px; height: 32px; background: #f3f4f6; border: 1px solid #d1d5db; border-radius: 6px;"
-                                                        href="<?= $BASE ?>/index.php?page=vehicle-incident-form&id=<?= (int)$i['id'] ?>&vehicle_id=<?= (int)$veh['id'] ?>"
-                                                        title="Edytuj kolizję">
-                                                        <i class="bi bi-gear" style="color: #6b7280; font-size: 14px;"></i>
-                                                    </a>
-                                                    <form method="post" action="<?= $BASE ?>/index.php?page=vehicle-incident-delete"
-                                                        class="d-inline" onsubmit="return confirm('Usunąć wpis kolizji?')">
-                                                        <?php
-                                                        if (session_status() !== PHP_SESSION_ACTIVE) {
-                                                            session_start();
-                                                        }
-                                                        $tok = $_SESSION['_token'] ?? bin2hex(random_bytes(32));
-                                                        $_SESSION['_token'] = $tok;
-                                                        echo '<input type="hidden" name="_token" value="' . htmlspecialchars($tok, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8') . '">';
-                                                        ?>
-                                                        <input type="hidden" name="id" value="<?= (int)$i['id'] ?>">
-                                                        <input type="hidden" name="vehicle_id" value="<?= (int)$veh['id'] ?>">
-                                                        <button class="btn btn-sm p-1" style="width: 32px; height: 32px; background: #fef2f2; border: 1px solid #fecaca; border-radius: 6px;" title="Usuń kolizję">
-                                                            <i class="bi bi-trash" style="color: #ef4444; font-size: 14px;"></i>
-                                                        </button>
-                                                    </form>
+                                            </div>
+                                            <div class="flex-grow-1">
+                                                <div class="fw-semibold">
+                                                    <?= $history['location_name'] ? htmlspecialchars($history['location_name'] . ' - ' . $history['location_city']) : 'Lokalizacja usunięta' ?>
                                                 </div>
-                                            </td>
-                                        </tr>
+                                                <div class="small text-muted">
+                                                    <?= date('d.m.Y H:i', strtotime($history['moved_at'])) ?>
+                                                    <?php if ($history['moved_by_username']): ?>
+                                                        przez <?= htmlspecialchars($history['moved_by_username']) ?>
+                                                    <?php endif; ?>
+                                                </div>
+                                                <?php if ($history['reason'] !== 'manual'): ?>
+                                                    <div class="small">
+                                                        <span class="badge bg-info"><?= ucfirst($history['reason']) ?></span>
+                                                    </div>
+                                                <?php endif; ?>
+                                                <?php if ($history['notes']): ?>
+                                                    <div class="small text-muted mt-1">
+                                                        <i class="bi bi-chat-square-quote me-1"></i><?= htmlspecialchars($history['notes']) ?>
+                                                    </div>
+                                                <?php endif; ?>
+                                            </div>
+                                        </div>
                                     <?php endforeach; ?>
-                                </tbody>
-                            </table>
+                                </div>
+                            <?php else: ?>
+                                <div class="text-center text-muted py-4">
+                                    <i class="bi bi-geo display-6 d-block mb-2 opacity-50"></i>
+                                    <span>Brak historii zmian lokalizacji</span>
+                                    <div class="small mt-2">
+                                        Pojazd nie ma jeszcze przypisanej lokalizacji w systemie flotowym
+                                    </div>
+                                </div>
+                            <?php endif; ?>
                         </div>
-                    <?php endif; ?>
-                </div>
-            </div>
+                    </div>
 
-            <!-- Zamówienia / Wynajem -->
-            <?php
-            // Zamówienia z sortowaniem
-            $orderOrder = '';
-            if ($section === 'orders') {
-                $orderOrder = match ($sort) {
-                    'number' => "ORDER BY number $dir, placed_at DESC",
-                    'status' => "ORDER BY status $dir, placed_at DESC",
-                    'net' => "ORDER BY total_net $dir, placed_at DESC",
-                    'vat' => "ORDER BY total_vat $dir, placed_at DESC",
-                    'gross' => "ORDER BY total_gross $dir, placed_at DESC",
-                    'currency' => "ORDER BY currency $dir, placed_at DESC",
-                    'date' => "ORDER BY placed_at $dir, id $dir",
-                    default => "ORDER BY placed_at DESC, id DESC"
-                };
-            } else {
-                $orderOrder = "ORDER BY placed_at DESC, id DESC";
-            }
-
-            $q3 = $db->prepare("SELECT * FROM orders WHERE vehicle_id = ? $orderOrder LIMIT 20");
-            $q3->execute([(int)$veh['id']]);
-            $orders = $q3->fetchAll(PDO::FETCH_ASSOC);
-            $orderCount = count($orders);
-            $orderSum = array_sum(array_column($orders, 'total_gross'));
-            ?>
-            <!-- Sekcja: Historia wynajmu -->
-            <div class="card mb-3 shadow-sm" style="border: 1px solid var(--color-light);">
-                <div class="card-header" style="background: white; border-bottom: 1px solid #6b7280; color: var(--color-dark);">
-                    <h6 class="mb-0">
-                        <i class="bi bi-clock-history me-2" style="color: var(--color-primary);"></i>Historia wynajmu
-                    </h6>
-                </div>
-                <div class="card-body p-0">
-                    <?php if (!$orders): ?>
-                        <div class="text-center text-muted py-5">
-                            <i class="bi bi-receipt display-4 d-block mb-3 opacity-25"></i>
-                            <h6>Brak historii wynajmu</h6>
-                            <p class="mb-0">Ten pojazd nie ma jeszcze żadnych zamówień</p>
+                    <!-- Sekcja: Serwisy -->
+                    <div class="card mb-3 shadow-sm" style="border: 1px solid var(--color-light);">
+                        <div class="card-header d-flex justify-content-between align-items-center" style="background: white; border-bottom: 1px solid #6b7280; color: var(--color-dark);">
+                            <h6 class="mb-0">
+                                <i class="bi bi-tools me-2" style="color: var(--color-primary);"></i>Serwisy
+                            </h6>
+                            <a class="btn btn-sm" style="background: var(--color-info); color: white; border: none;"
+                                href="<?= $BASE ?>/index.php?page=vehicle-service-form&vehicle_id=<?= (int)$veh['id'] ?>">
+                                <i class="bi bi-plus-circle me-1"></i>Dodaj serwis
+                            </a>
                         </div>
-                    <?php else: ?>
-                        <div class="table-responsive">
-                            <table class="table table-hover mb-0 align-middle">
-                                <thead class="table-light">
-                                    <tr>
-                                        <th><i class="bi bi-hash me-1"></i><?= sort_link_detail('orders', 'number', 'Numer', (int)$veh['id']) ?></th>
-                                        <th><i class="bi bi-flag me-1"></i><?= sort_link_detail('orders', 'status', 'Status', (int)$veh['id']) ?></th>
-                                        <th><i class="bi bi-calculator me-1"></i><?= sort_link_detail('orders', 'net', 'Netto', (int)$veh['id']) ?></th>
-                                        <th><i class="bi bi-percent me-1"></i><?= sort_link_detail('orders', 'vat', 'VAT', (int)$veh['id']) ?></th>
-                                        <th><i class="bi bi-currency-dollar me-1"></i><?= sort_link_detail('orders', 'gross', 'Brutto', (int)$veh['id']) ?></th>
-                                        <th><i class="bi bi-globe me-1"></i><?= sort_link_detail('orders', 'currency', 'Waluta', (int)$veh['id']) ?></th>
-                                        <th><i class="bi bi-calendar-event me-1"></i><?= sort_link_detail('orders', 'date', 'Data', (int)$veh['id']) ?></th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <?php
-                                    function order_status_badge($status)
-                                    {
-                                        return match (strtolower($status)) {
-                                            'paid' => 'bg-primary',
-                                            'completed' => 'bg-success',
-                                            'cancelled' => 'bg-danger',
-                                            default => 'bg-secondary',
-                                        };
-                                    }
-                                    foreach ($orders as $o): ?>
-                                        <tr style="border-left: 3px solid #8b5cf6;">
-                                            <td>
-                                                <i class="bi bi-receipt-cutoff me-1" style="color: #6b7280;"></i>
-                                                <strong><?= htmlspecialchars($o['number']) ?></strong>
-                                            </td>
-                                            <td>
-                                                <span class="badge px-3 py-2" style="background: #f3f4f6; color: #374151; border: 1px solid #d1d5db;">
-                                                    <?= htmlspecialchars($o['status']) ?>
-                                                </span>
-                                            </td>
-                                            <td class="text-muted"><?= number_format((float)$o['total_net'], 2, ',', ' ') ?> <?= htmlspecialchars($o['currency']) ?></td>
-                                            <td class="text-muted"><?= number_format((float)$o['total_vat'], 2, ',', ' ') ?> <?= htmlspecialchars($o['currency']) ?></td>
-                                            <td>
-                                                <span class="fw-bold" style="color: #374151;">
-                                                    <?= number_format((float)$o['total_gross'], 2, ',', ' ') ?> <?= htmlspecialchars($o['currency']) ?>
-                                                </span>
-                                            </td>
-                                            <td><span class="badge" style="background: #f3f4f6; color: #374151; border: 1px solid #d1d5db;"><?= htmlspecialchars($o['currency']) ?></span></td>
-                                            <td>
-                                                <i class="bi bi-calendar3 me-1" style="color: #6b7280;"></i>
-                                                <small><?= htmlspecialchars($o['placed_at']) ?></small>
-                                            </td>
-                                        </tr>
-                                    <?php endforeach; ?>
-                                </tbody>
-                            </table>
+                        <div class="card-body p-0">
+                            <?php if (!$services): ?>
+                                <div class="text-center text-muted py-5">
+                                    <i class="bi bi-wrench-adjustable display-4 d-block mb-3 opacity-25"></i>
+                                    <h6>Brak wpisów serwisowych</h6>
+                                    <p class="mb-0">Ten pojazd nie ma jeszcze żadnych zapisów serwisowych</p>
+                                </div>
+                            <?php else: ?>
+                                <div class="table-responsive">
+                                    <table class="table table-hover mb-0 align-middle">
+                                        <thead class="table-light">
+                                            <tr>
+                                                <th style="width: 120px;"><i class="bi bi-calendar-event me-1"></i><?= sort_link_detail('services', 'date', 'Data', (int)$veh['id']) ?></th>
+                                                <th style="width: 130px;"><i class="bi bi-speedometer me-1"></i><?= sort_link_detail('services', 'mileage', 'Przebieg', (int)$veh['id']) ?></th>
+                                                <th><i class="bi bi-exclamation-triangle me-1"></i>Usterka</th>
+                                                <th style="width: 130px;"><i class="bi bi-currency-dollar me-1"></i><?= sort_link_detail('services', 'cost', 'Kwota', (int)$veh['id']) ?></th>
+                                                <th style="width: 160px;"><i class="bi bi-building me-1"></i><?= sort_link_detail('services', 'workshop', 'Warsztat', (int)$veh['id']) ?></th>
+                                                <th class="text-end" style="width: 100px;"><i class="bi bi-gear me-1"></i>Akcje</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <?php foreach ($services as $s): ?>
+                                                <tr style="border-left: 3px solid #3b82f6;">
+                                                    <td>
+                                                        <i class="bi bi-calendar3 me-1" style="color: #6b7280;"></i>
+                                                        <?= htmlspecialchars($s['service_date']) ?>
+                                                    </td>
+                                                    <td>
+                                                        <?php if ($s['odometer_km']): ?>
+                                                            <span class="badge" style="background: #f3f4f6; color: #374151; border: 1px solid #d1d5db;">
+                                                                <i class="bi bi-speedometer2 me-1"></i><?= (int)$s['odometer_km'] ?> km
+                                                            </span>
+                                                        <?php else: ?>
+                                                            <span class="text-muted">—</span>
+                                                        <?php endif; ?>
+                                                    </td>
+                                                    <td class="text-truncate" style="max-width:320px;">
+                                                        <?php if ($s['issues_found']): ?>
+                                                            <small class="text-muted d-block">
+                                                                <i class="bi bi-tools me-1"></i>
+                                                                <?= nl2br(htmlspecialchars($s['issues_found'])) ?>
+                                                            </small>
+                                                        <?php else: ?>
+                                                            <span class="text-muted">—</span>
+                                                        <?php endif; ?>
+                                                    </td>
+                                                    <td>
+                                                        <span class="fw-bold" style="color: #374151; white-space: nowrap;">
+                                                            <?= number_format((float)$s['cost_total'], 2, ',', ' ') ?> zł
+                                                        </span>
+                                                    </td>
+                                                    <td>
+                                                        <?php if ($s['workshop_name']): ?>
+                                                            <i class="bi bi-shop me-1" style="color: #6b7280;"></i>
+                                                            <?= htmlspecialchars($s['workshop_name']) ?>
+                                                        <?php else: ?>
+                                                            <span class="text-muted">—</span>
+                                                        <?php endif; ?>
+                                                    </td>
+                                                    <td class="text-end">
+                                                        <div class="d-flex gap-1 justify-content-end align-items-center">
+                                                            <a class="btn btn-sm p-1" style="width: 32px; height: 32px; background: #f3f4f6; border: 1px solid #d1d5db; border-radius: 6px;"
+                                                                href="<?= $BASE ?>/index.php?page=vehicle-service-form&id=<?= (int)$s['id'] ?>&vehicle_id=<?= (int)$veh['id'] ?>"
+                                                                title="Edytuj serwis">
+                                                                <i class="bi bi-gear" style="color: #6b7280; font-size: 14px;"></i>
+                                                            </a>
+                                                            <form method="post" action="<?= $BASE ?>/index.php?page=vehicle-service-delete"
+                                                                class="d-inline" onsubmit="return confirm('Usunąć wpis serwisu?')">
+                                                                <?php
+                                                                if (session_status() !== PHP_SESSION_ACTIVE) {
+                                                                    session_start();
+                                                                }
+                                                                $tok = $_SESSION['_token'] ?? bin2hex(random_bytes(32));
+                                                                $_SESSION['_token'] = $tok;
+                                                                echo '<input type="hidden" name="_token" value="' . htmlspecialchars($tok, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8') . '">';
+                                                                ?>
+                                                                <input type="hidden" name="id" value="<?= (int)$s['id'] ?>">
+                                                                <input type="hidden" name="vehicle_id" value="<?= (int)$veh['id'] ?>">
+                                                                <button class="btn btn-sm p-1" style="width: 32px; height: 32px; background: #fef2f2; border: 1px solid #fecaca; border-radius: 6px;" title="Usuń serwis">
+                                                                    <i class="bi bi-trash" style="color: #ef4444; font-size: 14px;"></i>
+                                                                </button>
+                                                            </form>
+                                                        </div>
+                                                    </td>
+                                                </tr>
+                                            <?php endforeach; ?>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            <?php endif; ?>
                         </div>
-                    <?php endif; ?>
-                </div>
-            </div>
-        </div>
+                    </div>
 
+                    <!-- Sekcja: Kolizje / Szkody -->
+                    <div class="card mb-3 shadow-sm" style="border: 1px solid var(--color-light);">
+                        <div class="card-header d-flex justify-content-between align-items-center" style="background: white; border-bottom: 1px solid #6b7280; color: var(--color-dark);">
+                            <h6 class="mb-0">
+                                <i class="bi bi-exclamation-triangle me-2" style="color: var(--color-primary);"></i>Kolizje / szkody
+                            </h6>
+                            <a class="btn btn-sm" style="background: var(--color-danger); color: white; border: none;"
+                                href="<?= $BASE ?>/index.php?page=vehicle-incident-form&vehicle_id=<?= (int)$veh['id'] ?>">
+                                <i class="bi bi-plus-circle me-1"></i>Zgłoś kolizję
+                            </a>
+                        </div>
+                        <div class="card-body p-0">
+                            <?php if (!$incidents): ?>
+                                <div class="text-center text-muted py-5">
+                                    <i class="bi bi-shield-check display-4 d-block mb-3 text-success opacity-25"></i>
+                                    <h6>Brak zgłoszonych kolizji</h6>
+                                    <p class="mb-0">Ten pojazd nie ma żadnych zgłoszonych incydentów</p>
+                                </div>
+                            <?php else: ?>
+                                <div class="table-responsive">
+                                    <table class="table table-hover mb-0 align-middle">
+                                        <thead class="table-light">
+                                            <tr>
+                                                <th style="width: 120px;"><i class="bi bi-calendar-event me-1"></i><?= sort_link_detail('incidents', 'date', 'Data', (int)$veh['id']) ?></th>
+                                                <th style="width: 150px;"><i class="bi bi-person me-1"></i><?= sort_link_detail('incidents', 'driver', 'Kierowca', (int)$veh['id']) ?></th>
+                                                <th><i class="bi bi-file-text me-1"></i>Opis</th>
+                                                <th style="width: 120px;"><i class="bi bi-shield-exclamation me-1"></i><?= sort_link_detail('incidents', 'fault', 'Wina', (int)$veh['id']) ?></th>
+                                                <th style="width: 130px;"><i class="bi bi-currency-dollar me-1"></i><?= sort_link_detail('incidents', 'cost', 'Koszt', (int)$veh['id']) ?></th>
+                                                <th class="text-end" style="width: 100px;"><i class="bi bi-gear me-1"></i>Akcje</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <?php foreach ($incidents as $i): ?>
+                                                <tr style="border-left: 3px solid #ef4444;">
+                                                    <td>
+                                                        <i class="bi bi-calendar3 me-1" style="color: #6b7280;"></i>
+                                                        <?= htmlspecialchars($i['incident_date']) ?>
+                                                    </td>
+                                                    <td>
+                                                        <?php if ($i['driver_name']): ?>
+                                                            <i class="bi bi-person-fill me-1" style="color: #6b7280;"></i>
+                                                            <?= htmlspecialchars($i['driver_name']) ?>
+                                                        <?php else: ?>
+                                                            <span class="text-muted">—</span>
+                                                        <?php endif; ?>
+                                                    </td>
+                                                    <td class="text-truncate" style="max-width:320px;">
+                                                        <?php if ($i['damage_desc']): ?>
+                                                            <small class="text-muted d-block">
+                                                                <i class="bi bi-file-text me-1"></i>
+                                                                <?= nl2br(htmlspecialchars($i['damage_desc'])) ?>
+                                                            </small>
+                                                        <?php else: ?>
+                                                            <span class="text-muted">—</span>
+                                                        <?php endif; ?>
+                                                    </td>
+                                                    <td>
+                                                        <?php
+                                                        $f = $i['fault'] ?? 'unknown';
+                                                        $lbl = $faultLabel[$f] ?? $f;
+                                                        $cls = $faultBadge[$f] ?? 'secondary';
+                                                        ?>
+                                                        <span class="badge px-3 py-2" style="background: #f3f4f6; color: #374151; border: 1px solid #d1d5db;">
+                                                            <i class="bi bi-shield-<?= $f === 'none' ? 'check' : 'exclamation' ?> me-1"></i>
+                                                            <?= htmlspecialchars($lbl) ?>
+                                                        </span>
+                                                    </td>
+                                                    <td>
+                                                        <span class="fw-bold" style="color: #374151; white-space: nowrap;">
+                                                            <?= number_format((float)$i['repair_cost'], 2, ',', ' ') ?> zł
+                                                        </span>
+                                                    </td>
+                                                    <td class="text-end">
+                                                        <div class="d-flex gap-1 justify-content-end align-items-center">
+                                                            <a class="btn btn-sm p-1" style="width: 32px; height: 32px; background: #f3f4f6; border: 1px solid #d1d5db; border-radius: 6px;"
+                                                                href="<?= $BASE ?>/index.php?page=vehicle-incident-form&id=<?= (int)$i['id'] ?>&vehicle_id=<?= (int)$veh['id'] ?>"
+                                                                title="Edytuj kolizję">
+                                                                <i class="bi bi-gear" style="color: #6b7280; font-size: 14px;"></i>
+                                                            </a>
+                                                            <form method="post" action="<?= $BASE ?>/index.php?page=vehicle-incident-delete"
+                                                                class="d-inline" onsubmit="return confirm('Usunąć wpis kolizji?')">
+                                                                <?php
+                                                                if (session_status() !== PHP_SESSION_ACTIVE) {
+                                                                    session_start();
+                                                                }
+                                                                $tok = $_SESSION['_token'] ?? bin2hex(random_bytes(32));
+                                                                $_SESSION['_token'] = $tok;
+                                                                echo '<input type="hidden" name="_token" value="' . htmlspecialchars($tok, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8') . '">';
+                                                                ?>
+                                                                <input type="hidden" name="id" value="<?= (int)$i['id'] ?>">
+                                                                <input type="hidden" name="vehicle_id" value="<?= (int)$veh['id'] ?>">
+                                                                <button class="btn btn-sm p-1" style="width: 32px; height: 32px; background: #fef2f2; border: 1px solid #fecaca; border-radius: 6px;" title="Usuń kolizję">
+                                                                    <i class="bi bi-trash" style="color: #ef4444; font-size: 14px;"></i>
+                                                                </button>
+                                                            </form>
+                                                        </div>
+                                                    </td>
+                                                </tr>
+                                            <?php endforeach; ?>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            <?php endif; ?>
+                        </div>
+                    </div>
 
-        <!-- Prawa kolumna: szybkie akcje i statystyki -->
-        <div class="col-lg-4">
-            <!-- Sekcja: Szybkie akcje -->
-            <div class="card mb-3 shadow-sm" style="border: 1px solid var(--color-light);">
-                <div class="card-header" style="background: white; border-bottom: 1px solid #6b7280; color: var(--color-dark);">
-                    <h6 class="mb-0">
-                        <i class="bi bi-lightning-charge me-2" style="color: var(--color-primary);"></i>Szybkie akcje
-                    </h6>
-                </div>
-                <div class="card-body d-grid gap-3">
-                    <a class="btn btn-sm d-flex align-items-center" style="background: var(--color-info); color: white; border: none;"
-                        href="<?= $BASE ?>/index.php?page=vehicle-service-form&vehicle_id=<?= (int)$veh['id'] ?>">
-                        <i class="bi bi-tools me-2"></i>Dodaj serwis
-                    </a>
-                    <a class="btn btn-sm d-flex align-items-center" style="background: var(--color-danger); color: white; border: none;"
-                        href="<?= $BASE ?>/index.php?page=vehicle-incident-form&vehicle_id=<?= (int)$veh['id'] ?>">
-                        <i class="bi bi-exclamation-triangle me-2"></i>Zgłoś kolizję
-                    </a>
-                    <a class="btn btn-sm d-flex align-items-center" style="background: var(--color-success); color: white; border: none;"
-                        href="<?= $BASE ?>/index.php?page=vehicle-order-form&vehicle_id=<?= (int)$veh['id'] ?>">
-                        <i class="bi bi-plus-circle me-2"></i>Dodaj zamówienie
-                    </a>
-                    <hr class="my-2">
-                    <button class="btn btn-outline-secondary btn-sm disabled" title="W kolejnej iteracji">
-                        <i class="bi bi-calendar-check me-2"></i>Przypisz do rezerwacji
-                    </button>
-                    <button class="btn btn-outline-secondary btn-sm disabled" title="W kolejnej iteracji">
-                        <i class="bi bi-bell me-2"></i>Ustaw przypomnienia
-                    </button>
-                </div>
-            </div>
+                    <!-- Zamówienia / Wynajem -->
+                    <?php
+                    // Zamówienia z sortowaniem
+                    $orderOrder = '';
+                    if ($section === 'orders') {
+                        $orderOrder = match ($sort) {
+                            'number' => "ORDER BY number $dir, placed_at DESC",
+                            'status' => "ORDER BY status $dir, placed_at DESC",
+                            'net' => "ORDER BY total_net $dir, placed_at DESC",
+                            'vat' => "ORDER BY total_vat $dir, placed_at DESC",
+                            'gross' => "ORDER BY total_gross $dir, placed_at DESC",
+                            'currency' => "ORDER BY currency $dir, placed_at DESC",
+                            'date' => "ORDER BY placed_at $dir, id $dir",
+                            default => "ORDER BY placed_at DESC, id DESC"
+                        };
+                    } else {
+                        $orderOrder = "ORDER BY placed_at DESC, id DESC";
+                    }
 
-            <!-- Statystyki pojazdu -->
-            <?php
-            // Filtr okresu
-            $period = $_GET['period'] ?? 'all';
-            $today = date('Y-m-d');
-            $yearStart = date('Y-01-01');
-            $periodSql = '';
-            switch ($period) {
-                case 'today':
-                    $periodSql = "AND DATE(placed_at) = '$today'";
-                    break;
-                case '7d':
-                    $periodSql = "AND placed_at >= DATE_SUB('$today', INTERVAL 7 DAY)";
-                    break;
-                case '30d':
-                    $periodSql = "AND placed_at >= DATE_SUB('$today', INTERVAL 30 DAY)";
-                    break;
-                case 'month':
-                    $periodSql = "AND MONTH(placed_at) = MONTH('$today') AND YEAR(placed_at) = YEAR('$today')";
-                    break;
-                case 'year':
-                    $periodSql = "AND YEAR(placed_at) = YEAR('$today')";
-                    break;
-                case 'all':
-                default:
+                    $q3 = $db->prepare("SELECT * FROM orders WHERE vehicle_id = ? $orderOrder LIMIT 20");
+                    $q3->execute([(int)$veh['id']]);
+                    $orders = $q3->fetchAll(PDO::FETCH_ASSOC);
+                    $orderCount = count($orders);
+                    $orderSum = array_sum(array_column($orders, 'total_gross'));
+                    ?>
+                    <!-- Sekcja: Historia wynajmu -->
+                    <div class="card mb-3 shadow-sm" style="border: 1px solid var(--color-light);">
+                        <div class="card-header" style="background: white; border-bottom: 1px solid #6b7280; color: var(--color-dark);">
+                            <h6 class="mb-0">
+                                <i class="bi bi-clock-history me-2" style="color: var(--color-primary);"></i>Historia wynajmu
+                            </h6>
+                        </div>
+                        <div class="card-body p-0">
+                            <?php if (!$orders): ?>
+                                <div class="text-center text-muted py-5">
+                                    <i class="bi bi-receipt display-4 d-block mb-3 opacity-25"></i>
+                                    <h6>Brak historii wynajmu</h6>
+                                    <p class="mb-0">Ten pojazd nie ma jeszcze żadnych zamówień</p>
+                                </div>
+                            <?php else: ?>
+                                <div class="table-responsive">
+                                    <table class="table table-hover mb-0 align-middle">
+                                        <thead class="table-light">
+                                            <tr>
+                                                <th><i class="bi bi-hash me-1"></i><?= sort_link_detail('orders', 'number', 'Numer', (int)$veh['id']) ?></th>
+                                                <th><i class="bi bi-flag me-1"></i><?= sort_link_detail('orders', 'status', 'Status', (int)$veh['id']) ?></th>
+                                                <th><i class="bi bi-calculator me-1"></i><?= sort_link_detail('orders', 'net', 'Netto', (int)$veh['id']) ?></th>
+                                                <th><i class="bi bi-percent me-1"></i><?= sort_link_detail('orders', 'vat', 'VAT', (int)$veh['id']) ?></th>
+                                                <th><i class="bi bi-currency-dollar me-1"></i><?= sort_link_detail('orders', 'gross', 'Brutto', (int)$veh['id']) ?></th>
+                                                <th><i class="bi bi-globe me-1"></i><?= sort_link_detail('orders', 'currency', 'Waluta', (int)$veh['id']) ?></th>
+                                                <th><i class="bi bi-calendar-event me-1"></i><?= sort_link_detail('orders', 'date', 'Data', (int)$veh['id']) ?></th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <?php
+                                            function order_status_badge($status)
+                                            {
+                                                return match (strtolower($status)) {
+                                                    'paid' => 'bg-primary',
+                                                    'completed' => 'bg-success',
+                                                    'cancelled' => 'bg-danger',
+                                                    default => 'bg-secondary',
+                                                };
+                                            }
+                                            foreach ($orders as $o): ?>
+                                                <tr style="border-left: 3px solid #8b5cf6;">
+                                                    <td>
+                                                        <i class="bi bi-receipt-cutoff me-1" style="color: #6b7280;"></i>
+                                                        <strong><?= htmlspecialchars($o['number']) ?></strong>
+                                                    </td>
+                                                    <td>
+                                                        <span class="badge px-3 py-2" style="background: #f3f4f6; color: #374151; border: 1px solid #d1d5db;">
+                                                            <?= htmlspecialchars($o['status']) ?>
+                                                        </span>
+                                                    </td>
+                                                    <td class="text-muted"><?= number_format((float)$o['total_net'], 2, ',', ' ') ?> <?= htmlspecialchars($o['currency']) ?></td>
+                                                    <td class="text-muted"><?= number_format((float)$o['total_vat'], 2, ',', ' ') ?> <?= htmlspecialchars($o['currency']) ?></td>
+                                                    <td>
+                                                        <span class="fw-bold" style="color: #374151;">
+                                                            <?= number_format((float)$o['total_gross'], 2, ',', ' ') ?> <?= htmlspecialchars($o['currency']) ?>
+                                                        </span>
+                                                    </td>
+                                                    <td><span class="badge" style="background: #f3f4f6; color: #374151; border: 1px solid #d1d5db;"><?= htmlspecialchars($o['currency']) ?></span></td>
+                                                    <td>
+                                                        <i class="bi bi-calendar3 me-1" style="color: #6b7280;"></i>
+                                                        <small><?= htmlspecialchars($o['placed_at']) ?></small>
+                                                    </td>
+                                                </tr>
+                                            <?php endforeach; ?>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            <?php endif; ?>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-4">
+                    <!-- Prawa kolumna: widgety, statystyki, inne info -->
+                    <!-- Sekcja: Szybkie akcje -->
+                    <div class="card mb-3 shadow-sm" style="border: 1px solid var(--color-light);">
+                        <div class="card-header" style="background: white; border-bottom: 1px solid #6b7280; color: var(--color-dark);">
+                            <h6 class="mb-0">
+                                <i class="bi bi-lightning-charge me-2" style="color: var(--color-primary);"></i>Szybkie akcje
+                            </h6>
+                        </div>
+                        <div class="card-body d-grid gap-3">
+                            <a class="btn btn-sm d-flex align-items-center" style="background: var(--color-info); color: white; border: none;"
+                                href="<?= $BASE ?>/index.php?page=vehicle-service-form&vehicle_id=<?= (int)$veh['id'] ?>">
+                                <i class="bi bi-tools me-2"></i>Dodaj serwis
+                            </a>
+                            <a class="btn btn-sm d-flex align-items-center" style="background: var(--color-danger); color: white; border: none;"
+                                href="<?= $BASE ?>/index.php?page=vehicle-incident-form&vehicle_id=<?= (int)$veh['id'] ?>">
+                                <i class="bi bi-exclamation-triangle me-2"></i>Zgłoś kolizję
+                            </a>
+                            <a class="btn btn-sm d-flex align-items-center" style="background: var(--color-success); color: white; border: none;"
+                                href="<?= $BASE ?>/index.php?page=vehicle-order-form&vehicle_id=<?= (int)$veh['id'] ?>">
+                                <i class="bi bi-plus-circle me-2"></i>Dodaj zamówienie
+                            </a>
+                            <hr class="my-2">
+                            <button class="btn btn-outline-secondary btn-sm disabled" title="W kolejnej iteracji">
+                                <i class="bi bi-calendar-check me-2"></i>Przypisz do rezerwacji
+                            </button>
+                            <button class="btn btn-outline-secondary btn-sm disabled" title="W kolejnej iteracji">
+                                <i class="bi bi-bell me-2"></i>Ustaw przypomnienia
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Statystyki pojazdu -->
+                    <?php
+                    // Filtr okresu
+                    $period = $_GET['period'] ?? 'all';
+                    $today = date('Y-m-d');
+                    $yearStart = date('Y-01-01');
                     $periodSql = '';
-            }
-            // Statystyki zamówień
-            $statsOrders = $db->query("SELECT COUNT(*) AS cnt, SUM(total_net) AS net, SUM(total_gross) AS gross FROM orders WHERE vehicle_id = " . (int)$veh['id'] . " $periodSql")->fetch(PDO::FETCH_ASSOC);
-            // Statystyki kolizji
-            $statsIncidents = $db->query("SELECT COUNT(*) AS cnt, SUM(repair_cost) AS cost FROM vehicle_incidents WHERE vehicle_id = " . (int)$veh['id'] . ($period != 'all' ? " AND incident_date >= DATE_SUB('$today', INTERVAL 30 DAY)" : ""))->fetch(PDO::FETCH_ASSOC);
-            // Statystyki serwisów
-            $statsServices = $db->query("SELECT COUNT(*) AS cnt, SUM(cost_total) AS cost FROM vehicle_services WHERE vehicle_id = " . (int)$veh['id'] . ($period != 'all' ? " AND service_date >= DATE_SUB('$today', INTERVAL 30 DAY)" : ""))->fetch(PDO::FETCH_ASSOC);
-            ?>
-            <!-- Sekcja: Statystyki pojazdu -->
-            <div class="card mb-3 shadow-sm" style="border: 1px solid var(--color-light);">
-                <div class="card-header d-flex justify-content-between align-items-center" style="background: white; border-bottom: 1px solid #6b7280; color: var(--color-dark);">
-                    <h6 class="mb-0">
-                        <i class="bi bi-graph-up me-2" style="color: var(--color-primary);"></i>Statystyki pojazdu
-                    </h6>
-                    <form method="get" class="d-inline-flex gap-2 align-items-center" style="margin-bottom:0;">
-                        <input type="hidden" name="page" value="vehicle-detail">
-                        <input type="hidden" name="id" value="<?= (int)$veh['id'] ?>">
-                        <select name="period" class="form-select form-select-sm" onchange="this.form.submit()">
-                            <option value="all" <?= $period == 'all' ? ' selected' : '' ?>>Cały okres</option>
-                            <option value="today" <?= $period == 'today' ? ' selected' : '' ?>>Dzisiaj</option>
-                            <option value="7d" <?= $period == '7d' ? ' selected' : '' ?>>Ostatnie 7 dni</option>
-                            <option value="30d" <?= $period == '30d' ? ' selected' : '' ?>>Ostatnie 30 dni</option>
-                            <option value="month" <?= $period == 'month' ? ' selected' : '' ?>>Ostatni miesiąc</option>
-                            <option value="year" <?= $period == 'year' ? ' selected' : '' ?>>Bieżący rok</option>
-                        </select>
-                    </form>
-                </div>
-                <div class="card-body p-0">
-                    <div class="table-responsive">
-                        <table class="table table-sm mb-0">
-                            <tbody>
-                                <tr>
-                                    <th class="py-3 px-3">
-                                        <i class="bi bi-car-front me-2" style="color: #6b7280;"></i>Liczba wynajmów
-                                    </th>
-                                    <td class="py-3">
-                                        <span class="badge px-3 py-2" style="background: #f3f4f6; color: #374151; border: 1px solid #d1d5db;"><?= (int)($statsOrders['cnt'] ?? 0) ?></span>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <th class="py-3 px-3">
-                                        <i class="bi bi-exclamation-triangle me-2" style="color: #6b7280;"></i>Liczba szkód
-                                    </th>
-                                    <td class="py-3">
-                                        <span class="badge px-3 py-2" style="background: #f3f4f6; color: #374151; border: 1px solid #d1d5db;"><?= (int)($statsIncidents['cnt'] ?? 0) ?></span>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <th class="py-3 px-3">
-                                        <i class="bi bi-tools me-2" style="color: #6b7280;"></i>Liczba serwisów
-                                    </th>
-                                    <td class="py-3">
-                                        <span class="badge px-3 py-2" style="background: #f3f4f6; color: #374151; border: 1px solid #d1d5db;"><?= (int)($statsServices['cnt'] ?? 0) ?></span>
-                                    </td>
-                                </tr>
-                                <tr style="background: #f9fafb;">
-                                    <th class="py-3 px-3">
-                                        <i class="bi bi-currency-dollar me-2" style="color: #6b7280;"></i>Przychód netto
-                                    </th>
-                                    <td class="py-3 fw-bold" style="color: #374151;">
-                                        <?= number_format((float)($statsOrders['net'] ?? 0), 2, ',', ' ') ?> zł
-                                    </td>
-                                </tr>
-                                <tr style="background: #f9fafb;">
-                                    <th class="py-3 px-3">
-                                        <i class="bi bi-currency-dollar me-2" style="color: #6b7280;"></i>Przychód brutto
-                                    </th>
-                                    <td class="py-3 fw-bold" style="color: #374151;">
-                                        <?= number_format((float)($statsOrders['gross'] ?? 0), 2, ',', ' ') ?> zł
-                                    </td>
-                                </tr>
-                                <tr style="background: #f9fafb;">
-                                    <th class="py-3 px-3">
-                                        <i class="bi bi-wrench me-2" style="color: #6b7280;"></i>Koszty serwisów
-                                    </th>
-                                    <td class="py-3 fw-bold" style="color: #374151;">
-                                        <?= number_format((float)($statsServices['cost'] ?? 0), 2, ',', ' ') ?> zł
-                                    </td>
-                                </tr>
-                                <tr style="background: #f9fafb;">
-                                    <th class="py-3 px-3">
-                                        <i class="bi bi-exclamation-triangle me-2" style="color: #6b7280;"></i>Koszty kolizji
-                                    </th>
-                                    <td class="py-3 fw-bold" style="color: #374151;">
-                                        <?= number_format((float)($statsIncidents['cost'] ?? 0), 2, ',', ' ') ?> zł
-                                    </td>
-                                </tr>
-                                <tr style="background: #f9fafb; border-top: 1px solid #6b7280;">
-                                    <th class="py-4 px-3">
-                                        <i class="bi bi-trophy me-2" style="color: var(--color-primary);"></i><strong>Zysk netto</strong>
-                                    </th>
-                                    <td class="py-4">
-                                        <span class="badge fs-6 px-4 py-3" style="background: #10b981; color: white;">
-                                            <i class="bi bi-cash-coin me-1"></i>
-                                            <?= number_format((float)($statsOrders['net'] ?? 0) - (float)($statsServices['cost'] ?? 0) - (float)($statsIncidents['cost'] ?? 0), 2, ',', ' ') ?> zł
-                                        </span>
-                                    </td>
-                                </tr>
-                            </tbody>
-                        </table>
+                    switch ($period) {
+                        case 'today':
+                            $periodSql = "AND DATE(placed_at) = '$today'";
+                            break;
+                        case '7d':
+                            $periodSql = "AND placed_at >= DATE_SUB('$today', INTERVAL 7 DAY)";
+                            break;
+                        case '30d':
+                            $periodSql = "AND placed_at >= DATE_SUB('$today', INTERVAL 30 DAY)";
+                            break;
+                        case 'month':
+                            $periodSql = "AND MONTH(placed_at) = MONTH('$today') AND YEAR(placed_at) = YEAR('$today')";
+                            break;
+                        case 'year':
+                            $periodSql = "AND YEAR(placed_at) = YEAR('$today')";
+                            break;
+                        case 'all':
+                        default:
+                            $periodSql = '';
+                    }
+                    // Statystyki zamówień
+                    $statsOrders = $db->query("SELECT COUNT(*) AS cnt, SUM(total_net) AS net, SUM(total_gross) AS gross FROM orders WHERE vehicle_id = " . (int)$veh['id'] . " $periodSql")->fetch(PDO::FETCH_ASSOC);
+                    // Statystyki kolizji
+                    $statsIncidents = $db->query("SELECT COUNT(*) AS cnt, SUM(repair_cost) AS cost FROM vehicle_incidents WHERE vehicle_id = " . (int)$veh['id'] . ($period != 'all' ? " AND incident_date >= DATE_SUB('$today', INTERVAL 30 DAY)" : ""))->fetch(PDO::FETCH_ASSOC);
+                    // Statystyki serwisów
+                    $statsServices = $db->query("SELECT COUNT(*) AS cnt, SUM(cost_total) AS cost FROM vehicle_services WHERE vehicle_id = " . (int)$veh['id'] . ($period != 'all' ? " AND service_date >= DATE_SUB('$today', INTERVAL 30 DAY)" : ""))->fetch(PDO::FETCH_ASSOC);
+                    ?>
+                    <!-- Sekcja: Statystyki pojazdu -->
+                    <div class="card mb-3 shadow-sm" style="border: 1px solid var(--color-light);">
+                        <div class="card-header d-flex justify-content-between align-items-center" style="background: white; border-bottom: 1px solid #6b7280; color: var(--color-dark);">
+                            <h6 class="mb-0">
+                                <i class="bi bi-graph-up me-2" style="color: var(--color-primary);"></i>Statystyki pojazdu
+                            </h6>
+                            <form method="get" class="d-inline-flex gap-2 align-items-center" style="margin-bottom:0;">
+                                <input type="hidden" name="page" value="vehicle-detail">
+                                <input type="hidden" name="id" value="<?= (int)$veh['id'] ?>">
+                                <select name="period" class="form-select form-select-sm" onchange="this.form.submit()">
+                                    <option value="all" <?= $period == 'all' ? ' selected' : '' ?>>Cały okres</option>
+                                    <option value="today" <?= $period == 'today' ? ' selected' : '' ?>>Dzisiaj</option>
+                                    <option value="7d" <?= $period == '7d' ? ' selected' : '' ?>>Ostatnie 7 dni</option>
+                                    <option value="30d" <?= $period == '30d' ? ' selected' : '' ?>>Ostatnie 30 dni</option>
+                                    <option value="month" <?= $period == 'month' ? ' selected' : '' ?>>Ostatni miesiąc</option>
+                                    <option value="year" <?= $period == 'year' ? ' selected' : '' ?>>Bieżący rok</option>
+                                </select>
+                            </form>
+                        </div>
+                        <div class="card-body p-0">
+                            <div class="table-responsive">
+                                <table class="table table-sm mb-0">
+                                    <tbody>
+                                        <tr>
+                                            <th class="py-3 px-3">
+                                                <i class="bi bi-car-front me-2" style="color: #6b7280;"></i>Liczba wynajmów
+                                            </th>
+                                            <td class="py-3">
+                                                <span class="badge px-3 py-2" style="background: #f3f4f6; color: #374151; border: 1px solid #d1d5db;"><?= (int)($statsOrders['cnt'] ?? 0) ?></span>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <th class="py-3 px-3">
+                                                <i class="bi bi-exclamation-triangle me-2" style="color: #6b7280;"></i>Liczba szkód
+                                            </th>
+                                            <td class="py-3">
+                                                <span class="badge px-3 py-2" style="background: #f3f4f6; color: #374151; border: 1px solid #d1d5db;"><?= (int)($statsIncidents['cnt'] ?? 0) ?></span>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <th class="py-3 px-3">
+                                                <i class="bi bi-tools me-2" style="color: #6b7280;"></i>Liczba serwisów
+                                            </th>
+                                            <td class="py-3">
+                                                <span class="badge px-3 py-2" style="background: #f3f4f6; color: #374151; border: 1px solid #d1d5db;"><?= (int)($statsServices['cnt'] ?? 0) ?></span>
+                                            </td>
+                                        </tr>
+                                        <tr style="background: #f9fafb;">
+                                            <th class="py-3 px-3">
+                                                <i class="bi bi-currency-dollar me-2" style="color: #6b7280;"></i>Przychód netto
+                                            </th>
+                                            <td class="py-3 fw-bold" style="color: #374151;">
+                                                <?= number_format((float)($statsOrders['net'] ?? 0), 2, ',', ' ') ?> zł
+                                            </td>
+                                        </tr>
+                                        <tr style="background: #f9fafb;">
+                                            <th class="py-3 px-3">
+                                                <i class="bi bi-currency-dollar me-2" style="color: #6b7280;"></i>Przychód brutto
+                                            </th>
+                                            <td class="py-3 fw-bold" style="color: #374151;">
+                                                <?= number_format((float)($statsOrders['gross'] ?? 0), 2, ',', ' ') ?> zł
+                                            </td>
+                                        </tr>
+                                        <tr style="background: #f9fafb;">
+                                            <th class="py-3 px-3">
+                                                <i class="bi bi-wrench me-2" style="color: #6b7280;"></i>Koszty serwisów
+                                            </th>
+                                            <td class="py-3 fw-bold" style="color: #374151;">
+                                                <?= number_format((float)($statsServices['cost'] ?? 0), 2, ',', ' ') ?> zł
+                                            </td>
+                                        </tr>
+                                        <tr style="background: #f9fafb;">
+                                            <th class="py-3 px-3">
+                                                <i class="bi bi-exclamation-triangle me-2" style="color: #6b7280;"></i>Koszty kolizji
+                                            </th>
+                                            <td class="py-3 fw-bold" style="color: #374151;">
+                                                <?= number_format((float)($statsIncidents['cost'] ?? 0), 2, ',', ' ') ?> zł
+                                            </td>
+                                        </tr>
+                                        <tr style="background: #f9fafb; border-top: 1px solid #6b7280;">
+                                            <th class="py-4 px-3">
+                                                <i class="bi bi-trophy me-2" style="color: var(--color-primary);"></i><strong>Zysk netto</strong>
+                                            </th>
+                                            <td class="py-4">
+                                                <span class="badge fs-6 px-4 py-3" style="background: #10b981; color: white;">
+                                                    <i class="bi bi-cash-coin me-1"></i>
+                                                    <?= number_format((float)($statsOrders['net'] ?? 0) - (float)($statsServices['cost'] ?? 0) - (float)($statsIncidents['cost'] ?? 0), 2, ',', ' ') ?> zł
+                                                </span>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
